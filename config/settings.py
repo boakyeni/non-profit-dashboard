@@ -33,6 +33,15 @@ ALLOWED_HOSTS = env("ALLOWED_HOSTS").split(" ")
 # Application definition
 
 DJANGO_APPS = [
+    # Modules
+    "contact_analytics",
+    # -------------------------------
+    # Django apps
+    "rest_framework",
+    # -------------------------------
+    # 3rd party dependencies
+    "phonenumber_field",
+    # -------------------------------
     "django.contrib.contenttypes",
     "django.contrib.admin",
     "django.contrib.auth",
