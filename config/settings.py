@@ -35,6 +35,7 @@ ALLOWED_HOSTS = env("ALLOWED_HOSTS").split(" ")
 DJANGO_APPS = [
     # Modules
     "contact_analytics",
+    "donor_management",
     # -------------------------------
     # Django apps
     "rest_framework",
