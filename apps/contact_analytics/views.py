@@ -26,7 +26,7 @@ def contact_detail(request, pk=None):
             return Response(serializer.data)
             """
       returns all data if primary key is not provided and
-      returns all data if primary key is provided. Returns
+      returns pk data if primary key is provided. Returns
       404 if primary key is not found
       """
 
@@ -55,7 +55,6 @@ def contact_detail(request, pk=None):
     updates an existing contact specified by the pk is provided, 
     if contact is found, updates contact with data from the request payload
     """
-
     elif request.method == "DELETE":
         try:
             contact = Contact.objects.get(pk=pk)
