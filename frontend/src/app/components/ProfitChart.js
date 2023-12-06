@@ -45,8 +45,8 @@ const ProfitChart = () => {
     return (
         <>
 
-            <ResponsiveContainer width="100%" height="90%" className={'p-6'}>
-                <div className='flex flex-row gap-3 pb-4'>
+            <ResponsiveContainer width="100%" height="90%" className={'py-5'}>
+                <div className='flex flex-row gap-3 pb-4 pl-8'>
                     <div className='flex flex-row place-items-center text-[#9bd5b1]'>
                         <FaRegDotCircle className='' />
                         <p className=' pl-2'>Total Profit</p>
@@ -57,7 +57,7 @@ const ProfitChart = () => {
                     </div>
                 </div>
                 <LineChart width={730} height={250} data={data}
-                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }} className='pb-5'>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
                     <defs>
                         <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
@@ -70,7 +70,7 @@ const ProfitChart = () => {
                         </linearGradient>
                     </defs>
                     <XAxis dataKey="year" dy={10} />
-                    <YAxis dx={-10} />
+                    <YAxis dx={0} />
                     <Tooltip />
                     <Line type="monotone" dataKey="Iphone" stroke="#9bd5b1" fillOpacity={1} fill="url(#colorUv)" />
                     <Line type="monotone" dataKey="Samsung" stroke="#8884d8" fillOpacity={1} fill="url(#colorUv)" />

@@ -4,9 +4,9 @@
 const StatsBlock = ({ icon }) => {
     return (
         <>
-            <div className="flex flex-row bg-white border-slate-300 border drop-shadow-md justify-between h-[166px] m-4 p-6 ">
-                <div className="flex flex-col justify-between">
-                    <div className="bg-slate-200 rounded-full py-6 px-6">
+            <div className="overflow-visible flex flex-row bg-white border-slate-300 border drop-shadow-md justify-between h-[166px] m-4 p-6 ">
+                <div className="flex flex-col justify-end">
+                    <div className="bg-slate-200  py-6 px-6 absolute -top-6 left-6">
                         {icon}
                     </div>
                     <div>

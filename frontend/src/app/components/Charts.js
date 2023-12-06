@@ -1,6 +1,6 @@
 'use client'
 import StatsBlock from "./StatsBlock";
-import { GoPerson } from "react-icons/go";
+import { LuHeartHandshake, LuCalendarClock, LuGalleryVerticalEnd, LuUser2 } from 'react-icons/lu'
 import AreaChartPlot from "./PatientChart";
 import ProfitChart from "./ProfitChart";
 import ActivePieChart from "./PieChart";
@@ -10,10 +10,10 @@ const Charts = () => {
         <>
             <section className="pt-6">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-4 xl:gap-0 xl:grid-cols-4 2xl:gap-7.5">
-                    <StatsBlock icon={<GoPerson className='scale-[2]' />} />
-                    <StatsBlock icon={<GoPerson className='scale-[2]' />} />
-                    <StatsBlock icon={<GoPerson className='scale-[2]' />} />
-                    <StatsBlock icon={<GoPerson className='scale-[2]' />} />
+                    <StatsBlock icon={<LuGalleryVerticalEnd className='scale-[2.5]' />} />
+                    <StatsBlock icon={<LuHeartHandshake className='scale-[2.5]' />} />
+                    <StatsBlock icon={<LuCalendarClock className='scale-[2.5]' />} />
+                    <StatsBlock icon={<LuUser2 className='scale-[2.5]' />} />
                 </div>
             </section>
 

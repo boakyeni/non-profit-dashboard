@@ -4,6 +4,7 @@ import CustomSidebarLink from "./CustomSidebarLink"
 import { FaHome } from 'react-icons/fa'
 import { CiCalendarDate } from 'react-icons/ci'
 import { GoPerson } from 'react-icons/go'
+import { PiNewspaperClippingThin } from 'react-icons/pi'
 import SidebarAccordian from "./SidebarAccordian"
 
 
@@ -23,8 +24,9 @@ const CustomSidebar = () => {
                     <div className="p-6 ">
                         <CustomSidebarLink title="Dashboard" icon={<FaHome className="scale-[1.5]" />} />
                         <CustomSidebarLink title="Calendar" icon={<CiCalendarDate className="scale-[1.75]" />} />
+                        <CustomSidebarLink title="Forms" icon={<PiNewspaperClippingThin className="scale-[1.5]" />} />
+                        <SidebarAccordian title="Tasks" subtitles={["Kanban", "Other"]} type="dropdown_tasks" />
                         <CustomSidebarLink title="Profile" icon={<GoPerson className="scale-[1.5]" />} />
-                        <SidebarAccordian />
                     </div>
 
 
