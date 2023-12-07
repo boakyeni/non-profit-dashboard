@@ -1,26 +1,24 @@
 from django.db import models
+from donor_management.models import Donor
 
 
-class DonorType(models.TextChoices):
-    INDIVIDUAL = "Individual", "Individual"
-    INSTITUTION = "Institution", "Institution"
+# class DonorType(models.TextChoices):
+#     INDIVIDUAL = "Individual", "Individual"
+#     INSTITUTION = "Institution", "Institution"
 
 
-class Donor(models.Model):
-    name = models.CharField(max_length=100)
-    donor_type = models.CharField(max_length=100, choices=DonorType.choices)
-    amount_donated = models.DecimalField(max_digits=10, decimal_places=2)
-    institution = models.CharField(
-        max_length=100, blank=True
-    )  # Optional if type is INDIVIDUAL
-    email = models.EmailField(max_length=100)
-    address = models.CharField(max_length=100)
-    region = models.CharField(max_length=100)
-    country = models.CharField(max_length=100)
-    notes = models.TextField(max_length=250, verbose_name="Notes")  # Optional field
+# class Donor(models.Model):
+#     name = models.CharField(max_length=100)
+#     donor_type = models.CharField(max_length=100, choices=DonorType.choices)
+#     amount_donated = models.DecimalField(max_digits=10, decimal_places=2)
+#     institution = models.CharField(max_length=100, blank=True)
+#     email = models.EmailField(max_length=100)
+#     address = models.CharField(max_length=100)
+#     country = models.CharField(max_length=100)
+#     notes = models.TextField(max_length=250, verbose_name="Notes")
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
 
 class Cause(models.Model):
