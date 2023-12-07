@@ -21,14 +21,6 @@ ALLOWED_HOSTS = env("ALLOWED_HOSTS").split(" ")
 # Application definition
 
 DJANGO_APPS = [
-    # # Modules
-    # # -------------------------------
-    # # Django apps
-    # "rest_framework",
-    # # -------------------------------
-    # # 3rd party dependencies
-    # "phonenumber_field",
-    # -------------------------------
     "django.contrib.contenttypes",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -46,6 +38,7 @@ LOCAL_APPS = [
     "apps.users",
     "apps.contact_analytics",
     "apps.donor_management",
+    "apps.campaigns",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
