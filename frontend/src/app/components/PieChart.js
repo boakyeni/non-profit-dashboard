@@ -17,14 +17,14 @@ const renderActiveShape = (props) => {
     const cos = Math.cos(-RADIAN * midAngle);
     const sx = cx + (outerRadius + 10) * cos;
     const sy = cy + (outerRadius + 10) * sin;
-    const mx = cx + (outerRadius + 30) * cos;
-    const my = cy + (outerRadius + 30) * sin;
+    const mx = cx + (outerRadius + 10) * cos;
+    const my = cy + (outerRadius + 10) * sin;
     const ex = mx + (cos >= 0 ? 1 : -1) * 22;
     const ey = my;
     const textAnchor = cos >= 0 ? 'start' : 'end';
 
     return (
-        <g>
+        <g >
             <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
                 {payload.name}
             </text>
@@ -46,10 +46,10 @@ const renderActiveShape = (props) => {
                 outerRadius={outerRadius + 10}
                 fill={fill}
             />
-            <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
-            <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-            <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333">{`PV ${value}`}</text>
-            <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999">
+            {/* <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" /> */}
+            {/* <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" /> */}
+            <text x={'75%'} y={30} fill="#333">{`PV ${value}`}</text>
+            <text x={12} y={12} dy={18} fill="#999">
                 {`(Rate ${(percent * 100).toFixed(2)}%)`}
             </text>
         </g>
@@ -70,8 +70,8 @@ const ActivePieChart = () => {
 
     return (
         <>
-            <ResponsiveContainer width="100%" height="100%">
-                <PieChart width={400} height={400}>
+            <ResponsiveContainer width="100%" height="100%" >
+                <PieChart width={400} height={400} >
                     <Pie
                         activeIndex={state.activeIndex}
                         activeShape={renderActiveShape}
@@ -83,6 +83,7 @@ const ActivePieChart = () => {
                         fill="#8884d8"
                         dataKey="value"
                         onMouseEnter={onPieEnter}
+                        onTouchStart={onPieEnter}
                     />
                 </PieChart>
             </ResponsiveContainer>
