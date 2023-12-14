@@ -5,8 +5,8 @@ const RegisterPage = () => {
 
 
 
-        <section className="w-screen h-screen flex  bg-white ">
-            <div className="flex flex-row justify-center rounded-2xl shadow-2xl m-auto md:w-2/3">
+        <section className="w-screen h-screen flex  bg-slate-100 ">
+            <div className="flex flex-row justify-center rounded-2xl shadow-2xl m-auto md:w-2/3 bg-white">
                 <div className="hidden bg-cover lg:block lg:w-2/5">
                     <Image width={50} height={50} className="w-auto h-7 sm:h-8" src="/assets/bsystems_logo.png" alt="" />
                 </div>

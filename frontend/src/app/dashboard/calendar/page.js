@@ -1,6 +1,6 @@
 'use client'
 
-import CalendarWidget from "../components/CalendarWidget"
+import CalendarWidget from "../_components/CalendarWidget"
 import { useState } from "react";
 import moment from 'moment';
 import { momentLocalizer } from 'react-big-calendar'

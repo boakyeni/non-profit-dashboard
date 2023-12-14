@@ -44,10 +44,12 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "rest_framework",
     "phonenumber_field",
+    "schedule",
 ]
 
 LOCAL_APPS = [
     "apps.users",
+    "apps.scheduler",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

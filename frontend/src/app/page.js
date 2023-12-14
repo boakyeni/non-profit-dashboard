@@ -4,10 +4,7 @@ import Charts from './components/Charts'
 import Navbar from './components/Navbar'
 import TopBar from './components/TopBar'
 
-export const metadata = {
-  title: 'Bsystems NGO Platform',
-  description: 'Social and Analytics Platform for Non-Profit Organisations',
-}
+
 
 export default function Home() {
   return (
