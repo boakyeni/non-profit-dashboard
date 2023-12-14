@@ -23,7 +23,7 @@ class Donor(models.Model):
 
 
 class LeadType(models.Model):
-    Donor = models.ForeignKey(Donor, on_delete=models.CASCADE)
+    Donor = models.ForeignKey(Donor, on_delete=models.CASCADE, default=None)
     type = models.CharField(max_length=100, verbose_name="Lead Type")
 
     def __str__(self):
@@ -31,7 +31,7 @@ class LeadType(models.Model):
 
 
 class LeadAcquisition(models.Model):
-    Donor = models.ForeignKey(Donor, on_delete=models.CASCADE)
+    Donor = models.ForeignKey(Donor, on_delete=models.CASCADE, default=None)
     acquisition = models.CharField(max_length=100, verbose_name="Lead Acquisition")
 
     def __str__(self):

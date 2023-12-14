@@ -17,11 +17,11 @@ class MonetaryCampaign(models.Model):
 
 
 class Donation(models.Model):
-    donor = models.ForeignKey(Donor, on_delete=models.CASCADE)
+    donor = models.ForeignKey(Donor, on_delete=models.CASCADE, default=None)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     campaign_type = models.ManyToManyField(MonetaryCampaign)
     currency = models.CharField(max_length=100)
-    date = models.DateField()
+    date = models.DateField(auto_now=True)
 
     def __str__(self):
         return f"{self.donor.name} - {self.amount}"

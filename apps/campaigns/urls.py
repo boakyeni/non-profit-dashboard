@@ -16,5 +16,5 @@ router.register("causes", CampaignCauseViewSet, basename="causes")
 
 
 urlpatterns = [
-    path("api/", include(router.urls), name="api"),
+    path("api/", include(router.urls)),
 ]
