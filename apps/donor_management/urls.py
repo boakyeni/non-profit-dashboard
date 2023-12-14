@@ -1,8 +1,10 @@
-from django.urls import path
-from . import views
+from django.urls import path, include
+from .views import DonorViewSet
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register("donors", DonorViewSet, basename="Donor Management")
 
 urlpatterns = [
-    path("", views.get_all_donors, name=("get all donors")),
-    path("<int:pk>/", views.get_donor_detail, name=("Donor Detail")),
-    path("create/", views.create_donor, name=("Create Donor")),
+    path("api/", include(router.urls), name="api"),
 ]

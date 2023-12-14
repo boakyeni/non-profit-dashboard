@@ -36,9 +36,9 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "apps.users",
+    "apps.campaigns",
     "apps.contact_analytics",
     "apps.donor_management",
-    "apps.campaigns",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

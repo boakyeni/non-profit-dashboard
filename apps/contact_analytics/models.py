@@ -1,6 +1,7 @@
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
-from donor_management.models import Donor
+
+from apps.donor_management.models import Donor
 
 
 # Create your models here.
