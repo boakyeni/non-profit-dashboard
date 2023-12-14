@@ -1,7 +1,7 @@
 'use client'
 
 import CustomSidebar from '../components/CustomSidebar'
-import Navbar from './components/Navbar'
+import Navbar from './_components/Navbar'
 import Charts from '../components/Charts'
 
 

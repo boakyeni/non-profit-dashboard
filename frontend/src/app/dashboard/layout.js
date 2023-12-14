@@ -1,5 +1,5 @@
 import CustomSidebar from "../components/CustomSidebar"
-import Navbar from "./components/Navbar"
+import Navbar from "./_components/Navbar"
 export default function DashboardLayout({
     children, // will be a page or nested layout
 }) {
