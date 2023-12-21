@@ -11,6 +11,7 @@ djangorestframework = "~=3.14.0"
 django-environ = "*"
 djoser = "*"
 djangorestframework-simplejwt = "*"
+django-scheduler = "*"
 
 [dev-packages]
 
