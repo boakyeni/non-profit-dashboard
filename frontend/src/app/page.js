@@ -1,8 +1,8 @@
-import Image from 'next/image'
 import Masthead from './components/Masthead'
-import Charts from './components/Charts'
 import Navbar from './components/Navbar'
 import TopBar from './components/TopBar'
+import Footer from './components/Footer'
+import ContactFooter from './components/ContactFooter'
 
 
 
@@ -15,6 +15,8 @@ export default function Home() {
       <div className='h-screen bg-black'>
 
       </div>
+      <ContactFooter />
+      <Footer />
     </main>
   )
 }

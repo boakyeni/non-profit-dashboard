@@ -4,7 +4,8 @@ import { LuHeartHandshake, LuCalendarClock, LuGalleryVerticalEnd, LuUser2 } from
 import AreaChartPlot from "./PatientChart";
 import ProfitChart from "./ProfitChart";
 import ActivePieChart from "./PieChart";
-
+import AppointmentBlock from "./AppointmentBlock";
+import Link from "next/link";
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
@@ -12,12 +13,13 @@ const Charts = () => {
 
     const needDominantBaselineFix = 0
     return (
-        <div className="lg:h-screen max-md:grid max-md:grid-cols-1">
+        <div className=" max-md:grid max-md:grid-cols-1">
             <section className="pt-6 ">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-4 xl:gap-0 xl:grid-cols-4 2xl:gap-7.5">
+                    <AppointmentBlock icon={<LuCalendarClock className='scale-[2.5]' />} />
                     <StatsBlock icon={<LuGalleryVerticalEnd className='scale-[2.5]' />} />
                     <StatsBlock icon={<LuHeartHandshake className='scale-[2.5]' />} />
-                    <StatsBlock icon={<LuCalendarClock className='scale-[2.5]' />} />
+
                     <StatsBlock icon={<LuUser2 className='scale-[2.5]' />} />
                 </div>
             </section>
@@ -36,7 +38,7 @@ const Charts = () => {
                 <div className=" md:w-1/3 h-[250px] bg-white drop-shadow-xl rounded-2xl">
                     <ActivePieChart />
                 </div>
-                <div className=" md:w-1/3 h-[250px] bg-white drop-shadow-xl rounded-2xl flex place-items-center">
+                <Link href={`/dashboard/campaigns/1`} className=" md:w-1/3 h-[250px] bg-white drop-shadow-xl rounded-2xl flex place-items-center">
                     <div className="w-1/2 mx-auto my-2 text-sm">
                         <CircularProgressbarWithChildren
                             value={67} styles={{
@@ -63,8 +65,8 @@ const Charts = () => {
 
                     </div>
 
-                </div>
-                <div className=" md:w-1/3 h-[250px] bg-white drop-shadow-xl rounded-2xl flex place-items-center">
+                </Link>
+                <Link href={`/dashboard/campaigns/2`} className=" md:w-1/3 h-[250px] bg-white drop-shadow-xl rounded-2xl flex place-items-center">
                     <div className="w-1/2 mx-auto my-2 ">
                         <CircularProgressbarWithChildren
                             value={32} styles={{
@@ -90,7 +92,7 @@ const Charts = () => {
                         </CircularProgressbarWithChildren>
                     </div>
 
-                </div>
+                </Link>
             </section >
         </div>
     );

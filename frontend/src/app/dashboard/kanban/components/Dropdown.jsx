@@ -20,7 +20,7 @@ const Dropdown = (props) => {
     return (
         <div
             ref={dropRef}
-            className={` drop-shadow-xl cursor-default ${props.class ? props.class : ""}`}
+            className={` drop-shadow-xl cursor-default bg-white rounded-xl p-2 ${props.class ? props.class : ""}`}
         >
             {props.children}
         </div>

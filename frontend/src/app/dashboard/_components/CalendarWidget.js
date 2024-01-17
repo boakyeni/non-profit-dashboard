@@ -4,7 +4,10 @@ import { Calendar, Views, DateLocalizer } from 'react-big-calendar'
 
 // Storybook cannot alias this, so you would use 'react-big-calendar/lib/addons/dragAndDrop'
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
+import { editEvent, setEndDate, setStartDate, toggleCreateEventModal, toggleEditEventModal, setSelectedEvent, toggleEdit } from '../../lib/features/events/eventSlice';
 // Storybook cannot alias this, so you would use 'react-big-calendar/lib/addons/dragAndDrop/styles.scss'
+import { useDispatch, useSelector } from 'react-redux';
+
 
 
 const DragAndDropCalendar = withDragAndDrop(Calendar)
@@ -25,11 +28,14 @@ const adjEvents = events.map((it, ind) => ({
 
 const formatName = (name, count) => `${name} ID ${count}`
 
-export default function CalendarWidget({ localizer }) {
+export default function CalendarWidget({ localizer, events }) {
     const [myEvents, setMyEvents] = useState(adjEvents)
     const [draggedEvent, setDraggedEvent] = useState()
     const [displayDragItemInCell, setDisplayDragItemInCell] = useState(true)
     const [counters, setCounters] = useState({ item1: 0, item2: 0 })
+
+    const dispatch = useDispatch()
+    const { selectedDates } = useSelector((state) => state.events)
 
     const eventPropGetter = useCallback(
         (event) => ({
@@ -40,56 +46,68 @@ export default function CalendarWidget({ localizer }) {
         []
     )
     //,
-    const handleDragStart = useCallback((event) => setDraggedEvent(event), [])
 
-    const dragFromOutsideItem = useCallback(() => draggedEvent, [draggedEvent])
 
-    const customOnDragOver = useCallback(
-        (dragEvent) => {
-            // check for undroppable is specific to this example
-            // and not part of API. This just demonstrates that
-            // onDragOver can optionally be passed to conditionally
-            // allow draggable items to be dropped on cal, based on
-            // whether event.preventDefault is called
-            if (draggedEvent !== 'undroppable') {
-                console.log('preventDefault')
-                dragEvent.preventDefault()
-            }
+    /* This grabs the date that the user dragged on the Calendar,
+        Only one event can be created or edited at a time, so whenever we are
+        setting the properties of an event it is like setting the properties of the selected event or new event.
+        Sometimes that is not clear in the code and I hope this comment clears that up, that the selected event is usually implied by the users most recent action
+          */
+    const newEvent = useCallback(
+        ({ start, end }) => {
+            /* Syncs date data with modal and brings up modal */
+            dispatch(setStartDate(start.toISOString()));
+            dispatch(setEndDate(end.toISOString()));
+            dispatch(toggleCreateEventModal());
+
         },
-        [draggedEvent]
+        [dispatch, selectedDates]
     )
 
-    const handleDisplayDragItemInCell = useCallback(
-        () => setDisplayDragItemInCell((prev) => !prev),
-        []
+    const resizeEvent = useCallback(
+        ({ event, start, end }) => {
+            const updatedEvent = {
+                ...event,
+                start,
+                end
+            };
+
+            // Dispatch the action to edit (resize) the event
+            dispatch(editEvent(updatedEvent));
+        },
+        [dispatch]
     )
 
     const moveEvent = useCallback(
         ({ event, start, end, isAllDay: droppedOnAllDaySlot = false }) => {
-            const { allDay } = event
-            if (!allDay && droppedOnAllDaySlot) {
-                event.allDay = true
+
+            const updatedEvent = {
+                ...event,
+                start,
+                end,
+                allDay: event.allDay || droppedOnAllDaySlot,
+            };
+
+            // Dispatch the action to edit the event
+            dispatch(editEvent(updatedEvent));
+        },
+        [dispatch]
+    );
+
+    /* We explicity set the selected event here so that it can be used when viewing or editing the event*/
+    const handleEventClick = useCallback(
+        (event) => {
+            const eventToBeEdited = {
+                ...event,
+                start: event.start.toISOString(),
+                end: event.end.toISOString()
             }
 
-            setMyEvents((prev) => {
-                const existing = prev.find((ev) => ev.id === event.id) ?? {}
-                const filtered = prev.filter((ev) => ev.id !== event.id)
-                return [...filtered, { ...existing, start, end, allDay }]
-            })
+            dispatch(setSelectedEvent(eventToBeEdited));
+            dispatch(toggleEditEventModal())
         },
-        [setMyEvents]
-    )
-
-    const newEvent = useCallback(
-        (event) => {
-            setMyEvents((prev) => {
-                const idList = prev.map((item) => item.id)
-                const newId = Math.max(...idList) + 1
-                return [...prev, { ...event, id: newId }]
-            })
-        },
-        [setMyEvents]
-    )
+        [dispatch]
+    );
 
     const onDropFromOutside = useCallback(
         ({ start, end, allDay: isAllDay }) => {
@@ -118,16 +136,31 @@ export default function CalendarWidget({ localizer }) {
         [draggedEvent, counters, setDraggedEvent, setCounters, newEvent]
     )
 
-    const resizeEvent = useCallback(
-        ({ event, start, end }) => {
-            setMyEvents((prev) => {
-                const existing = prev.find((ev) => ev.id === event.id) ?? {}
-                const filtered = prev.filter((ev) => ev.id !== event.id)
-                return [...filtered, { ...existing, start, end }]
-            })
+    const handleDragStart = useCallback((event) => setDraggedEvent(event), [])
+
+    const dragFromOutsideItem = useCallback(() => draggedEvent, [draggedEvent])
+
+    const customOnDragOver = useCallback(
+        (dragEvent) => {
+            // check for undroppable is specific to this example
+            // and not part of API. This just demonstrates that
+            // onDragOver can optionally be passed to conditionally
+            // allow draggable items to be dropped on cal, based on
+            // whether event.preventDefault is called
+            if (draggedEvent !== 'undroppable') {
+                console.log('preventDefault')
+                dragEvent.preventDefault()
+            }
         },
-        [setMyEvents]
+        [draggedEvent]
     )
+
+    const handleDisplayDragItemInCell = useCallback(
+        () => setDisplayDragItemInCell((prev) => !prev),
+        []
+    )
+
+
 
     const defaultDate = useMemo(() => new Date(2023, 11, 7), [])
 
@@ -149,6 +182,7 @@ export default function CalendarWidget({ localizer }) {
                     onEventDrop={moveEvent}
                     onEventResize={resizeEvent}
                     onSelectSlot={newEvent}
+                    onSelectEvent={handleEventClick}
                     resizable
                     selectable
                 />

@@ -5,6 +5,9 @@ import { v4 as uuidv4 } from "uuid";
 import useLocalStorage from "use-local-storage";
 import Board from "./components/Board";
 import Editable from "./components/Editable";
+import DeleteBoardConfirm from "./components/DeleteBoardConfirm";
+import { toggleDeleteBoardModal } from "../../lib/features/dropdown/dropdownSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 
 
@@ -12,6 +15,14 @@ import Editable from "./components/Editable";
 const KanbanPage = () => {
     {/* Kanban from https://github.com/aman162000/kanban-board */ }
     const [data, setData] = useState([]);
+    const [deleteBoardId, setDeleteBoardId] = useState(null);
+    const { deleteBoardModalOpen } = useSelector((state) => state.dropdowns);
+    const dispatch = useDispatch()
+
+    const openDeleteModal = (boardId) => {
+        setDeleteBoardId(boardId);
+        dispatch(toggleDeleteBoardModal());
+    };
 
     useEffect(() => {
         setData(localStorage.getItem("kanban-board")
@@ -111,7 +122,8 @@ const KanbanPage = () => {
     return (
         <>
             <DragDropContext onDragEnd={onDragEnd}>
-                <div className="h-screen w-full flex flex-col transition-all duration-300" >
+                <div className="h-screen w-full flex flex-row transition-all duration-300 justify-around" >
+                    <DeleteBoardConfirm id={deleteBoardId} removeBoard={removeBoard} />
                     <div className="flex-1 w-full overflow-x-auto">
                         <div className="mt-5 min-w-fit flex gap-8 px-[2rem] text-black">
                             {data.map((item) => (
@@ -125,6 +137,7 @@ const KanbanPage = () => {
                                     removeCard={removeCard}
                                     removeBoard={removeBoard}
                                     updateCard={updateCard}
+                                    openDeleteModal={() => openDeleteModal(item.id)}
                                 />
                             ))}
                             <Editable
@@ -135,10 +148,19 @@ const KanbanPage = () => {
                                 placeholder={"Enter Board  Title"}
                                 parentClass={"w-44"}
                             />
+
                         </div>
+
+
                     </div>
+
+
+
                 </div>
+
             </DragDropContext>
+
+
         </>
     )
 }
