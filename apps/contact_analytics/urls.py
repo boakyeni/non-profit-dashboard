@@ -6,5 +6,5 @@ router = DefaultRouter()
 router.register("contacts", ContactViewSet, basename="contacts")
 
 urlpatterns = [
-    path("api/", include(router.urls), name="api"),
+    path("", include(router.urls), name="api"),
 ]

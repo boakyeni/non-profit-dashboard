@@ -6,5 +6,5 @@ router = DefaultRouter()
 router.register("donors", DonorViewSet, basename="Donor Management")
 
 urlpatterns = [
-    path("api/", include(router.urls), name="api"),
+    path("", include(router.urls), name="api"),
 ]
