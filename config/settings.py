@@ -137,12 +137,32 @@ AUTH_USER_MODEL = "users.User"
 
 from datetime import timedelta
 
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication",
+    ),
+    "EXCEPTION_HANDLER": "utils.exceptions.custom_exception_handler",
+}
+
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": (
         "Bearer",
         "JWT",
     ),
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=2),
+    "SIGNING_KEY": env("SIGNING_KEY"),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "UPDATE_LAST_LOGIN": True,
+}
+
+SIMPLE_JWT = {
+    "AUTH_HEADER_TYPES": (
+        "Bearer",
+        "JWT",
+    ),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=2),
     "SIGNING_KEY": env("SIGNING_KEY"),
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
