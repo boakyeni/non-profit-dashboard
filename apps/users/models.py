@@ -22,7 +22,9 @@ class User(AbstractUser):
     phone_number = PhoneNumberField(
         verbose_name=_("Phone Number"), max_length=30, default="+18884244444"
     )
-
+    reference = models.CharField(
+        verbose_name=_("Account Reference"), max_length=250, blank=True, null=True
+    )
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = [
         "first_name",
