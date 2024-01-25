@@ -42,7 +42,7 @@ const CampaignDetails = ({ params }) => {
                             <thead className="text-xs text-gray-700 uppercase bg-gray-50 ">
                                 <tr>
                                     <th scope="col" className="px-6 py-3">
-
+                                        Type
                                     </th>
                                     <th scope="col" className="px-6 py-3">
                                         Amount
@@ -67,30 +67,31 @@ const CampaignDetails = ({ params }) => {
                                         ₵ 100,000
                                     </td>
                                     <td className="px-6 py-4">
-                                        Laptop
+                                        3
                                     </td>
                                     <td className="px-6 py-4">
-                                        $2999
+                                        ₵ 33,000
                                     </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                    <td className="px-6 py-4">
+                                        57.14 %
                                     </td>
+
                                 </tr>
                                 <tr className="bg-white border-b">
                                     <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap ">
                                         Mid Range
                                     </th>
                                     <td className="px-6 py-4">
-                                        White
+                                        ₵ 50,000
                                     </td>
                                     <td className="px-6 py-4">
-                                        Laptop PC
+                                        200
                                     </td>
                                     <td className="px-6 py-4">
-                                        $1999
+                                        ₵ 250
                                     </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                    <td className="px-6 py-4">
+                                        28.57 %
                                     </td>
                                 </tr>
                                 <tr className="bg-white ">
@@ -98,25 +99,26 @@ const CampaignDetails = ({ params }) => {
                                         Broad Base
                                     </th>
                                     <td className="px-6 py-4">
-                                        Black
+                                        ₵ 25,000
                                     </td>
                                     <td className="px-6 py-4">
-                                        Accessories
+                                        800
                                     </td>
                                     <td className="px-6 py-4">
-                                        $99
+                                        ₵ 31.25
                                     </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                                    <td className="px-6 py-4">
+                                        14.29%
                                     </td>
                                 </tr>
 
                             </tbody>
                             <tfoot>
                                 <tr className="font-semibold">
-                                    <th scope="row" className="px-6 py-3 text-base">Total</th>
-                                    <td className="px-6 py-3">3</td>
-                                    <td className="px-6 py-3">21,000</td>
+                                    <th scope="row" className="px-6 py-3 text-base">Totals</th>
+                                    <td className="px-6 py-3">₵ 175,000</td>
+                                    <td className="px-6 py-3">1,003</td>
+
                                 </tr>
                             </tfoot>
                         </table>

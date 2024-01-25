@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
-
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -8,4 +9,5 @@ urlpatterns = [
     path("api/contact_analytics/", include("apps.contact_analytics.urls")),
     path("api/donor_management/", include("apps.donor_management.urls")),
     path("schedule/", include("schedule.urls")),
-]
+    path("mosaico/", include("apps.mosaico.urls")),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

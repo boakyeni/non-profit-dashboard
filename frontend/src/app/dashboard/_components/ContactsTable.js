@@ -1,6 +1,6 @@
 'use client'
 import { useDispatch, useSelector } from "react-redux"
-import { fetchContacts, setSelectedContact, toggleContactCard, toggleContactTableAction, toggleContactSelection, toggleAllContacts, toggleEditUser } from "../../lib/features/contacts/contactSlice"
+import { fetchContacts, setSelectedContact, toggleContactCard, toggleContactTableAction, toggleContactSelection, toggleAllContacts, toggleEditUser, toggleContactSortModal } from "../../lib/features/contacts/contactSlice"
 
 import { useEffect, useState, useRef } from "react"
 import ReactPaginate from 'react-paginate'
@@ -103,7 +103,7 @@ const ContactsTable = ({ itemsPerPage }) => {
                                 <a href="#" className="block px-4 py-2 hover:bg-gray-100  ">Show only Patients</a>
                             </li>
                             <li>
-                                <a href="#" className="block px-4 py-2 hover:bg-gray-100 ">Sort/Filter</a>
+                                <button href="#" className="block px-4 py-2 hover:bg-gray-100 w-full text-left " onClick={() => dispatch(toggleContactSortModal())}>Sort/Filter</button>
                             </li>
 
                         </ul>

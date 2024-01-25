@@ -13,7 +13,7 @@ const Dashboard = () => {
         <div className='flex flex-col'>
 
             <Charts />
-            <Charts />
+
 
         </div>
     )

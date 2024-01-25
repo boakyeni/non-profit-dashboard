@@ -1,3 +1,4 @@
+'use client'
 import React, { Fragment, useCallback, useMemo, useState } from 'react'
 import PropTypes from 'prop-types'
 import { Calendar, Views, DateLocalizer } from 'react-big-calendar'
@@ -17,8 +18,8 @@ const events = [
         id: 0,
         title: 'All Day Event very long title',
         allDay: true,
-        start: new Date(2023, 11, 7),
-        end: new Date(2023, 11, 8),
+        start: new Date(2024, 0, 23),
+        end: new Date(2024, 0, 24),
     },]
 
 const adjEvents = events.map((it, ind) => ({
@@ -162,7 +163,7 @@ export default function CalendarWidget({ localizer, events }) {
 
 
 
-    const defaultDate = useMemo(() => new Date(2023, 11, 7), [])
+    const defaultDate = useMemo(() => new Date(), [])
 
     return (
         <Fragment>

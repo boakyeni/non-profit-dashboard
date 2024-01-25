@@ -28,7 +28,7 @@ const AddPatientsModal = () => {
                             <div className="flex flex-col lg:flex-row space-x-6">
                                 <div className="lg:w-1/2 2xl:w-3/4 space-y-6">
                                     <div className="col-span-6 sm:col-span-4">
-                                        <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 ">Title</label>
+                                        <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 ">Name</label>
                                         <input type="text" name="title" id="title" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Bonnie" required="" />
                                     </div>
 
@@ -53,19 +53,11 @@ const AddPatientsModal = () => {
                                         <label htmlFor="department" className="block mb-2 text-sm font-medium text-gray-900 ">Department</label>
                                         <input type="text" name="department" id="department" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Development" required="" />
                                     </div>
-                                    <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="company" className="block mb-2 text-sm font-medium text-gray-900 ">Company</label>
-                                        <input type="number" name="company" id="company" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="123456" required="" />
-                                    </div>
 
-                                    <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="new-password" className="block mb-2 text-sm font-medium text-gray-900 ">New Password</label>
-                                        <input type="password" name="new-password" id="new-password" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5  " placeholder="••••••••" required="" />
-                                    </div>
 
                                 </div>
                                 <div className="lg:w-1/2 2xl:w-1/4">
-                                    <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 ">Add guests</label>
+                                    <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 ">Add Contacts</label>
                                     <input type="text" name="first-name" id="first-name" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Add Email" required="" />
 
                                 </div>

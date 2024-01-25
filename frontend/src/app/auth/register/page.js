@@ -1,5 +1,6 @@
 'use client'
 import Image from "next/image"
+import Link from "next/link"
 const RegisterPage = () => {
     return (
 
@@ -7,7 +8,7 @@ const RegisterPage = () => {
 
         <section className="w-screen h-screen flex  bg-slate-100 ">
             <div className="flex flex-row justify-center rounded-2xl shadow-2xl m-auto md:w-2/3 bg-white">
-                <div className="hidden bg-cover lg:block lg:w-2/5">
+                <div className="hidden bg-cover lg:block lg:w-2/5 m-8">
                     <Image width={50} height={50} className="w-auto h-7 sm:h-8" src="/assets/bsystems_logo.png" alt="" />
                 </div>
 
@@ -60,7 +61,7 @@ const RegisterPage = () => {
 
                             <div>
                                 <label className="block mb-2 text-sm text-gray-600 ">Phone number</label>
-                                <input type="text" placeholder="XXX-XX-XXXX-XXX" className="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg  focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
+                                <input type="tel" placeholder="XXX-XX-XXXX-XXX" className="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg  focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
                             </div>
 
                             <div>
@@ -77,17 +78,19 @@ const RegisterPage = () => {
                                 <label className="block mb-2 text-sm text-gray-600 ">Confirm password</label>
                                 <input type="password" placeholder="⏺⏺⏺⏺⏺⏺⏺⏺" className="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-lg  focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
                             </div>
+                            <Link href='/dashboard'>
+                                {/* Remove link, this needs toast and checks and then redirect*/}
+                                <button
+                                    className="h-12 md:mt-6 flex items-center justify-between w-full px-6 py-3 text-sm tracking-wide text-white capitalize transition-colors duration-300 transform bg-slate-700 rounded-lg hover:bg-[#fe0304] focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50">
+                                    <span>Sign Up </span>
 
-                            <button
-                                className="h-12 md:mt-6 flex items-center justify-between w-full px-6 py-3 text-sm tracking-wide text-white capitalize transition-colors duration-300 transform bg-slate-700 rounded-lg hover:bg-[#fe0304] focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50">
-                                <span>Sign Up </span>
-
-                                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 rtl:-scale-x-100" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd"
-                                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                        clipRule="evenodd" />
-                                </svg>
-                            </button>
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 rtl:-scale-x-100" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd"
+                                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                            clipRule="evenodd" />
+                                    </svg>
+                                </button>
+                            </Link>
                             <div className="flex items-center justify-between mt-4">
                                 <span className="w-1/5 border-b dark:border-gray-600 md:w-1/4"></span>
 

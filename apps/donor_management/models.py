@@ -1,4 +1,7 @@
 from django.db import models
+from django.db.models import fields
+from datetime import datetime
+from schedule.models import Event
 
 
 class DonorType(models.TextChoices):
@@ -17,9 +20,14 @@ class Donor(models.Model):
     region = models.CharField(max_length=100)
     country = models.CharField(max_length=100)
     notes = models.TextField(max_length=250, verbose_name="Notes")
+    attended_events = models.ManyToManyField(Event, blank=True)
 
     def __str__(self):
         return self.name
+
+    @property
+    def total_amount_donated(self):
+        return sum([float(donation) for donation in self.donations])
 
 
 class LeadType(models.Model):

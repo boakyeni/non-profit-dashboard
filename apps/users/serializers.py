@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from djoser.serializers import UserCreateSerializer
 from rest_framework import serializers, viewsets, status
 from phonenumber_field.serializerfields import PhoneNumberField
 
@@ -21,7 +20,10 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "full_name",
             "phone_number",
+            "reference",
+            "password",
         ]
+        extra_kwargs = {"password": {"write_only": True}}
 
     def get_first_name(self, obj):
         return obj.first_name.title()
@@ -37,3 +39,9 @@ class UserSerializer(serializers.ModelSerializer):
         if instance.is_superuser:
             representation["admin"] = True
         return representation
+<<<<<<< HEAD
+=======
+
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)
+>>>>>>> 495e7b089ea8ca459df9c1b1b094e302c5033e55

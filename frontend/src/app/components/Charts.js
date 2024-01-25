@@ -8,6 +8,8 @@ import AppointmentBlock from "./AppointmentBlock";
 import Link from "next/link";
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import RevenueBlock from "./RevenueBlock";
+import ContactBlock from "./ContactBlock";
 
 const Charts = () => {
 
@@ -16,25 +18,25 @@ const Charts = () => {
         <div className=" max-md:grid max-md:grid-cols-1">
             <section className="pt-6 ">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-4 xl:gap-0 xl:grid-cols-4 2xl:gap-7.5">
-                    <AppointmentBlock icon={<LuCalendarClock className='scale-[2.5]' />} />
-                    <StatsBlock icon={<LuGalleryVerticalEnd className='scale-[2.5]' />} />
-                    <StatsBlock icon={<LuHeartHandshake className='scale-[2.5]' />} />
+                    <AppointmentBlock icon={<LuCalendarClock className='scale-[2.5] stroke-1' />} />
+                    <StatsBlock icon={<LuGalleryVerticalEnd className='scale-[2.5] stroke-1' />} number={10} message={"Incomplete Tasks"} submessage={"3 Due this week"} href={'/dashboard/kanban/'} />
+                    <RevenueBlock icon={<LuHeartHandshake className='scale-[2.5] stroke-1' />} href={"/dashboard/contacts/"} rate={2.59} />
 
-                    <StatsBlock icon={<LuUser2 className='scale-[2.5]' />} />
+                    <ContactBlock icon={<LuUser2 className='scale-[2.5] stroke-1' />} rate={25} href={"/dashboard/contacts"} />
                 </div>
             </section>
 
-            <section className="flex flex-col sm:flex-row my-4 px-4 gap-3 ">
-                <div className="sm:w-1/2 h-[300px] bg-white drop-shadow-xl rounded-2xl">
+            <section className=" mt-4 mb-8 px-4 w-full grid grid-cols-1 gap-8 md:grid-cols-2">
+                <div className=" mx-auto w-full h-[300px] bg-white drop-shadow-xl rounded-2xl">
                     <ProfitChart />
                 </div>
 
-                <div className="sm:w-1/2 h-[300px] bg-white drop-shadow-xl rounded-2xl">
+                <div className=" mx-auto w-full h-[300px] bg-white drop-shadow-xl rounded-2xl">
                     <AreaChartPlot />
                 </div>
             </section>
 
-            <section className="flex my-4 px-4 gap-2 max-md:grid max-md:grid-cols-1 mx-auto">
+            <section className="flex my-4 px-4 gap-8 max-md:grid max-md:grid-cols-1 mx-auto">
                 <div className=" md:w-1/3 h-[250px] bg-white drop-shadow-xl rounded-2xl">
                     <ActivePieChart />
                 </div>

@@ -31,7 +31,7 @@ const Card = (props) => {
                     )}
 
                     <div
-                        className="bg-white rounded-md drop-shadow-md mx-auto px-auto pb-2 mb-3"
+                        className="bg-white rounded-md drop-shadow-md mx-auto p-2 mb-3"
                         onClick={() => {
                             setModalShow(true);
                         }}
@@ -61,7 +61,7 @@ const Card = (props) => {
                 <span>Sun 12:30</span>
               </div> */}
                             {props.card.task.length !== 0 && (
-                                <div className="flex items-center">
+                                <div className="flex items-center space-x-1">
                                     <LuCheckCircle />
                                     <span className="text-slate-500">
                                         {props.card.task.length !== 0
