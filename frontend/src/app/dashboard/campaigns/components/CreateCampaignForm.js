@@ -24,7 +24,7 @@ const CreateCampaignForm = () => {
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-4">
-                                        <label htmlFor="select-date" className="block mb-2 text-sm font-medium text-gray-900 ">Select Date</label>
+                                        <label htmlFor="select-date" className="block mb-2 text-sm font-medium text-gray-900 ">Select Type</label>
                                         <input type="text" name="select-date" id="select-date" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5" placeholder="Green" required="" />
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
@@ -50,8 +50,7 @@ const CreateCampaignForm = () => {
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="new-password" className="block mb-2 text-sm font-medium text-gray-900 ">New Password</label>
-                                        <input type="password" name="new-password" id="new-password" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5  " placeholder="••••••••" required="" />
+
                                     </div>
                                 </div>
                                 <div className="md:w-1/2 2xl:w-1/4">
@@ -63,7 +62,7 @@ const CreateCampaignForm = () => {
                         </div>
                         {/* // Modal Footer */}
                         <div className="flex items-center p-6 space-x-3 rtl:space-x-reverse border-t border-gray-200 rounded-b ">
-                            <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ">Add New Event</button>
+                            <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ">Add New Campaign</button>
                         </div>
                     </div>
                 </div>

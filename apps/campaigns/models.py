@@ -1,5 +1,6 @@
 from django.db import models
 from apps.donor_management.models import Donor
+
 # from .cause import Cause
 
 
@@ -17,7 +18,9 @@ class MonetaryCampaign(models.Model):
 
 
 class Donation(models.Model):
-    donor = models.ForeignKey(Donor, on_delete=models.CASCADE, default=None)
+    donor = models.ForeignKey(
+        Donor, on_delete=models.CASCADE, default=None, related_name="donations"
+    )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     campaign_type = models.ManyToManyField(MonetaryCampaign)
     currency = models.CharField(max_length=100)

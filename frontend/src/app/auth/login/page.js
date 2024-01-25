@@ -1,6 +1,6 @@
 'use client'
 import Image from "next/image"
-
+import Link from "next/link"
 const LoginPage = () => {
 
     return (
@@ -41,16 +41,19 @@ const LoginPage = () => {
                     <div className="mt-4">
                         <div className="flex justify-between">
                             <label className="block mb-2 text-sm font-medium text-gray-600" htmlFor="loggingPassword">Password</label>
-                            <a href="#" className="text-xs text-gray-500 dark:text-gray-300 hover:underline">Forget Password?</a>
+                            <a href="#" className="text-xs text-gray-500 dark:text-gray-300 hover:underline">Forgot Password?</a>
                         </div>
 
                         <input id="loggingPassword" className="block w-full px-4 py-2 text-gray-700 bg-white border rounded-lg focus:border-blue-400 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-300" type="password" />
                     </div>
 
                     <div className="mt-6">
-                        <button className="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-slate-700 rounded-lg hover:bg-[#fe0304] focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50">
-                            Sign In
-                        </button>
+                        <Link href={'/dashboard'}>
+                            {/* Remove link, this needs toast and checks and then redirect*/}
+                            <button className="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-slate-700 rounded-lg hover:bg-[#fe0304] focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50">
+                                Sign In
+                            </button>
+                        </Link>
                     </div>
 
                     <div className="flex items-center justify-between mt-4">

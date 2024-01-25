@@ -15,6 +15,12 @@ djangorestframework-simplejwt = "^5.3.1"
 phonenumbers = "^8.13.26"
 django-scheduler = "^0.10.1"
 requests = "^2.31.0"
+sorl-thumbnail = "^12.10.0"
+jsonfield = "^3.1.0"
+pillow = "^10.1.0"
+premailer = "^3.10.0"
+mysqlclient = "^2.2.1"
+jsonify = "^0.5"
 
 
 [build-system]
