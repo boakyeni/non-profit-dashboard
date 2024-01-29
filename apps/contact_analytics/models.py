@@ -2,6 +2,7 @@ from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.translation import gettext_lazy as _
 from apps.donor_management.models import Donor
+from apps.campaigns.models import Patient
 
 
 # Create your models here.
