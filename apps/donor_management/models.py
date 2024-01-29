@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import fields
 from datetime import datetime
 from schedule.models import Event
+from contact_analytics.models import AccountProfile
 
 
 class DonorType(models.TextChoices):
@@ -11,7 +12,9 @@ class DonorType(models.TextChoices):
 
 # Create your models here.
 class Donor(models.Model):
-    name = models.CharField(max_length=100)
+    donor_profile = models.ForeignKey(
+        AccountProfile, on_delete=models.CASCADE, default=None
+    )
     donor_type = models.CharField(max_length=100, choices=DonorType.choices)
     amount_donated = models.DecimalField(max_digits=10, decimal_places=2)
     institution = models.CharField(max_length=100, blank=True)

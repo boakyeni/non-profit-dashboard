@@ -1,5 +1,6 @@
 from django.db import models
 from apps.donor_management.models import Donor
+from contact_analytics.models import AccountProfile
 
 # from .cause import Cause
 
@@ -9,7 +10,6 @@ class MonetaryCampaign(models.Model):
     progress = models.DecimalField(max_digits=10, decimal_places=2)
     goal = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField(max_length=250)
-    # campaign_cause = models.ManyToManyField(Cause)
     start_date = models.DateField()
     end_date = models.DateField()
 
@@ -19,7 +19,7 @@ class MonetaryCampaign(models.Model):
 
 class Donation(models.Model):
     donor = models.ForeignKey(
-        Donor, on_delete=models.CASCADE, default=None, related_name="donations"
+        Donor, on_delete=models.CASCADE, default=None, related_name="Donations"
     )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     campaign_type = models.ManyToManyField(MonetaryCampaign)
@@ -31,11 +31,10 @@ class Donation(models.Model):
 
 
 class Patient(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.ForeignKey(AccountProfile, on_delete=models.CASCADE, default=None)
     hospital = models.CharField(max_length=100)
     description = models.TextField(max_length=250)
     illness = models.CharField(max_length=100)
-    # cause = models.ManyToManyField(Cause)
 
     def __str__(self):
         return self.name
