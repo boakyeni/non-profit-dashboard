@@ -1,6 +1,6 @@
 from django.db import models
-from django.db.models import fields
-from datetime import datetime
+from django.db.models import fields, Count
+from datetime import datetime, timedelta
 from schedule.models import Event
 from contact_analytics.models import AccountProfile
 
@@ -32,6 +32,20 @@ class Donor(models.Model):
     def total_amount_donated(self):
         return sum([float(donation) for donation in self.donations])
 
+    @property
+    def new_donors_percentage(self):
+        total_donors = Donor.objects.exclude(pk=self.pk).aggregate(count=Count(
+            "id"
+        ))["count"]
+        if total_donors == 0:
+            return (self.new_donors_count / total_donors) * 100
+        else:
+            return 0
+
+def get_specific_time_frame_start_date(self, days):
+    today = datetime.now().date()
+    get_specific_time_frame_start_date = today - timedelta(days=days)
+    return get_specific_time_frame_start_date
 
 class LeadType(models.Model):
     Donor = models.ForeignKey(Donor, on_delete=models.CASCADE, default=None)
@@ -39,7 +53,6 @@ class LeadType(models.Model):
 
     def __str__(self):
         return self.type
-
 
 class LeadAcquisition(models.Model):
     Donor = models.ForeignKey(Donor, on_delete=models.CASCADE, default=None)
