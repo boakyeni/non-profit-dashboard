@@ -21,6 +21,7 @@ pillow = "^10.1.0"
 premailer = "^3.10.0"
 mysqlclient = "^2.2.1"
 jsonify = "^0.5"
+django-cors-headers = "^4.3.1"
 django-countries = "^7.5.1"
 
 

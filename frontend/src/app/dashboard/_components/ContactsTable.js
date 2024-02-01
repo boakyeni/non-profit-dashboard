@@ -1,6 +1,6 @@
 'use client'
 import { useDispatch, useSelector } from "react-redux"
-import { fetchContacts, setSelectedContact, toggleContactCard, toggleContactTableAction, toggleContactSelection, toggleAllContacts, toggleEditUser, toggleContactSortModal } from "../../lib/features/contacts/contactSlice"
+import { fetchContacts, setSelectedContact, toggleContactCard, toggleContactTableAction, toggleContactSelection, toggleAllContacts, toggleEditUser, toggleContactSortModal, setSearchFilter, applyFilters } from "../../lib/features/contacts/contactSlice"
 
 import { useEffect, useState, useRef } from "react"
 import ReactPaginate from 'react-paginate'
@@ -66,7 +66,7 @@ const ContactsTable = ({ itemsPerPage }) => {
     useEffect(() => {
         const endOffset = itemOffset + itemsPerPage;
         console.log(`Loading items from ${itemOffset} to ${endOffset}`);
-        setCurrentItems(contacts.slice(itemOffset, endOffset));
+        setCurrentItems((searchResults ? searchResults : contacts).slice(itemOffset, endOffset));
         setPageCount(Math.ceil(contacts.length / itemsPerPage));
     }, [itemOffset, itemsPerPage]);
 
@@ -75,6 +75,11 @@ const ContactsTable = ({ itemsPerPage }) => {
         const newOffset = event.selected * itemsPerPage % items.length;
         console.log(`User requested page number ${event.selected}, which is offset ${newOffset}`);
         setItemOffset(newOffset);
+    };
+
+    const handleSearchChange = (event) => {
+        dispatch(setSearchFilter(event.target.value))
+        dispatch(applyFilters())
     };
 
 
@@ -115,7 +120,7 @@ const ContactsTable = ({ itemsPerPage }) => {
                 <label htmlFor="table-search" className="sr-only">Search</label>
                 <div className="relative m-3">
 
-                    <input type="text" id="table-search-users" className="rounded-2xl block py-1 ps-2 text-sm text-gray-900 border border-gray-300 w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500  " placeholder="Search for contacts" />
+                    <input type="text" id="table-search-users" className="rounded-2xl block py-1 ps-2 text-sm text-gray-900 border border-gray-300 w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500  " placeholder="Search for contacts" onChange={handleSearchChange} />
                 </div>
             </div>
 
@@ -156,9 +161,8 @@ const ContactsTable = ({ itemsPerPage }) => {
                             <th scope="row" className="flex items-center py-4 text-gray-900 ">
 
                                 <div className="">
-                                    <div className="text-base font-semibold flex flex-col">
-                                        <span>Neil</span>
-                                        <span>Smotherson</span>
+                                    <div className="text-base break-words font-semibold flex flex-col">
+                                        <span>Smotherson </span>
                                     </div>
                                     <div className="font-normal text-gray-500">neil.sims@flowbite.com</div>
                                 </div>

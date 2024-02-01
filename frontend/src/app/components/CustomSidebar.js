@@ -44,7 +44,7 @@ const CustomSidebar = () => {
                         <CustomSidebarLink title="Dashboard" icon={<FaHome className="scale-[1.5]" />} href="/dashboard" />
                         <CustomSidebarLink title="Calendar" icon={<CiCalendarDate className="scale-[1.75]" />} href="/dashboard/calendar" />
                         <CustomSidebarLink title="Contacts" icon={<LuUsers2 className="scale-[1.75] stroke-1" />} href="/dashboard/contacts" />
-                        <CustomSidebarLink title="Analytics" icon={<LuScatterChart className="scale-[1.5] stroke-1" />} href="/dashboard" />
+                        <CustomSidebarLink title="Analytics" icon={<LuScatterChart className="scale-[1.5] stroke-1" />} href="/dashboard/analytics" />
                         <CustomSidebarLink title="Campaigns" icon={<FaCediSign className="scale-[1.5] stroke-1" />} href={`/dashboard/campaigns`} />
                         <SidebarAccordian title="Tasks" subtitles={["Kanban", "Other"]} icons={[<LuKanbanSquareDashed className="scale-[1.5]" />, <LuTornado className="scale-[1.5]" />]} />
                         <CustomSidebarLink title="Profile" icon={<LuUser2 className="scale-[1.5] stroke-1" />} href="/dashboard/profile" />

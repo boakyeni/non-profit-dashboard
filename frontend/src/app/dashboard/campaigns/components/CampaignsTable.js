@@ -1,6 +1,6 @@
 'use client'
 import { useDispatch, useSelector } from "react-redux"
-import { fetchCampaigns, setSelectedCampaign, toggleCampaignTableAction, toggleCampaignSelection, toggleAllCampaigns } from "../../../lib/features/campaigns/campaignSlice"
+import { fetchCampaigns, setSelectedCampaign, toggleCampaignTableAction, toggleCampaignSelection, toggleAllCampaigns, applyFilters, setSearchFilter } from "../../../lib/features/campaigns/campaignSlice"
 import { useEffect, useState, useRef } from "react"
 import ReactPaginate from 'react-paginate'
 import useOutsideClickHandler from "../../../../utils/useOutsideClickHandler"
@@ -17,7 +17,7 @@ const CampaignsTable = ({ itemsPerPage }) => {
     }, [dispatch])
 
     /* holds contacts, whether action dropdown is open, and which contacts the user has selected */
-    const { campaigns, campaignTableActionOpen, selectedCampaigns } = useSelector((state) => state.campaigns)
+    const { campaigns, searchResults, campaignTableActionOpen, selectedCampaigns } = useSelector((state) => state.campaigns)
 
     /* More Info opens a card, this makes sure the right user data is displayed in that card */
     const handleMoreInfoClick = (campaign) => {
@@ -47,7 +47,7 @@ const CampaignsTable = ({ itemsPerPage }) => {
     useEffect(() => {
         const endOffset = itemOffset + itemsPerPage;
         console.log(`Loading items from ${itemOffset} to ${endOffset}`);
-        setCurrentItems(campaigns.slice(itemOffset, endOffset));
+        setCurrentItems((searchResults ? searchResults : campaigns).slice(itemOffset, endOffset));
         setPageCount(Math.ceil(campaigns.length / itemsPerPage));
     }, [itemOffset, itemsPerPage]);
 
@@ -58,6 +58,10 @@ const CampaignsTable = ({ itemsPerPage }) => {
         setItemOffset(newOffset);
     };
 
+    const handleSearchChange = (event) => {
+        dispatch(setSearchFilter(event.target.value))
+        dispatch(applyFilters())
+    };
 
     return (
 
@@ -92,7 +96,7 @@ const CampaignsTable = ({ itemsPerPage }) => {
                 <label htmlFor="table-search" className="sr-only">Search</label>
                 <div className="relative m-3">
 
-                    <input type="text" id="table-search-users" className="rounded-2xl block py-1 ps-2 text-sm text-gray-900 border border-gray-300 w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500  " placeholder="Search for Campaigns" />
+                    <input type="text" id="table-search-users" className="rounded-2xl block py-1 ps-2 text-sm text-gray-900 border border-gray-300 w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500  " placeholder="Search for Campaigns" onChange={handleSearchChange} />
                 </div>
             </div>
 

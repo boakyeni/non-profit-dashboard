@@ -1,15 +1,57 @@
 'use client'
 import { useDispatch, useSelector } from "react-redux"
 import { LuX } from "react-icons/lu"
-import { toggleCreateEventModal, setEndDate, setStartDate, addEvent } from "../../../lib/features/events/eventSlice"
+import { toggleCreateEventModal, setEndDate, setStartDate, addEvent, getEvents } from "../../../lib/features/events/eventSlice"
 import DateComponent from "../../_components/DateComponent"
-
+import { useState, useEffect } from "react"
 
 const CreateEventModal = () => {
     const dispatch = useDispatch()
-    const { createEventModalOpen, selectedEvent } = useSelector((state) => state.events)
+    const { createEventModalOpen, selectedEvent, startTimeRange, endTimeRange } = useSelector((state) => state.events)
+    const [localTitle, setLocalTitle] = useState('');
+    const [localStartDate, setLocalStartDate] = useState(selectedEvent.start);
+    const [localEndDate, setLocalEndDate] = useState(selectedEvent.end);
+    const [localDescription, setLocalDescription] = useState('')
+    const [localFrequency, setLocalFrequency] = useState('');
+
+    useEffect(() => {
+        setLocalTitle("");
+        setLocalStartDate(selectedEvent.start);
+        setLocalEndDate(selectedEvent.end);
+        setLocalDescription('');
+        setLocalFrequency('')
+    }, [selectedEvent]);
+
+    const handleTitleChange = (e) => {
+        setLocalTitle(e.target.value)
+    }
+    const handleStartDateChange = (date) => {
+        setLocalStartDate(date.toISOString())
+    }
+    const handleEndDateChange = (date) => {
+        setLocalEndDate(date.toISOString())
+    }
+    const handleDescriptionChange = (e) => {
+        setLocalDescription(e.target.value)
+    }
+    const handleFrequencyChange = async (e) => {
+        setLocalFrequency(e.target.value);
+    }
 
     const handleAddNewEvent = () => {
+        const newEvent = {
+            ...selectedEvent,
+            title: localTitle,
+            start: localStartDate,
+            end: localEndDate,
+            description: localDescription,
+            rule: localFrequency
+
+        }
+        dispatch(addEvent(newEvent)).then(() => {
+            dispatch(toggleCreateEventModal())
+            dispatch(getEvents({ 'start': startTimeRange, 'end': endTimeRange }))
+        })
 
     }
 
@@ -35,22 +77,22 @@ const CreateEventModal = () => {
                                 <div className="lg:w-1/2 2xl:w-3/4 space-y-6">
                                     <div className="col-span-6 sm:col-span-4">
                                         <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 ">Title</label>
-                                        <input type="text" name="title" id="title" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Bonnie" required="" />
+                                        <input type="text" value={localTitle} name="title" id="title" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Bonnie" required="" onChange={handleTitleChange} />
                                     </div>
 
                                     <div className="flex flex-row w-full space-x-3">
                                         <div className="max-sm:w-1/2">
                                             <label htmlFor="select-date" className="block mb-2 text-sm font-medium text-gray-900 ">Select Start</label>
-                                            <DateComponent selected={selectedEvent.start} setDate={(date) => dispatch(setStartDate(date.toISOString()))} />
+                                            <DateComponent selected={localStartDate} setDate={handleStartDateChange} />
                                         </div>
                                         <div className="max-sm:w-1/2">
                                             <label htmlFor="select-date" className="block mb-2 text-sm font-medium text-gray-900 ">Select End</label>
-                                            <DateComponent selected={selectedEvent.end} setDate={(date) => dispatch(setEndDate(date.toISOString()))} />
+                                            <DateComponent selected={localEndDate} setDate={handleEndDateChange} />
                                         </div>
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 ">Description</label>
-                                        <textarea name="description" id="description" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Write a description here" required="" />
+                                        <textarea name="description" id="description" value={localDescription} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Write a description here" required="" onChange={handleDescriptionChange} />
                                     </div>
                                     <div className="max-w-lg">
                                         <label className="block text-sm font-medium text-gray-900" htmlFor="user_avatar">Upload file</label>
@@ -59,7 +101,7 @@ const CreateEventModal = () => {
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="phone-number" className="block mb-2 text-sm font-medium text-gray-900 ">Phone Number</label>
-                                        <input type="number" name="phone-number" id="phone-number" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="e.g. +(12)3456 789" required="" />
+                                        <input type="tel" name="phone-number" id="phone-number" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="e.g. +(12)3456 789" required="" />
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="department" className="block mb-2 text-sm font-medium text-gray-900 ">Department</label>
@@ -67,12 +109,20 @@ const CreateEventModal = () => {
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="company" className="block mb-2 text-sm font-medium text-gray-900 ">Company</label>
-                                        <input type="number" name="company" id="company" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="123456" required="" />
+                                        <input type="text" name="company" id="company" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="123456" required="" />
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="new-password" className="block mb-2 text-sm font-medium text-gray-900 ">New Password</label>
-                                        <input type="password" name="new-password" id="new-password" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5  " placeholder="••••••••" required="" />
+                                        <label htmlFor="countries" className="block mb-2 text-sm font-medium text-gray-900 ">Select a Frequency</label>
+                                        <select id="countries" value={localFrequency}
+                                            onChange={handleFrequencyChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ">
+
+                                            <option value="">One Time Event</option>
+                                            <option value="YEARLY">Yearly</option>
+                                            <option value="MONTHLY">Monthly</option>
+                                            <option value="WEEKLY">Weekly</option>
+                                            <option value="DAILY">Daily</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div className="lg:w-1/2 2xl:w-1/4">
@@ -84,7 +134,7 @@ const CreateEventModal = () => {
                         </div>
                         {/* // Modal Footer */}
                         <div className="flex items-center p-6 space-x-3 rtl:space-x-reverse border-t border-gray-200 rounded-b ">
-                            <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center " onClick={() => dispatch(addEvent(selectedEvent))}>Add New Event</button>
+                            <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center " onClick={handleAddNewEvent}>Add New Event</button>
                         </div>
                     </div>
                 </div>
