@@ -1,4 +1,8 @@
 from django.shortcuts import render
+from rest_framework import status, viewsets
+from rest_framework.response import Response
+from schedule.models import Event, Rule
+from .serializers import EventSerializer, RuleSerializer
 
 # Create your views here.
 
