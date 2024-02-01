@@ -32,44 +32,6 @@ class Donor(models.Model):
     def total_amount_donated(self):
         return sum([float(donation) for donation in self.donations])
 
-    @property
-    def new_donors_count(self):
-        start_date = self.get_specific_time_frame_start_date(days=30)
-        new_donors = Donor.objects.filter(donation__donation_date__gte=start_date).exclude(pk=self.pk).distinct()
-        return new_donors.count()
-
-    @property
-    def new_donors_percentage(self):
-        total_donors = Donor.objects.exclude(pk=self.pk).aggregate(count=Count(
-            "id"
-        ))["count"]
-        if total_donors == 0:
-            return (self.new_donors_count / total_donors) * 100
-        else:
-            return 0
-        
-    def get_new_donors_date(self, start_date, end_date):
-        total_donors_before_start = Donor.objects.filter(
-            donation__donation_date__gte=start_date,
-            donation__donation_date__lte=end_date,
-        ).distinct().count()
-        new_donors = Donor.objects.filter(
-            donation__donation_date__gte=start_date,
-            donation__donation_date__lte=end_date,
-        ).exclude(pk=self.pk).distinct().count()
-        if total_donors_before_start > 0:
-            new_donors_percentage = (new_donors / total_donors_before_start) * 100
-        else:
-            new_donors_percentage = 0
-        return {
-            "new_donors_count": new_donors,
-            "new_donors_percentage": new_donors_percentage
-        }    
-
-def get_specific_time_frame_start_date(self, days):
-    today = datetime.now().date()
-    get_specific_time_frame_start_date = today - timedelta(days=days)
-    return get_specific_time_frame_start_date
 
 class LeadType(models.Model):
     Donor = models.ForeignKey(Donor, on_delete=models.CASCADE, default=None)
