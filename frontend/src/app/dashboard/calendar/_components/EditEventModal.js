@@ -2,7 +2,7 @@
 import { useDispatch, useSelector } from "react-redux"
 import { useState, useEffect } from "react"
 import { LuX } from "react-icons/lu"
-import { toggleEditEventModal, setEndDate, setStartDate, editEvent, setSelectedEvent, updateSelectedEvent, toggleEditEventModalEdit } from "../../../lib/features/events/eventSlice"
+import { toggleEditEventModal, setEndDate, setStartDate, editEvent, setSelectedEvent, updateSelectedEvent, toggleEditEventModalEdit, getEvents, setEditEventModalEdit } from "../../../lib/features/events/eventSlice"
 import DateComponent from "../../_components/DateComponent"
 
 /* View/Edit Modal */
@@ -10,10 +10,11 @@ const EditEventModal = () => {
     /* Think of the useStates as temporary variables, since we don't want to immediately send to the backend 
     or redux store the user's partial changes. Instead we store as temp and wait for user to confirm those changes, by clicking save  */
     const dispatch = useDispatch()
-    const { editEventModalOpen, editEventModalEditable, selectedEvent } = useSelector((state) => state.events)
+    const { editEventModalOpen, editEventModalEditable, selectedEvent, startTimeRange, endTimeRange } = useSelector((state) => state.events)
     const [localTitle, setLocalTitle] = useState(selectedEvent?.title);
     const [localStartDate, setLocalStartDate] = useState(selectedEvent.start);
     const [localEndDate, setLocalEndDate] = useState(selectedEvent.end);
+    const [localDescription, setLocalDescription] = useState(selectedEvent.description)
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -24,6 +25,7 @@ const EditEventModal = () => {
         setLocalTitle(selectedEvent?.title || "");
         setLocalStartDate(selectedEvent.start);
         setLocalEndDate(selectedEvent.end);
+        setLocalDescription(selectedEvent.description);
     }, [selectedEvent]);
 
     // Reset state on cancel
@@ -31,6 +33,7 @@ const EditEventModal = () => {
         setLocalTitle(selectedEvent.title);
         setLocalStartDate(selectedEvent.start);
         setLocalEndDate(selectedEvent.end);
+        setLocalDescription(selectedEvent.description);
     }
 
     const handleCancelEdit = () => {
@@ -44,9 +47,20 @@ const EditEventModal = () => {
             ...selectedEvent,
             title: localTitle,
             start: localStartDate,
-            end: localEndDate
+            end: localEndDate,
+            description: localDescription,
+            cancel_start: selectedEvent.start,
+            cancel_end: selectedEvent.end,
         }
-        dispatch(editEvent(updatedEvent))
+        // Check for any changes before making this call to avoid spam
+        dispatch(editEvent(updatedEvent)).then(() => {
+            dispatch(setSelectedEvent(updatedEvent)) // Update the selected event in the state
+            dispatch(setEditEventModalEdit(false))
+            dispatch(getEvents({ 'start': startTimeRange, 'end': endTimeRange }))
+        }
+        )
+
+
     }
 
     return (
@@ -81,12 +95,12 @@ const EditEventModal = () => {
                                         </div>
                                         <div className="max-sm:w-1/2">
                                             <label htmlFor="select-date" className="block mb-2 text-sm font-medium text-gray-900 ">Select End</label>
-                                            <DateComponent selected={localEndDate} setDate={(date) => setLocalStartDate(date.toISOString())} read={!editEventModalEditable} />
+                                            <DateComponent selected={localEndDate} setDate={(date) => setLocalEndDate(date.toISOString())} read={!editEventModalEditable} />
                                         </div>
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 ">Description</label>
-                                        <textarea name="description" id="description" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Write a description here" required="" />
+                                        <textarea name="description" id="description" value={localDescription} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Write a description here" required="" onChange={(e) => setLocalDescription(e.target.value)} readOnly={!editEventModalEditable} />
                                     </div>
                                     <div className="max-w-lg">
                                         <label className="block text-sm font-medium text-gray-900" htmlFor="user_avatar">Upload file</label>
@@ -95,7 +109,7 @@ const EditEventModal = () => {
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="phone-number" className="block mb-2 text-sm font-medium text-gray-900 ">Phone Number</label>
-                                        <input type="number" name="phone-number" id="phone-number" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="e.g. +(12)3456 789" required="" />
+                                        <input type="tel" name="phone-number" id="phone-number" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="e.g. +(12)3456 789" required="" />
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="department" className="block mb-2 text-sm font-medium text-gray-900 ">Department</label>
@@ -103,12 +117,18 @@ const EditEventModal = () => {
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="company" className="block mb-2 text-sm font-medium text-gray-900 ">Company</label>
-                                        <input type="number" name="company" id="company" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="123456" required="" />
+                                        <input type="text" name="company" id="company" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="123456" required="" />
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="new-password" className="block mb-2 text-sm font-medium text-gray-900 ">New Password</label>
-                                        <input type="password" name="new-password" id="new-password" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5  " placeholder="••••••••" required="" />
+                                        <label htmlFor="countries" className="block mb-2 text-sm font-medium text-gray-900 ">Select a Frequency</label>
+                                        <select disabled={!editEventModalEditable} id="countries" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ">
+                                            <option value="">One Time Event</option>
+                                            <option value="US">Yearly</option>
+                                            <option value="CA">Monthly</option>
+                                            <option value="FR">Weekly</option>
+                                            <option value="DE">Daily</option>
+                                        </select>
                                     </div>
                                 </div>
                                 <div className="lg:w-1/2 2xl:w-1/4">

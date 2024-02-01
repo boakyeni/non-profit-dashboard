@@ -1,11 +1,11 @@
 'use client'
-import React, { Fragment, useCallback, useMemo, useState } from 'react'
+import React, { Fragment, useCallback, useMemo, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Calendar, Views, DateLocalizer } from 'react-big-calendar'
-
+import moment from 'moment'
 // Storybook cannot alias this, so you would use 'react-big-calendar/lib/addons/dragAndDrop'
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
-import { editEvent, setEndDate, setStartDate, toggleCreateEventModal, toggleEditEventModal, setSelectedEvent, toggleEdit } from '../../lib/features/events/eventSlice';
+import { editEvent, setEndDate, setStartDate, toggleCreateEventModal, toggleEditEventModal, setSelectedEvent, toggleEdit, getEvents, setEndTimeRange, setStartTimeRange } from '../../lib/features/events/eventSlice';
 // Storybook cannot alias this, so you would use 'react-big-calendar/lib/addons/dragAndDrop/styles.scss'
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -22,21 +22,27 @@ const events = [
         end: new Date(2024, 0, 24),
     },]
 
-const adjEvents = events.map((it, ind) => ({
-    ...it,
-    isDraggable: ind % 2 === 0,
-}))
+
 
 const formatName = (name, count) => `${name} ID ${count}`
 
-export default function CalendarWidget({ localizer, events }) {
-    const [myEvents, setMyEvents] = useState(adjEvents)
+export default function CalendarWidget({ localizer }) {
+    const { events } = useSelector((state) => state.events)
+    const isValidDate = date => !isNaN(Date.parse(date));
+    const adjEvents = useMemo(() => events.map((it) => ({
+        ...it,
+        start: isValidDate(it.start) ? new Date(it.start) : null,
+        end: isValidDate(it.end) ? new Date(it.end) : null,
+        isDraggable: true,
+    })), [events])
+    const [date, setDate] = useState(new Date());
+    const [view, setView] = useState('month');
     const [draggedEvent, setDraggedEvent] = useState()
     const [displayDragItemInCell, setDisplayDragItemInCell] = useState(true)
     const [counters, setCounters] = useState({ item1: 0, item2: 0 })
 
     const dispatch = useDispatch()
-    const { selectedDates } = useSelector((state) => state.events)
+    const { selectedDates, selectedEvent, startTimeRange, endTimeRange } = useSelector((state) => state.events)
 
     const eventPropGetter = useCallback(
         (event) => ({
@@ -46,8 +52,6 @@ export default function CalendarWidget({ localizer, events }) {
         }),
         []
     )
-    //,
-
 
     /* This grabs the date that the user dragged on the Calendar,
         Only one event can be created or edited at a time, so whenever we are
@@ -69,41 +73,58 @@ export default function CalendarWidget({ localizer, events }) {
         ({ event, start, end }) => {
             const updatedEvent = {
                 ...event,
-                start,
-                end
+                start: start.toISOString(),
+                end: end.toISOString(),
+                cancel_start: event.start.toISOString(),
+                cancel_end: event.end.toISOString(),
             };
 
+            // add if statement to check for changes to avoid spam
             // Dispatch the action to edit (resize) the event
-            dispatch(editEvent(updatedEvent));
+            dispatch(editEvent(updatedEvent)).then(() => {
+                // events could also be editted to replace the changed event with updated event from above
+                // to limit a call to the server, but better to stay updated
+                dispatch(getEvents({ 'start': startTimeRange, 'end': endTimeRange }))
+            })
+
         },
         [dispatch]
     )
 
     const moveEvent = useCallback(
         ({ event, start, end, isAllDay: droppedOnAllDaySlot = false }) => {
-
             const updatedEvent = {
                 ...event,
-                start,
-                end,
+                start: start.toISOString(),
+                end: end.toISOString(),
                 allDay: event.allDay || droppedOnAllDaySlot,
+                cancel_start: event.start.toISOString(),
+                cancel_end: event.end.toISOString(),
             };
 
+            // add if statement to check for changes to avoid spam
             // Dispatch the action to edit the event
-            dispatch(editEvent(updatedEvent));
+            dispatch(editEvent(updatedEvent)).then(() => {
+                // events could also be editted to replace the changed event with updated event from above
+                // to limit a call to the server, but better to stay updated
+
+                dispatch(getEvents({ 'start': startTimeRange, 'end': endTimeRange }))
+            })
+
+
         },
         [dispatch]
     );
 
     /* We explicity set the selected event here so that it can be used when viewing or editing the event*/
     const handleEventClick = useCallback(
+
         (event) => {
             const eventToBeEdited = {
                 ...event,
                 start: event.start.toISOString(),
                 end: event.end.toISOString()
             }
-
             dispatch(setSelectedEvent(eventToBeEdited));
             dispatch(toggleEditEventModal())
         },
@@ -161,9 +182,61 @@ export default function CalendarWidget({ localizer, events }) {
         []
     )
 
-
-
     const defaultDate = useMemo(() => new Date(), [])
+
+    const getDateRange = (date, view) => {
+        let start, end;
+
+        switch (view) {
+            case 'month':
+                start = moment(date).startOf('month').startOf('week').toDate();
+                end = moment(date).endOf('month').endOf('week').toDate();
+                break;
+            case 'week':
+                start = moment(date).startOf('week').toDate();
+                end = moment(date).endOf('week').toDate();
+                break;
+            case 'day':
+                start = moment(date).startOf('day').toDate();
+                end = moment(date).endOf('day').toDate();
+                break;
+            case 'agenda':
+                // For 'agenda', you might define a fixed range, like the next 7 days
+                start = moment(date).startOf('day').toDate();
+                end = moment(date).startOf('day').add(31, 'days').toDate();
+                break;
+            // Add more cases for other views if needed
+            default:
+                start = moment(date).toDate();
+                end = moment(date).toDate();
+        }
+
+        return { start, end };
+    };
+
+
+
+    const handleNavigate = (newDate) => {
+        setDate(newDate);
+    };
+
+    const handleViewChange = (newView) => {
+        setView(newView);
+    };
+
+    useEffect(() => {
+        const { start, end } = getDateRange(date, view);
+        dispatch(setStartTimeRange(start.toISOString()))
+        dispatch(setEndTimeRange(end.toISOString()))
+        const timeRange = {
+            'start': start.toISOString(),
+            'end': end.toISOString()
+        }
+
+        dispatch(getEvents(timeRange))
+        // Fetch events based on this range
+    }, [date, view]);
+
 
     return (
         <Fragment>
@@ -176,7 +249,7 @@ export default function CalendarWidget({ localizer, events }) {
                     }
                     draggableAccessor="isDraggable"
                     eventPropGetter={eventPropGetter}
-                    events={myEvents}
+                    events={adjEvents}
                     localizer={localizer}
                     onDropFromOutside={onDropFromOutside}
                     onDragOver={customOnDragOver}
@@ -184,6 +257,10 @@ export default function CalendarWidget({ localizer, events }) {
                     onEventResize={resizeEvent}
                     onSelectSlot={newEvent}
                     onSelectEvent={handleEventClick}
+                    onNavigate={handleNavigate}
+                    onView={handleViewChange}
+                    view={view}
+                    date={date}
                     resizable
                     selectable
                 />

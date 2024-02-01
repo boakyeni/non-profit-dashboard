@@ -49,11 +49,11 @@ const ProfitChart = () => {
                 <div className='flex flex-row gap-3 pb-4 pl-8'>
                     <div className='flex flex-row place-items-center text-[#9bd5b1]'>
                         <FaRegDotCircle className='' />
-                        <p className=' pl-2'>Total Profit</p>
+                        <p className=' pl-2'>Total Donors</p>
                     </div>
                     <div className='flex flex-row place-items-center text-[#8884d8]'>
                         <FaRegDotCircle className='' />
-                        <p className='pl-2'>Total Revenue</p>
+                        <p className='pl-2'>Total Contribution</p>
                     </div>
                 </div>
                 <LineChart width={730} height={250} data={data}

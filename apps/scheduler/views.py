@@ -5,59 +5,88 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from schedule.models import Event, Occurrence, Rule
-from .serializers import EventSerializer, OccurrenceSerializer, RuleSerializer
-from schedule.periods import Period, OccurrenceReplacer
+from rest_framework.decorators import api_view
+from schedule.models import Event, Occurrence, Rule, Calendar
+from .serializers import (
+    EventSerializer,
+    OccurrenceSerializer,
+    RuleSerializer,
+    AdditionalEventInfoSerializer,
+)
+from schedule.periods import Period
+from schedule.utils import OccurrenceReplacer
 from datetime import datetime, timedelta
 from django.db import transaction
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 
 
 class EventCreateView(APIView):
     @transaction.atomic
     def post(self, request, format=None):
         data = request.data
-        if request.data.get("frequency"):
+        # Rule have to be created manually but this should prevent duplications
+        if request.data.get("rule"):
             try:
-                rule = Rule.objects.get(frequency=request.data.get("frequency"))
+                rule = Rule.objects.get(frequency=request.data.get("rule"))
             except Rule.DoesNotExist:
                 # Create Rule
                 rule_data = {
-                    "name": request.data.get("frequency"),
-                    "frequency": request.data.get("frequency"),
+                    "name": request.data.get("rule"),
+                    "description": request.data.get("rule"),
+                    "frequency": request.data.get("rule"),
                 }
                 rule_serializer = RuleSerializer(data=rule_data)
                 rule_serializer.is_valid(raise_exception=True)
                 rule = rule_serializer.save()
             data["rule"] = rule.id
+        """
+        HERE WE ARE TESTING, THIS SHOULD BE REPLACED WITH EITHER THE INSTITUTIONS CALENDAR OR PERSONAL CALENDAR
+        """
+        data["calendar"] = Calendar.objects.get(name="Test").id
+        """
+        TEST
+        """
+        # Create Event
         event_serializer = EventSerializer(data=data)
         event_serializer.is_valid(raise_exception=True)
         event = event_serializer.save()
+        # Hold extra data for that event needs for React Big calendar, that is not included in django-scheduler
+        additional_serializer = AdditionalEventInfoSerializer(
+            data={"event": event.id, "allDay": data.get("allDay")}
+        )
+        additional_serializer.is_valid(raise_exception=True)
+        additional_serializer.save()
         return Response(event_serializer.data, status=status.HTTP_201_CREATED)
 
 
+@api_view(["GET"])
 def get_calendar_events(request):
     # Assuming you're retrieving events for a specific period
-    start_date = datetime.now()
-    end_date = start_date + timedelta(days=7)  # For example, next 7 days
+    # Retrieve query parameters for start and end dates
+    # format: 2024-01-01T00:00:00
+    start_date_str = request.query_params.get("start", None)
+    end_date_str = request.query_params.get("end", None)
+
+    # Parse the datetime strings to datetime objects
+    start_date = parse_datetime(start_date_str) if start_date_str else timezone.now()
+    end_date = (
+        parse_datetime(end_date_str) if end_date_str else start_date + timedelta(days=7)
+    )
 
     events = Event.objects.all()  # Retrieve events as needed
     all_occurrences = []
 
     for event in events:
-        period = Period(
-            event, start_date, end_date
-        )  # Period for which you want occurrences
-        persisted_occurrences = event.occurrence_set.all()
-        occ_replacer = OccurrenceReplacer(persisted_occurrences)
-
-        for occ in period.occurrences:
-            # Replace generated occurrences with persisted ones
-            replaced_occurrence = occ_replacer.get_occurrence(occ)
-            all_occurrences.append(replaced_occurrence)
+        # Use get_occurrences to retrieve all occurrences within the period
+        occurrences = event.get_occurrences(start=start_date, end=end_date)
+        all_occurrences.extend(occurrences)
 
     # Now all_occurrences contains the correct mix of generated and persisted occurrences
     # Serialize and return this data
-    # ...
+
+    occurence_serializer = OccurrenceSerializer(instance=all_occurrences, many=True)
+    return Response(occurence_serializer.data, status=status.HTTP_200_OK)
 
 
 # on move recurring event
@@ -75,9 +104,36 @@ This current implementation gives possibility of spam, however since anytime the
 class PersistedOccurrenceCreateView(APIView):
     @transaction.atomic
     def post(self, request, format=None):
+        # This try block minimizes db space, but sacrifices event history for one time only events
+        # if we still want event history for one time only events, remove if not event.rule block
+        try:
+            event = Event.objects.get(id=request.data.get("event"))
+            event.description = (
+                event.description
+                if not request.data.get("description")
+                else request.data.get("description")
+            )
+            event.title = (
+                event.title
+                if not request.data.get("title")
+                else request.data.get("title")
+            )
+            event.save()
+            event_desc = event.description
+            event_title = event.title
+
+            # One time only event
+            if not event.rule:
+                event.start = request.data.get("start")
+                event.end = request.data.get("end")
+                event.save()
+                return Response("Changes made", status=status.HTTP_200_OK)
+
+        except Event.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         # Data for cancelling the original occurrence
         cancel_data = request.data.get("cancel_occurrence")
-        cancel_data["event"] = request.data["event_id"]
+        cancel_data["event"] = request.data["event"]
         cancel_data["cancelled"] = True  # Mark as cancelled
         cancel_data["start"] = request.data.get("cancel_start")
         cancel_data["end"] = request.data.get("cancel_end")
@@ -86,12 +142,8 @@ class PersistedOccurrenceCreateView(APIView):
         All previously cancelled occurrences should have the same original start, but only one with that original    start for that event would not be cancelled, that is the one that the user just selected
         If there is no original start passed this must be the first time it is being moved or cancelled
         """
-        original_start = request.data.get("original_start") or request.data.get(
-            "cancel_start"
-        )
-        original_end = request.data.get("original_end") or request.data.get(
-            "cancel_end"
-        )
+        original_start = request.data.get("cancel_start")
+        original_end = request.data.get("cancel_end")
         prev_occurrence = Occurrence.objects.filter(
             event_id=cancel_data["event"],
             original_start=original_start,
@@ -121,8 +173,8 @@ class PersistedOccurrenceCreateView(APIView):
                 )
 
         # Data for the new occurrence
-        new_occurrence_data = request.data.get("new_occurrence")
-        new_occurrence_data["event"] = request.data["event_id"]
+        new_occurrence_data = {}
+        new_occurrence_data["event"] = request.data.get("event")
 
         """ 
         occurence_data still needs start and end time data, as well at original start and original end
@@ -132,6 +184,8 @@ class PersistedOccurrenceCreateView(APIView):
         new_occurrence_data["end"] = request.data.get("end")
         new_occurrence_data["original_start"] = original_start
         new_occurrence_data["original_end"] = original_end
+        new_occurrence_data["title"] = event_title
+        new_occurrence_data["description"] = event_desc
 
         new_occurrence_serializer = OccurrenceSerializer(data=new_occurrence_data)
         if new_occurrence_serializer.is_valid(raise_exception=True):

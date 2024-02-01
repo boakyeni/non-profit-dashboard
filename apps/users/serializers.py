@@ -6,8 +6,6 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
-    first_name = serializers.SerializerMethodField()
-    last_name = serializers.SerializerMethodField()
     full_name = serializers.SerializerMethodField(source="get_full_name")
     phone_number = PhoneNumberField()
 
@@ -21,15 +19,8 @@ class UserSerializer(serializers.ModelSerializer):
             "full_name",
             "phone_number",
             "reference",
-            "password",
+            "calendars",
         ]
-        extra_kwargs = {"password": {"write_only": True}}
-
-    def get_first_name(self, obj):
-        return obj.first_name.title()
-
-    def get_last_name(self, obj):
-        return obj.last_name.title()
 
     def get_full_name(self, obj):
         return obj.get_full_name
