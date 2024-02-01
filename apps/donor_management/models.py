@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import fields, Count
 from datetime import date, datetime, timedelta
 from schedule.models import Event
-from contact_analytics.models import AccountProfile
+from apps.contact_analytics.models import AccountProfile
 
 
 class DonorType(models.TextChoices):

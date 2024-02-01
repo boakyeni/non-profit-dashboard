@@ -1,6 +1,6 @@
 from django.db import models
 from apps.donor_management.models import Donor
-from contact_analytics.models import AccountProfile
+from apps.contact_analytics.models import AccountProfile
 
 # from .cause import Cause
 

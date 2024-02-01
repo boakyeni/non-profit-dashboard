@@ -25,7 +25,7 @@ def new_donors_count():
     return new_donors.count()
 
 
-@api_view({"GET"})
+@api_view(["GET"])
 def new_donors_percentage(request):
     total_donors = Donor.objects.aggregate(count=Count("id"))["count"]
     if total_donors != 0:
@@ -35,7 +35,7 @@ def new_donors_percentage(request):
         return Response(0)
 
 
-@api_view({"GET"})
+@api_view(["GET"])
 def get_new_donors_date(request):
     start_date = request.query_params.get("start_date")
     end_date = request.query_params.get("end_date")
