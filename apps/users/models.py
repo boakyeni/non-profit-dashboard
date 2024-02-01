@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser, Group
 from django.utils.translation import gettext_lazy as _
 from .managers import CustomUserManager
 from phonenumber_field.modelfields import PhoneNumberField
+from schedule.models import Calendar
 
 # Create your models here.
 
@@ -25,6 +26,7 @@ class User(AbstractUser):
     reference = models.CharField(
         verbose_name=_("Account Reference"), max_length=250, blank=True, null=True
     )
+    calendars = models.ManyToManyField(Calendar, blank=True, related_name="users")
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = [
         "first_name",

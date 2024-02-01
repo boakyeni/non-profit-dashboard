@@ -1,6 +1,13 @@
 from django.shortcuts import render
 
 # Create your views here.
+from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+from django.core.mail import send_mail
+from django.conf import settings
+from django.db import transaction
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -8,11 +15,11 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 import requests
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.conf import settings
 from .serializers import UserSerializer
-from django.db import transaction
+
 
 CENTRAL_AUTH_URL = settings.CENTRAL_AUTH_URL
+User = get_user_model()
 
 
 @api_view(["POST"])
@@ -107,3 +114,67 @@ def signup_view(request):
     return Response(
         {"detail": "Account creation failed"}, status=status.HTTP_400_BAD_REQUEST
     )
+
+
+@api_view(["POST"])
+@transaction.atomic
+def custom_password_reset_view(request):
+    email = request.data.get("email")
+    user = User.objects.filter(email=email).first()
+    if not user:
+        return Response(
+            {"error": "User with this email does not exist."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    # Generate password reset token and UID
+    token = default_token_generator.make_token(user)
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+    # Construct the password reset link (to be sent via email)
+    reset_link = f"{settings.DOMAIN}/reset-password/{uid}/{token}/"
+
+    # Send an email with the password reset link
+    send_mail(
+        subject="Password Reset for Your Bsystems Account",
+        message=f"Please click the following link to reset your password: {reset_link}",
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[email],
+    )
+
+    return Response({"message": "Password reset link sent."}, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+@transaction.atomic
+def custom_password_reset_confirm_view(request):
+    uidb64 = request.data.get("uid")
+    token = request.data.get("token")
+    new_password = request.data.get("new_password")
+
+    try:
+        # Decode the UID
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        # Communicate with the central auth service to reset the password
+        reference = user.reference
+        response = requests.post(
+            f"{CENTRAL_AUTH_URL}/reset-password",
+            data={"reference": reference, "new_password": new_password},
+        )
+        data = response.json()
+        if data["success"]:
+            return Response({"message": "Password has been reset successfully."})
+        else:
+            return Response(
+                {"error": "Failed to reset password with the central auth service."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+    else:
+        return Response(
+            {"error": "Invalid UID or token."}, status=status.HTTP_400_BAD_REQUEST
+        )

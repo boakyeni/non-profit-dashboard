@@ -10,4 +10,6 @@ urlpatterns = [
     path("api/donor_management/", include("apps.donor_management.urls")),
     path("schedule/", include("schedule.urls")),
     path("mosaico/", include("apps.mosaico.urls")),
+    path("api/scheduler/", include("apps.scheduler.urls")),
+    path("api/auth/", include("apps.users.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
