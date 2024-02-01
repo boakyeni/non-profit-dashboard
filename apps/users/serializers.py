@@ -30,9 +30,6 @@ class UserSerializer(serializers.ModelSerializer):
         if instance.is_superuser:
             representation["admin"] = True
         return representation
-<<<<<<< HEAD
-=======
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
->>>>>>> 495e7b089ea8ca459df9c1b1b094e302c5033e55

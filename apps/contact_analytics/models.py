@@ -1,9 +1,7 @@
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.translation import gettext_lazy as _
-from apps.donor_management.models import Donor
-from apps.campaigns.models import Patient
-
+from schedule.models import Event
 
 # Create your models here.
 
@@ -25,19 +23,20 @@ class Role(models.TextChoices):
 
 
 class AccountProfile(models.Model):
-    first_name = models.CharField(max_length=100)
+    name = models.CharField(max_length=250)
+    given_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    other_names = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
-    role = models.TextChoices(
-        max_length=2,
-        choices=Role.Choices,
+    role = models.CharField(
+        max_length=20,
+        choices=Role,
+        blank=True,
+        null=True,
     )
-    address = models.CharField(max_length=100)
+    address = models.CharField(max_length=100, blank=True, null=True)
     # change to django countries
-    country = models.CharField(max_length=100)
-    region = models.CharField(max_length=100)
-    events_attended = models.CharField()
+    country = models.CharField(max_length=100, blank=True, null=True)
+    region = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -45,7 +44,6 @@ class AccountProfile(models.Model):
 
 class Company(models.Model):
     name = models.CharField(max_length=100, verbose_name="Name of Company")
-    
     address = models.CharField(max_length=100, verbose_name="Company Address")
     district = models.CharField(max_length=100, verbose_name="Company District")
     region = models.CharField(max_length=100, verbose_name="Company Region")
@@ -58,7 +56,7 @@ class PhoneNumber(models.Model):
     name = models.CharField(max_length=100, verbose_name="Name of Donor")
     number = PhoneNumberField(blank=True, max_length=128)
     notes = models.TimeField(auto_now=True, blank=True)
-    profile = models.OneToManyField(
+    profile = models.ForeignKey(
         AccountProfile,
         on_delete=models.CASCADE,
     )

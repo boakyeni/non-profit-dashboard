@@ -1,8 +1,8 @@
 from django.db import models
 from django.db.models import fields, Count
-from datetime import date ,datetime, timedelta
+from datetime import date, datetime, timedelta
 from schedule.models import Event
-from contact_analytics.models import AccountProfile
+from apps.contact_analytics.models import AccountProfile
 
 
 class DonorType(models.TextChoices):
@@ -39,6 +39,7 @@ class LeadType(models.Model):
 
     def __str__(self):
         return self.type
+
 
 class LeadAcquisition(models.Model):
     Donor = models.ForeignKey(Donor, on_delete=models.CASCADE, default=None)
