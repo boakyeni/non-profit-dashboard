@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import fields, Count
-from datetime import date ,datetime, timedelta
+from datetime import date, datetime, timedelta
 from schedule.models import Event
 from contact_analytics.models import AccountProfile
 
@@ -40,9 +40,18 @@ class LeadType(models.Model):
     def __str__(self):
         return self.type
 
+
 class LeadAcquisition(models.Model):
     Donor = models.ForeignKey(Donor, on_delete=models.CASCADE, default=None)
     acquisition = models.CharField(max_length=100, verbose_name="Lead Acquisition")
 
     def __str__(self):
         return self.acquisition
+
+
+class LeadSource(models.Model):
+    Donor = models.ForeignKey(Donor, on_delete=models.CASCADE, default=None)
+    source = models.CharField(max_length=100, verbose_name="Lead Source")
+
+    def __str__(self):
+        return self.source
