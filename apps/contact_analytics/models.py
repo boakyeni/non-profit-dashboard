@@ -2,6 +2,7 @@ from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.translation import gettext_lazy as _
 from schedule.models import Event
+from django_countries.fields import CountryField
 
 # Create your models here.
 
@@ -34,8 +35,9 @@ class AccountProfile(models.Model):
         null=True,
     )
     address = models.CharField(max_length=100, blank=True, null=True)
-    # change to django countries
-    country = models.CharField(max_length=100, blank=True, null=True)
+    country = CountryField(
+        verbose_name="Country", default="GH", max_length=2, blank=True, null=True
+    )
     region = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
@@ -54,13 +56,20 @@ class Company(models.Model):
 
 class PhoneNumber(models.Model):
     name = models.CharField(max_length=100, verbose_name="Name of Donor")
-    number = PhoneNumberField(blank=True, max_length=128)
+    number = PhoneNumberField(
+        blank=True,
+        max_length=128,
+    )
     notes = models.TimeField(auto_now=True, blank=True)
     profile = models.ForeignKey(
         AccountProfile,
         on_delete=models.CASCADE,
+        null=True,
+        blank=True,
     )
-    Company = models.ForeignKey(Company, on_delete=models.CASCADE, default=None)
+    Company = models.ForeignKey(
+        Company, on_delete=models.CASCADE, default=None, null=True, blank=True
+    )
 
     def __str__(self):
         return self.name
