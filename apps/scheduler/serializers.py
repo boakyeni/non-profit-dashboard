@@ -36,17 +36,7 @@ class OccurrenceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Occurrence
-        fields = [
-            "id",
-            "event",
-            "title",
-            "start",
-            "end",
-            "description",
-            "cancelled",
-            "allDay",
-            "rule",
-        ]
+        fields = "__all__"
 
     def get_allDay(self, obj):
         try:

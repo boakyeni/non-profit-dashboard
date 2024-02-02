@@ -84,7 +84,8 @@ def get_calendar_events(request):
     for event in events:
         # Use get_occurrences to retrieve all occurrences within the period
         occurrences = event.get_occurrences(start=start_date, end=end_date)
-        all_occurrences.extend(occurrences)
+        non_cancelled_occurrences = [occ for occ in occurrences if not occ.cancelled]
+        all_occurrences.extend(non_cancelled_occurrences)
 
     # Now all_occurrences contains the correct mix of generated and persisted occurrences
     # Serialize and return this data
@@ -136,25 +137,25 @@ class PersistedOccurrenceCreateView(APIView):
         except Event.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         # Data for cancelling the original occurrence
-        cancel_data = request.data.get("cancel_occurrence")
+        cancel_data = {}
         cancel_data["event"] = request.data["event"]
         cancel_data["cancelled"] = True  # Mark as cancelled
         cancel_data["start"] = request.data.get("cancel_start")
         cancel_data["end"] = request.data.get("cancel_end")
-
         """
         All previously cancelled occurrences should have the same original start, but only one with that original    start for that event would not be cancelled, that is the one that the user just selected
         If there is no original start passed this must be the first time it is being moved or cancelled
         """
-        original_start = request.data.get("cancel_start")
-        original_end = request.data.get("cancel_end")
+        original_start = parse_datetime(request.data.get("cancel_start"))
+        original_end = parse_datetime(request.data.get("cancel_end"))
+        print(original_start, original_end)
         prev_occurrence = Occurrence.objects.filter(
-            event_id=cancel_data["event"],
-            original_start=original_start,
-            original_end=original_end,
+            event=event,
+            start=original_start,
+            end=original_end,
             cancelled=False,
         ).first()
-
+        print(prev_occurrence, 1)
         # The first time we cancel or move the event would not of been persisted in the db
         # Any time after that the event is persisted in the db so we have to account for that
         if prev_occurrence:
@@ -162,15 +163,19 @@ class PersistedOccurrenceCreateView(APIView):
             prev_occurrence.cancelled = True
             prev_occurrence.save(update_fields=["cancelled"])
             # So that every move maintains the original start time
+            print(prev_occurrence, 2)
             original_start = prev_occurrence.original_start
             original_end = prev_occurrence.original_end
         else:
             # If here is reached this is the first time the event occurence is being moved or cancelled
-            cancel_data["original_start"] = request.data.get("cancel_start")
-            cancel_data["original_end"] = request.data.get("cancel_end")
+            cancel_data["original_start"] = parse_datetime(
+                request.data.get("cancel_start")
+            )
+            cancel_data["original_end"] = parse_datetime(request.data.get("cancel_end"))
             cancel_serializer = OccurrenceSerializer(data=cancel_data)
             if cancel_serializer.is_valid(raise_exception=True):
                 cancel_serializer.save()
+
             else:
                 return Response(
                     cancel_serializer.errors, status=status.HTTP_400_BAD_REQUEST
@@ -184,8 +189,8 @@ class PersistedOccurrenceCreateView(APIView):
         occurence_data still needs start and end time data, as well at original start and original end
         original_start and original_end, should be the original_start and end of the cancel_instance
         """
-        new_occurrence_data["start"] = request.data.get("start")
-        new_occurrence_data["end"] = request.data.get("end")
+        new_occurrence_data["start"] = parse_datetime(request.data.get("start"))
+        new_occurrence_data["end"] = parse_datetime(request.data.get("end"))
         new_occurrence_data["original_start"] = original_start
         new_occurrence_data["original_end"] = original_end
         new_occurrence_data["title"] = event_title
