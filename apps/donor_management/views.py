@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from django.core.mail import EmailMessage
 from .models import Donor
 from .serializers import DonorSerializer
+from django.template import Template, Context
 
 
 class DonorViewSet(viewsets.ModelViewSet):
@@ -75,20 +76,33 @@ def send_html_email_with_attachment(request):
     """
     files = request.FILES.getlist("files")  # 'files' is the name attribute in your form
     recipient_ids = request.POST.getlist("recipientIds")
+    # get emails
 
     recipients = []
-    email = EmailMessage(
-        "Subject Here",
-        html_content,
-        "from@yourdomain.com",
-        bcc=recipients,  # Use bcc instead of to for privacy
-    )
+    for recipient in recipients:
+        context = Context(
+            {
+                "mail": recipient,
+                "unsubscribe_link": "http://example.com/unsubscribe",
+            }
+        )
+        template = Template(html_content)
+        rendered_html = template.render(context)
 
-    # Specify email body is HTML
-    email.content_subtype = "html"
+        email = EmailMessage(
+            "Subject Here",
+            rendered_html,
+            "from@yourdomain.com",
+            to=[
+                recipient
+            ],  # Use bcc instead of to for privacy when sending to multiple
+        )
 
-    for file in files:
-        email.attach(file.name, file.read(), file.content_type)
+        # Specify email body is HTML
+        email.content_subtype = "html"
 
-    # Send the email
-    email.send()
+        for file in files:
+            email.attach(file.name, file.read(), file.content_type)
+
+        # Send the email
+        email.send()

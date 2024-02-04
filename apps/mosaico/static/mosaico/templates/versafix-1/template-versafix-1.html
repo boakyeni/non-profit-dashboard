@@ -45,7 +45,7 @@
       preheaderLinkOption {
         label: Unsubscribe Link;
         widget: select;
-        options: [profile_link]=Profile|[unsubscribe_link]=Unsubscribe|none=None;
+        options: [unsubscribe_link]=Unsubscribe|none=None;
         help: If -None- is selected, preHeader text will be shown;
       }
      
@@ -432,7 +432,7 @@
                           -ko-font-size: @[linkStyle.size]px; -ko-color: @linkStyle.color; -ko-font-family: @linkStyle.face">
                           <a data-ko-display="preheaderLinkOption neq 'none'" data-ko-editable="unsubscribeText" href="[unsubscribe_link]" 
                              style="text-decoration: underline; color: #ffffff; -ko-attr-href: @preheaderLinkOption; 
-                             -ko-color: @linkStyle.color; -ko-text-decoration: @linkStyle.decoration">Unsubscribe</a> 
+                             -ko-color: @linkStyle.color; -ko-text-decoration: @linkStyle.decoration"></a>
                           <span data-ko-display="preheaderLinkOption eq 'none'" style="font-size: 13px;color: #919191; font-weight: normal; text-align:center;
                             font-family: Arial, Helvetica, sans-serif; -ko-font-size: @[longTextStyle.size]px; -ko-color: @longTextStyle.color;
                             -ko-font-family: @longTextStyle.face; -ko-bind-text: @preheaderText; display: none"></span>
@@ -451,7 +451,7 @@
                         -ko-color: @linkStyle.color; -ko-text-decoration: @linkStyle.decoration">
                           <a data-ko-editable="webversionText" href="[show_link]" 
                           style="text-decoration: underline; color: #ffffff;
-                           -ko-color: @linkStyle.color; -ko-text-decoration: @linkStyle.decoration">View in your browser</a>
+                           -ko-color: @linkStyle.color; -ko-text-decoration: @linkStyle.decoration"></a>
                          </span>
                        </td>
                       </tr>
@@ -1505,14 +1505,14 @@
           <tr>
             <td data-ko-editable="longText" class="long-text links-color" 
                 style="text-align:center; font-size: 13px;color: #919191; font-weight: normal; text-align:center; font-family: Arial, Helvetica, sans-serif;
-                -ko-font-size: @[longTextStyle.size]px; -ko-color: @longTextStyle.color; -ko-font-family: @longTextStyle.face"><p>Email sent to <a href="mailto:[mail]">[mail]</a></p></td>
+                -ko-font-size: @[longTextStyle.size]px; -ko-color: @longTextStyle.color; -ko-font-family: @longTextStyle.face"><p>Email sent to <a href="mailto:{{mail}}">[mail]</a></p></td>
           </tr>
           <tr>
             <td style="text-align: center;">
               <a style="text-decoration: underline; color: #ffffff; text-align: center; font-size: 13px; 
                 font-weight: normal; font-family: Arial, Helvetica, sans-serif;
                 -ko-text-decoration: @linkStyle.decoration; -ko-color: @linkStyle.color; -ko-font-size: @[linkStyle.size]px; -ko-font-family: @linkStyle.face"
-                href="[unsubscribe_link]"><span data-ko-editable="disiscrivitiText">Unsubscribe</span></a>
+                href="{{unsubscribe_link}}"><span data-ko-editable="disiscrivitiText">Unsubscribe</span></a>
             </td>
           </tr>
           <tr data-ko-display="_root_.sponsor.visible" style="display: none;text-align:center">

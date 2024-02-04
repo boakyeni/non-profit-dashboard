@@ -1,7 +1,7 @@
 
 'use client'
 
-import PreviewForm from "../../components/PreviewForm"
+import PreviewForm from "../_components/PreviewForm"
 
 const PreviewPage = () => {
     return (

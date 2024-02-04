@@ -36,6 +36,7 @@ apiClient.interceptors.request.use(function (config) {
     return Promise.reject(error);
 });
 
+// Gets new access token or redirects to login to get new redirect and access
 apiClient.interceptors.response.use(async response => {
     // Simply return the response if it's successful
     return response;
@@ -45,9 +46,9 @@ apiClient.interceptors.response.use(async response => {
     // Avoid retrying for the refresh token endpoint itself
     if (originalRequest.url.includes('/api/auth/jwt/refresh/')) {
         // If the refresh token request fails, redirect to login and don't retry
-        // if (typeof window !== 'undefined') {
-        //     window.location.href = '/auth/login';
-        // }
+        if (typeof window !== 'undefined') {
+            window.location.href = '/auth/login';
+        }
         return Promise.reject(error);
     }
 
@@ -58,14 +59,14 @@ apiClient.interceptors.response.use(async response => {
         try {
             // Attempt to refresh the token by calling your refresh token endpoint
             const response = await apiClient.get('http://localhost:8000/api/auth/jwt/refresh/');
-
+            localStorage.setItem('access_token', response.data.access)
             // If the token was successfully refreshed, retry the original request
             return apiClient(originalRequest);
         } catch (refreshError) {
             // If the refresh attempt itself failed, redirect to login
-            // if (typeof window !== 'undefined') {
-            //     window.location.href = '/auth/login';
-            // }
+            if (typeof window !== 'undefined') {
+                window.location.href = '/auth/login';
+            }
             console.log(refreshError.response.data)
             return Promise.reject(refreshError);
         }

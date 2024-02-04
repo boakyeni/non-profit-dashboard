@@ -15,10 +15,10 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 import requests
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 from .serializers import UserSerializer
-from rest_framework.request import Request
-from rest_framework.parsers import JSONParser
-from rest_framework_simplejwt.views import TokenRefreshView
+
+from .serializers import TokenRefreshSerializer
 
 
 CENTRAL_AUTH_URL = settings.CENTRAL_AUTH_URL
@@ -48,13 +48,18 @@ def login_view(request):
         token["user_id"] = data["data"]["user"]["_id"]
         token["merchant_id"] = data["data"]["merchant"]["_id"]
         token["merchant_name"] = data["data"]["merchant"]["businessName"]
-
-        return Response(
+        drf_response = Response(
             {
-                "refresh": str(token),
+                "refresh": str(token),  # probably dont need
                 "access": str(token.access_token),
             }
         )
+        drf_response.set_cookie(
+            key=settings.SIMPLE_JWT["AUTH_COOKIE"],
+            value=str(token),
+            httponly=True,
+        )
+        return drf_response
     return Response(
         {"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
     )
@@ -108,12 +113,18 @@ def signup_view(request):
         token["user_id"] = data["data"]["user"]["_id"]
         token["merchant_id"] = data["data"]["merchant"]["_id"]
         token["merchant_name"] = data["data"]["merchant"]["businessName"]
-        return Response(
+        drf_response = Response(
             {
-                "refresh": str(token),
+                "refresh": str(token),  # probably dont need
                 "access": str(token.access_token),
             }
         )
+        drf_response.set_cookie(
+            key=settings.SIMPLE_JWT["AUTH_COOKIE"],
+            value=str(token),
+            httponly=True,
+        )
+        return drf_response
     return Response(
         {"detail": "Account creation failed"}, status=status.HTTP_400_BAD_REQUEST
     )
@@ -184,6 +195,7 @@ def custom_password_reset_confirm_view(request):
 
 
 # NEEDS TESTING
+# Gets new access token else should return 401
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def refresh_token_view(request):
@@ -195,24 +207,11 @@ def refresh_token_view(request):
 
     # Prepare data for TokenRefreshView
     data = {"refresh": refresh_token}
-    # Create a Request object that simulates the original request
-    simulated_request = Request(request._request, parsers=[JSONParser()])
-    simulated_request._full_data = data
-    simulated_request._data = data
-    simulated_request._files = {}
 
-    # Instantiate and call the TokenRefreshView
-    print("1233")
-    view = (
-        TokenRefreshView.as_view()
-    )  # fix this do the implementation yourself, you already have the serializer
-    print(view, "heere")
-    response = view(simulated_request._request)
-    response.set_cookie(
-        key=settings.SIMPLE_JWT["AUTH_COOKIE"],
-        value="testing",
-        httponly=True,
-    )
-    # You might need to transform DRF's Response to a Django HttpResponse if necessary
-    print(response.cookies, "hEER")
-    return response
+    # Check simplejwt docs if this doesnt work
+    serializer = TokenRefreshSerializer(data=data)
+    try:
+        serializer.is_valid(raise_exception=True)
+    except TokenError:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    return Response(serializer.validated_data, status=status.HTTP_200_OK)
