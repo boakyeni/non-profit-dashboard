@@ -1,4 +1,4 @@
-
+'use client'
 import CampaignCard from "./components/CampaignCard"
 import { LuPlusCircle, LuArrowRightCircle } from "react-icons/lu"
 

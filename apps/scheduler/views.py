@@ -8,8 +8,12 @@ from .serializers import EventSerializer, RuleSerializer
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework import status, permissions
+from rest_framework.decorators import (
+    api_view,
+    permission_classes,
+    authentication_classes,
+)
 from schedule.models import Event, Occurrence, Rule, Calendar
 from .serializers import (
     EventSerializer,
@@ -23,6 +27,7 @@ from datetime import datetime, timedelta
 from django.db import transaction
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class EventCreateView(APIView):
@@ -65,6 +70,8 @@ class EventCreateView(APIView):
 
 
 @api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+# @authentication_classes([JWTAuthentication])
 def get_calendar_events(request):
     # Assuming you're retrieving events for a specific period
     # Retrieve query parameters for start and end dates
@@ -155,7 +162,7 @@ class PersistedOccurrenceCreateView(APIView):
             end=original_end,
             cancelled=False,
         ).first()
-        print(prev_occurrence, 1)
+
         # The first time we cancel or move the event would not of been persisted in the db
         # Any time after that the event is persisted in the db so we have to account for that
         if prev_occurrence:
@@ -163,7 +170,7 @@ class PersistedOccurrenceCreateView(APIView):
             prev_occurrence.cancelled = True
             prev_occurrence.save(update_fields=["cancelled"])
             # So that every move maintains the original start time
-            print(prev_occurrence, 2)
+
             original_start = prev_occurrence.original_start
             original_end = prev_occurrence.original_end
         else:

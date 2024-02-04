@@ -1,9 +1,10 @@
 from rest_framework import viewsets
 from django.db.models import Count
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, parser_classes
+from rest_framework.parsers import MultiPartParser, FormParser
 from datetime import datetime, timedelta
-
+from django.core.mail import EmailMessage
 from .models import Donor
 from .serializers import DonorSerializer
 
@@ -59,3 +60,35 @@ def get_new_donors_date(request):
             "new_donors_percentage": new_donors_percentage,
         }
     )
+
+
+@api_view(["POST"])
+@parser_classes([MultiPartParser, FormParser])
+def send_html_email_with_attachment(request):
+    html_content = """
+    <html>
+        <body>
+            <h1>This is a heading</h1>
+            <p>This is a paragraph of text in the email body.</p>
+        </body>
+    </html>
+    """
+    files = request.FILES.getlist("files")  # 'files' is the name attribute in your form
+    recipient_ids = request.POST.getlist("recipientIds")
+
+    recipients = []
+    email = EmailMessage(
+        "Subject Here",
+        html_content,
+        "from@yourdomain.com",
+        bcc=recipients,  # Use bcc instead of to for privacy
+    )
+
+    # Specify email body is HTML
+    email.content_subtype = "html"
+
+    for file in files:
+        email.attach(file.name, file.read(), file.content_type)
+
+    # Send the email
+    email.send()

@@ -1,4 +1,4 @@
-
+'use client'
 import CampaignsTable from "../components/CampaignsTable"
 const ViewCampaigns = () => {
     return (

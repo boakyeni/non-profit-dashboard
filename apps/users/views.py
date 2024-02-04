@@ -16,6 +16,9 @@ from rest_framework import status
 import requests
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import UserSerializer
+from rest_framework.request import Request
+from rest_framework.parsers import JSONParser
+from rest_framework_simplejwt.views import TokenRefreshView
 
 
 CENTRAL_AUTH_URL = settings.CENTRAL_AUTH_URL
@@ -178,3 +181,38 @@ def custom_password_reset_confirm_view(request):
         return Response(
             {"error": "Invalid UID or token."}, status=status.HTTP_400_BAD_REQUEST
         )
+
+
+# NEEDS TESTING
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def refresh_token_view(request):
+    print("hellp")
+    # Access the refresh_token from the cookies sent with the request
+    refresh_token = request.COOKIES.get("refresh_token")
+    # if not refresh_token:
+    #     return Response({"error": "Refresh token not found."}, status=400)
+
+    # Prepare data for TokenRefreshView
+    data = {"refresh": refresh_token}
+    # Create a Request object that simulates the original request
+    simulated_request = Request(request._request, parsers=[JSONParser()])
+    simulated_request._full_data = data
+    simulated_request._data = data
+    simulated_request._files = {}
+
+    # Instantiate and call the TokenRefreshView
+    print("1233")
+    view = (
+        TokenRefreshView.as_view()
+    )  # fix this do the implementation yourself, you already have the serializer
+    print(view, "heere")
+    response = view(simulated_request._request)
+    response.set_cookie(
+        key=settings.SIMPLE_JWT["AUTH_COOKIE"],
+        value="testing",
+        httponly=True,
+    )
+    # You might need to transform DRF's Response to a Django HttpResponse if necessary
+    print(response.cookies, "hEER")
+    return response

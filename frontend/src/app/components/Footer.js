@@ -1,4 +1,4 @@
-
+'use client'
 
 const Footer = () => (
     <footer className="flex gap-8 items-center justify-center bg-white text-black p-8">

@@ -1,4 +1,4 @@
-
+'use client'
 import ContactCard from "../_components/ContactCard"
 import ContactsTable from "../_components/ContactsTable"
 import ContactModal from "../_components/ContactModal"
