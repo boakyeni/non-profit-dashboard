@@ -1,5 +1,5 @@
 from django.db import models
-from schedule.models import Event
+from schedule.models import Event, Calendar
 
 # Create your models here.
 
@@ -18,3 +18,10 @@ class AdditionalEventInfo(models.Model):
         end_time = self.event.end.time()
         midnight = start_time.replace(hour=0, minute=0, second=0, microsecond=0)
         return start_time == midnight and end_time == midnight
+
+
+class AdditionalCalendarInfo(models.Model):
+    calendar = models.OneToOneField(
+        Calendar, on_delete=models.CASCADE, related_name="additional_info"
+    )
+    private = models.BooleanField(default=False)

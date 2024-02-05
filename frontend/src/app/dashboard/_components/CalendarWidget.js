@@ -27,14 +27,16 @@ const events = [
 const formatName = (name, count) => `${name} ID ${count}`
 
 export default function CalendarWidget({ localizer }) {
-    const { events } = useSelector((state) => state.events)
+    const { events, calendar, currentCalendarId } = useSelector((state) => state.events)
     const isValidDate = date => !isNaN(Date.parse(date));
-    const adjEvents = useMemo(() => events.map((it) => ({
-        ...it,
-        start: isValidDate(it.start) ? new Date(it.start) : null,
-        end: isValidDate(it.end) ? new Date(it.end) : null,
-        isDraggable: true,
-    })), [events])
+    const adjEvents = useMemo(() => events
+        .filter((it) => it.calendar?.id === Number(currentCalendarId)) // change to calendars.id
+        .map((it) => ({
+            ...it,
+            start: isValidDate(it.start) ? new Date(it.start) : null,
+            end: isValidDate(it.end) ? new Date(it.end) : null,
+            isDraggable: true,
+        })), [events, calendar, currentCalendarId])
     const [date, setDate] = useState(new Date());
     const [view, setView] = useState('month');
     const [draggedEvent, setDraggedEvent] = useState()

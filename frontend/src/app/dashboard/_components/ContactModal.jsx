@@ -80,12 +80,11 @@ const ContactModal = () => {
                                     <input type="number" name="company" id="company" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="123456" required="" />
                                 </div>
                                 <div className="col-span-6 sm:col-span-3">
-                                    <label htmlFor="current-password" className="block mb-2 text-sm font-medium text-gray-900 ">Current Password</label>
-                                    <input type="password" name="current-password" id="current-password" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="••••••••" required="" />
+                                    <label htmlFor="current-password" className="block mb-2 text-sm font-medium text-gray-900 ">Upload Profile Photo</label>
+                                    <input type="file" name="current-password" id="current-password" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " />
                                 </div>
                                 <div className="col-span-6 sm:col-span-3">
-                                    <label htmlFor="new-password" className="block mb-2 text-sm font-medium text-gray-900 ">New Password</label>
-                                    <input type="password" name="new-password" id="new-password" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5  " placeholder="••••••••" required="" />
+
                                 </div>
                             </div>
                         </div>

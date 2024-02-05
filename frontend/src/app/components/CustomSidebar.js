@@ -30,7 +30,7 @@ const CustomSidebar = () => {
 
     return (
         <>
-            <aside className={`fixed top-0 z-30 flex h-screen flex-col overflow-y-hidden bg-slate-800 duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0 w-[290px] ${sidebarOpen ? ' translate-x-0' : '-translate-x-full '}`}>
+            <aside className={`fixed top-0 z-30 flex h-screen flex-col overflow-y-hidden bg-slate-800 duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0 w-[290px] ${sidebarOpen ? ' translate-x-0' : '-translate-x-full '} overflow-y-scroll`}>
                 <div className="p-3 flex flex-row place-items-center justify-between">
                     <h1 className="text-white p-3 text-xl ">NGO Admin</h1>
                     <LuX className="lg:hidden scale-[1.5] text-white cursor-pointer" onClick={() => dispatch(toggleSidebar())} />

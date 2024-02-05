@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from schedule.models import Event, Rule
-from .serializers import EventSerializer, RuleSerializer
+from .serializers import EventSerializer, RuleSerializer, CalendarSerializer
 
 # Create your views here.
 
@@ -72,6 +72,13 @@ class EventCreateView(APIView):
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])
 # @authentication_classes([JWTAuthentication])
+def create_calendar_view(request):
+    pass
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+# @authentication_classes([JWTAuthentication])
 def get_calendar_events(request):
     # Assuming you're retrieving events for a specific period
     # Retrieve query parameters for start and end dates
@@ -99,6 +106,15 @@ def get_calendar_events(request):
 
     occurence_serializer = OccurrenceSerializer(instance=all_occurrences, many=True)
     return Response(occurence_serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+# @authentication_classes([JWTAuthentication])
+def get_calendars(request):
+    users_calendars = request.user.calendars.all()
+    serializer = CalendarSerializer(instance=users_calendars, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # on move recurring event

@@ -75,10 +75,10 @@ const ContactCard = () => {
                         </div>
                     </div>
 
-                    <div className="flex flex-col items-center pb-10">
-
-                        <LuUser2 className="scale-[3.0] rounded-full bg-slate-200 mb-8 stroke-1" />
-
+                    <div className="flex flex-col items-center pb-10 w-full">
+                        <div className='w-16 h-16 mx-auto flex items-center justify-around'>
+                            <LuUser2 className="scale-[4.0] rounded-full bg-slate-200 stroke-1" />
+                        </div>
                         <h5 className="mb-1 text-xl font-medium text-gray-900 ">Neil Smotherson</h5>
                         <span className="text-sm text-gray-500 dark:text-gray-400">neil.sims@flowbite.com</span>
                         <div className="flex mt-4 md:mt-6">
