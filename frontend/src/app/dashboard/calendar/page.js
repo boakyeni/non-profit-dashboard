@@ -45,6 +45,7 @@ const CalendarPage = () => {
         dispatch(setEndDate(new Date().toISOString()))
         dispatch(toggleCreateEventModal())
     }
+
     // store calendar selection in local storage
     const handleCalendarSelection = (calendar_id) => {
         if (typeof window !== 'undefined') {

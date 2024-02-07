@@ -6,18 +6,17 @@ const apiClient = axios.create({
     withCredentials: true,
 
 });
-// // NOT NEEDED BECAUSE WE ARE USING TOKEN BASED AUTH NOT SESSION AUTH
-// // CSRF Token handling for Django
-// // Assuming Django sets CSRF token in a cookie named 'csrftoken'
-// const getCsrfToken = () => {
-//     if (typeof window !== 'undefined') {
-//         return document.cookie.split('; ').find(row => row.startsWith('csrftoken='))
-//             ?.split('=')[1];
-//     }
-//     return null;
-// };
+// CSRF Token handling for Django
+// Assuming Django sets CSRF token in a cookie named 'csrftoken'
+const getCsrfToken = () => {
+    if (typeof window !== 'undefined') {
+        return document.cookie.split('; ').find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1];
+    }
+    return null;
+};
 
-// apiClient.defaults.headers.common['X-CSRFToken'] = getCsrfToken();
+apiClient.defaults.headers.common['X-CSRFToken'] = getCsrfToken();
 
 
 
@@ -43,7 +42,7 @@ apiClient.interceptors.response.use(async response => {
 }, async error => {
     const originalRequest = error.config;
 
-    // Avoid retrying for the refresh token endpoint itself
+    // Avoid retrying for the refresh token endpoint itself prevents infinite loop
     if (originalRequest.url.includes('/api/auth/jwt/refresh/')) {
         // If the refresh token request fails, redirect to login and don't retry
         if (typeof window !== 'undefined') {

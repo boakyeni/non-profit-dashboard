@@ -196,6 +196,7 @@ def custom_password_reset_confirm_view(request):
 
 # NEEDS TESTING
 # Gets new access token else should return 401
+# to get a new refresh token, login
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def refresh_token_view(request):

@@ -11,7 +11,14 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import user_passes_test
 from premailer import transform
 from PIL import Image, ImageDraw
-
+from rest_framework.decorators import (
+    api_view,
+    permission_classes,
+    authentication_classes,
+)
+from rest_framework import permissions, status
+from rest_framework.response import Response
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import Upload, Template
 
 logger = logging.getLogger(__name__)
@@ -172,3 +179,21 @@ def size(size_txt):
         return None
     else:
         return int(size_txt)
+
+
+@api_view(["GET"])
+# @permission_classes([permissions.IsAuthenticated])
+# @authentication_classes([JWTAuthentication])
+def get_template_html(request):
+    template_id = request.query_params.get("template_id")
+
+    try:
+        template_instance = Template.objects.get(id=template_id)
+    except Template.DoesNotExist:
+        return Response(
+            {"No Template found with that id"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    return Response(
+        {"template_html": template_instance.html}, status=status.HTTP_200_OK
+    )
