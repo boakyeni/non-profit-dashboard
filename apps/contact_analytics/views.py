@@ -65,19 +65,20 @@ class CSVUploadView(APIView):
                         phone_number, created = PhoneNumber.objects.get_or_create(
                             id=phone_number_id
                         )
-                        # add phone number object to profile
-                        row["profile"] = phone_number
+                        serializer = AccountProfileSerializer(data=row)
 
-                    # validate data using accountprofileserializer
-                    serializer = AccountProfileSerializer(data=row)
-                    if serializer.is_valid():
-                        # append validated data to the list for bulk creation
-                        account_profiles.append(
-                            AccountProfile(**serializer.validated_data)
-                        )
-
-                # Bulk create Account objects
-                AccountProfile.objects.bulk_create(account_profiles)
+                        # validate data using accountprofileserializer
+                        if serializer.is_valid():
+                            # save the accountprofile instance to handle relationships
+                            account_instance = serializer.save()
+                            phone_number.profile = account_instance
+                            phone_number.save()
+                            
+                            company_id = row.get("company_id")
+                            if company_id:
+                                company, created = Company.objects.get_or_create(id=company_id)
+                                account_instance.company = company
+                                account_instance.save()
 
                 return Response(
                     {"success": "Data uploaded successfully"},
@@ -94,5 +95,6 @@ class CSVUploadView(APIView):
         except Exception as e:
             return Response(
                 # Handle unexpected errors
-                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )

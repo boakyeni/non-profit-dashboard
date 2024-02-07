@@ -67,7 +67,7 @@ class PhoneNumber(models.Model):
         null=True,
         blank=True,
     )
-    Company = models.ForeignKey(
+    company = models.ForeignKey(
         Company, on_delete=models.CASCADE, default=None, null=True, blank=True
     )
 
