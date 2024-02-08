@@ -1,7 +1,9 @@
 from django.db import models
 from schedule.models import Event, Calendar
+from django.contrib.auth import get_user_model
 
 # Create your models here.
+User = get_user_model()
 
 
 # React Big Calendar has an allDay field but django-scheduler Event does not
@@ -25,3 +27,4 @@ class AdditionalCalendarInfo(models.Model):
         Calendar, on_delete=models.CASCADE, related_name="additional_info"
     )
     private = models.BooleanField(default=False)
+    users = models.ManyToManyField(User, blank=True, related_name="calendars")

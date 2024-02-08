@@ -3,6 +3,7 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 from schedule.models import Event, Rule
 from .serializers import EventSerializer, RuleSerializer, CalendarSerializer
+from .models import AdditionalCalendarInfo
 
 # Create your views here.
 
@@ -93,6 +94,7 @@ def get_calendar_events(request):
     )
 
     events = Event.objects.all()  # Retrieve events as needed
+    # try Events.filter(calendar__additional_info__users=request.user) when users are in, instead of above
     all_occurrences = []
 
     for event in events:
@@ -112,7 +114,10 @@ def get_calendar_events(request):
 @permission_classes([permissions.IsAuthenticated])
 # @authentication_classes([JWTAuthentication])
 def get_calendars(request):
-    users_calendars = request.user.calendars.all()
+    users_calendars_info = AdditionalCalendarInfo.objects.filter(
+        users=request.user
+    ).select_related("calendar")
+    users_calendars = [info.calendar for info in users_calendars_info]
     serializer = CalendarSerializer(instance=users_calendars, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 

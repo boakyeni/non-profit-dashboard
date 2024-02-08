@@ -75,7 +75,7 @@ const PreviewForm = () => {
                             {/* // Modal Body */}
                             {(emailSent || sendingError) ? (<div className={`p-4 mb-4 text-sm rounded-lg ${sendingError ? 'text-red-700 bg-red-100' : 'text-green-700 bg-green-100'}`} role="alert">
                                 {sendingError ? sendingError : 'Email successfully sent!'}
-                            </div>) : (<div className="p-6  max-h-[calc(100vh-20rem)] overflow-x-auto ">
+                            </div>) : (<div className="p-6 min-h-[300px] max-h-[calc(100vh-20rem)] overflow-x-auto ">
                                 <div className="flex flex-col md:flex-row md:space-x-6">
                                     <div className=" md:w-1/2 2xl:w-3/4 space-y-6">
                                         <div className="col-span-6 sm:col-span-4">

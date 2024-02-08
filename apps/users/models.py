@@ -26,7 +26,6 @@ class User(AbstractUser):
     reference = models.CharField(
         verbose_name=_("Account Reference"), max_length=250, blank=True, null=True
     )
-    calendars = models.ManyToManyField(Calendar, blank=True, related_name="users")
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = [
         "first_name",

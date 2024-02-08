@@ -7,7 +7,7 @@ const SubscriberTable = () => {
 
     }
     return (
-        <div className="relative flex flex-col overscroll-none drop-shadow-xl min-h-[10vh] max-h-[40vh] lg:mt-10 flex-grow bg-white">
+        <div className="relative flex flex-col overscroll-none drop-shadow-xl h-[450px] lg:mt-10 flex-grow bg-white">
             <div className="sticky z-10 flex items-center justify-between flex-col md:flex-row flex-wrap space-y-4 md:space-y-0 py-4 bg-slate-100 ">
                 <div  >
                     <button id="dropdownActionButton" className="m-3 inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1.5" type="button">
@@ -47,7 +47,7 @@ const SubscriberTable = () => {
             </div>
 
             {/* Paginate This */}
-            <div className="overflow-y-auto max-h-[30vh]">
+            <div className="overflow-y-auto">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                     <thead className="sticky top-0 text-xs text-gray-700 uppercase bg-gray-50 ">
                         <tr>

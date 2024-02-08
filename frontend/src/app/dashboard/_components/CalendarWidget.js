@@ -30,7 +30,7 @@ export default function CalendarWidget({ localizer }) {
     const { events, calendar, currentCalendarId } = useSelector((state) => state.events)
     const isValidDate = date => !isNaN(Date.parse(date));
     const adjEvents = useMemo(() => events
-        .filter((it) => it.calendar?.id === Number(currentCalendarId)) // change to calendars.id
+        .filter((it) => it.calendar?.id === Number(currentCalendarId)) // change to calendar.id
         .map((it) => ({
             ...it,
             start: isValidDate(it.start) ? new Date(it.start) : null,

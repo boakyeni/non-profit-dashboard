@@ -73,7 +73,6 @@ def signup_view(request):
         "first_name": request.data.get("first_name"),
         "last_name": request.data.get("last_name"),
         "email": request.data.get("email"),
-        "password": request.data.get("password"),
         # Add other fields as needed
     }
     merchant_data = {}
@@ -86,6 +85,7 @@ def signup_view(request):
     # Post to central user db
     name = user_data.pop("first_name") + " " + user_data.pop("last_name")
     user_data["name"] = name
+    user_data["password"] = request.data.get("password")
 
     request_data = {
         "operation": "SIGNUP",

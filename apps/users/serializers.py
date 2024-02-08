@@ -21,7 +21,6 @@ class UserSerializer(serializers.ModelSerializer):
             "full_name",
             "phone_number",
             "reference",
-            "calendars",
         ]
 
     def get_full_name(self, obj):
