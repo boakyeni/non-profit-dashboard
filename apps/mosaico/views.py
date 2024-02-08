@@ -7,23 +7,30 @@ from django.shortcuts import render
 from django.core.mail import send_mail
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import user_passes_test
 from premailer import transform
 from PIL import Image, ImageDraw
-
+from rest_framework.decorators import (
+    api_view,
+    permission_classes,
+    authentication_classes,
+)
+from rest_framework import permissions, status
+from rest_framework.response import Response
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import Upload, Template
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-@user_passes_test(lambda u: u.is_staff)
+# @user_passes_test(lambda u: u.is_staff)
 def index(request):
     return render(request, "mosaico/index.html")
 
 
-@user_passes_test(lambda u: u.is_staff)
+# @user_passes_test(lambda u: u.is_staff)
 def editor(request):
     return render(request, "mosaico/editor.html")
 
@@ -45,6 +52,7 @@ def download(request):
         to = request.POST["rcpt"]
         subject = request.POST["subject"]
         from_email = settings.DEFAULT_FROM_EMAIL
+        print(from_email)
         # TODO: convert the HTML email to a plain-text message here.  That way
         # we can have both HTML and plain text.
         msg = ""
@@ -114,7 +122,7 @@ def image(request):
 
 
 @csrf_exempt
-@user_passes_test(lambda u: u.is_staff)
+# @user_passes_test(lambda u: u.is_staff)
 def template(request):
     action = request.POST["action"]
     if action == "save":
@@ -128,7 +136,10 @@ def template(request):
         template.template_data = template_data
         template.meta_data = meta_data
         template.save()
-        response = HttpResponse("template saved", status=201)
+        print(template.id)
+        response = JsonResponse(
+            {"success": "template saved", "template_id": template.id}, status=201
+        )
     else:
         response = HttpResponse("unknown action", status=400)
     return response
@@ -168,3 +179,21 @@ def size(size_txt):
         return None
     else:
         return int(size_txt)
+
+
+@api_view(["GET"])
+# @permission_classes([permissions.IsAuthenticated])
+# @authentication_classes([JWTAuthentication])
+def get_template_html(request):
+    template_id = request.query_params.get("template_id")
+
+    try:
+        template_instance = Template.objects.get(id=template_id)
+    except Template.DoesNotExist:
+        return Response(
+            {"No Template found with that id"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    return Response(
+        {"template_html": template_instance.html}, status=status.HTTP_200_OK
+    )

@@ -1,4 +1,4 @@
-
+'use client'
 import { Calendar } from 'react-big-calendar'
 import { useState, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';

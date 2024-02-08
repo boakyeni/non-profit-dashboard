@@ -1,4 +1,4 @@
-
+'use client'
 const NavButton = ({ children, section }) => {
     const goto = (section) => {
         if (typeof window !== "undefined") {

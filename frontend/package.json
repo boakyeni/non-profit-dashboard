@@ -14,11 +14,13 @@
     "@hello-pangea/dnd": "^16.5.0",
     "@reduxjs/toolkit": "^2.0.1",
     "axios": "^1.6.2",
+    "dompurify": "^3.0.8",
     "framer-motion": "^10.16.12",
     "moment": "^2.29.4",
     "next": "13.5.6",
     "react": "^18",
     "react-big-calendar": "^1.8.5",
+    "react-card-flip": "^1.2.2",
     "react-circular-progressbar": "^2.1.0",
     "react-currency-input-field": "^3.6.12",
     "react-datepicker": "^4.25.0",
@@ -36,6 +38,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@types/dompurify": "^3.0.5",
     "autoprefixer": "^10",
     "eslint": "^8",
     "eslint-config-next": "13.5.6",

@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from schedule.models import Event, Occurrence, Rule
-from .models import AdditionalEventInfo
+from schedule.models import Event, Occurrence, Rule, Calendar
+from .models import AdditionalEventInfo, AdditionalCalendarInfo
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -33,20 +33,11 @@ class RuleSerializer(serializers.ModelSerializer):
 class OccurrenceSerializer(serializers.ModelSerializer):
     allDay = serializers.SerializerMethodField()
     rule = serializers.SerializerMethodField()
+    calendar = serializers.SerializerMethodField()
 
     class Meta:
         model = Occurrence
-        fields = [
-            "id",
-            "event",
-            "title",
-            "start",
-            "end",
-            "description",
-            "cancelled",
-            "allDay",
-            "rule",
-        ]
+        fields = "__all__"
 
     def get_allDay(self, obj):
         try:
@@ -60,4 +51,28 @@ class OccurrenceSerializer(serializers.ModelSerializer):
             event = Event.objects.get(id=obj.event.id)
             return event.rule.frequency if event.rule else None
         except Event.DoesNotExist:
+            return False
+
+    def get_calendar(self, obj):
+        event = Event.objects.get(id=obj.event.id)
+        return CalendarSerializer(instance=event.calendar).data
+
+
+class AdditionalCalendarInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AdditionalCalendarInfo
+        fields = "__all__"
+
+
+class CalendarSerializer(serializers.ModelSerializer):
+    private = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Calendar
+        fields = "__all__"
+
+    def get_private(self, obj):
+        try:
+            obj.additional_info.private
+        except AdditionalCalendarInfo.DoesNotExist:
             return False

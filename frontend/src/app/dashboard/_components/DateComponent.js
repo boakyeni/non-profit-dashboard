@@ -1,4 +1,4 @@
-
+'use client'
 import { useState } from "react"
 import { LuCalendar } from "react-icons/lu"
 import DatePicker from "react-datepicker";

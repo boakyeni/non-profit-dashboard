@@ -19,7 +19,6 @@ const ContactsTable = ({ itemsPerPage }) => {
 
     /* holds contacts, whether action dropdown is open, and which contacts the user has selected */
     const { contacts, searchResults, contactTableActionOpen, selectedContacts, editUserOpen } = useSelector((state) => state.contact)
-
     /* Handle click outside of dropdown to close drowdown */
     const tableActionRef = useRef(null)
     useEffect(() => {
@@ -64,11 +63,12 @@ const ContactsTable = ({ itemsPerPage }) => {
     const [itemOffset, setItemOffset] = useState(0);
 
     useEffect(() => {
+        const activeContacts = searchResults.length > 0 ? searchResults : contacts;
         const endOffset = itemOffset + itemsPerPage;
-        console.log(`Loading items from ${itemOffset} to ${endOffset}`);
-        setCurrentItems((searchResults ? searchResults : contacts).slice(itemOffset, endOffset));
-        setPageCount(Math.ceil(contacts.length / itemsPerPage));
-    }, [itemOffset, itemsPerPage]);
+        setCurrentItems(activeContacts.slice(itemOffset, endOffset));
+        setPageCount(Math.ceil(activeContacts.length / itemsPerPage));
+
+    }, [itemOffset, itemsPerPage, contacts, searchResults]);
 
     // Invoke when user click to request another page.
     const handlePageClick = (event) => {
@@ -81,7 +81,6 @@ const ContactsTable = ({ itemsPerPage }) => {
         dispatch(setSearchFilter(event.target.value))
         dispatch(applyFilters())
     };
-
 
     return (
 
@@ -113,7 +112,7 @@ const ContactsTable = ({ itemsPerPage }) => {
 
                         </ul>
                         <div className="py-1">
-                            <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100  ">Preview Email to Send</a>
+                            <a href="http://localhost:8000/mosaico" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100  ">Preview Email to Send</a>
                         </div>
                     </div>
                 </div>
@@ -150,36 +149,38 @@ const ContactsTable = ({ itemsPerPage }) => {
                         </tr>
                     </thead>
                     <tbody className="">
-
-                        <tr className="bg-white border-b  hover:bg-gray-50 ">
-                            <td className="w-4 p-4">
-                                <div className="flex items-center">
-                                    <input id="checkbox-table-search-1" type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500   focus:ring-2  " />
-                                    <label htmlFor="checkbox-table-search-1" className="sr-only">checkbox</label>
-                                </div>
-                            </td>
-                            <th scope="row" className="flex items-center py-4 text-gray-900 ">
-
-                                <div className="">
-                                    <div className="text-base break-words font-semibold flex flex-col">
-                                        <span>Smotherson </span>
+                        {currentItems && currentItems.map((contact) => (
+                            <tr key={contact.id} className="bg-white border-b  hover:bg-gray-50 ">
+                                <td className="w-4 p-4">
+                                    <div className="flex items-center">
+                                        <input id="checkbox-table-search-1" type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500   focus:ring-2  " />
+                                        <label htmlFor="checkbox-table-search-1" className="sr-only">checkbox</label>
                                     </div>
-                                    <div className="font-normal text-gray-500">neil.sims@flowbite.com</div>
-                                </div>
-                            </th>
-                            <td className="max-sm:hidden px-6 py-4">
-                                React Developer
-                            </td>
-                            <td className="max-sm:hidden px-6 py-4">
-                                <div className="flex items-center">
-                                    <div className="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Online
-                                </div>
-                            </td>
-                            <td className="px-6 py-4">
-                                {/* // Modal Toggle */}
-                                <a href="#" onClick={handleMoreInfoClick} type="button" className="font-medium text-blue-600  hover:underline">More Info</a>
-                            </td>
-                        </tr>
+                                </td>
+                                <th scope="row" className="flex items-center py-4 text-gray-900 ">
+
+                                    <div className="">
+                                        <div className="text-base break-words font-semibold flex flex-col">
+                                            <span>Smotherson {contact.id} </span>
+                                        </div>
+                                        <div className="font-normal text-gray-500">neil.sims@flowbite.com</div>
+                                    </div>
+                                </th>
+                                <td className="max-sm:hidden px-6 py-4">
+                                    React Developer
+                                </td>
+                                <td className="max-sm:hidden px-6 py-4">
+                                    <div className="flex items-center">
+                                        <div className="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Online
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4">
+                                    {/* // Modal Toggle */}
+                                    <a href="#" onClick={handleMoreInfoClick} type="button" className="font-medium text-blue-600  hover:underline">More Info</a>
+                                </td>
+                            </tr>
+                        ))}
+
                     </tbody>
                 </table>
             </div>
@@ -195,7 +196,7 @@ const ContactsTable = ({ itemsPerPage }) => {
                     containerClassName="flex justify-end space-x-1 p-[12px]"
                     pageClassName="mr-1" // Tailwind classes for page items
                     pageLinkClassName="py-1 px-3 bg-white border border-gray-300 rounded hover:bg-gray-100" // Tailwind classes for page links
-                    activeClassName="bg-blue-500 text-white" // Tailwind classes for the active page
+                    activeClassName="py-1 text-black" // Tailwind classes for the active page
                     previousClassName="py-1 px-3 bg-white border border-gray-300 rounded hover:bg-gray-100" // Tailwind classes for previous button
                     nextClassName="py-1 px-3 bg-white border border-gray-300 rounded hover:bg-gray-100" // Tailwind classes for next button
                 />

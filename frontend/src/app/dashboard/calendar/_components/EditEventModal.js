@@ -73,7 +73,7 @@ const EditEventModal = () => {
                         {/* //Modal Header */}
                         <div className="flex items-start justify-between p-4 border-b rounded-t ">
                             <h3 className="text-xl font-semibold text-gray-900 ">
-                                Edit Event or Appointment
+                                Event or Appointment Details
                             </h3>
                             <button type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center " data-modal-hide="editUserModal">
                                 <LuX className="scale-[1.5] stroke-2" onClick={() => dispatch(toggleEditEventModal())} />
@@ -90,13 +90,23 @@ const EditEventModal = () => {
 
                                     <div className="flex flex-row w-full space-x-3">
                                         <div className="max-sm:w-1/2">
-                                            <label htmlFor="select-date" className="block mb-2 text-sm font-medium text-gray-900 ">Select Start</label>
+                                            <label htmlFor="select-date" className="block mb-2 text-sm font-medium text-gray-900 ">Start</label>
                                             <DateComponent selected={localStartDate} setDate={(date) => setLocalStartDate(date.toISOString())} read={!editEventModalEditable} />
                                         </div>
                                         <div className="max-sm:w-1/2">
-                                            <label htmlFor="select-date" className="block mb-2 text-sm font-medium text-gray-900 ">Select End</label>
+                                            <label htmlFor="select-date" className="block mb-2 text-sm font-medium text-gray-900 ">End</label>
                                             <DateComponent selected={localEndDate} setDate={(date) => setLocalEndDate(date.toISOString())} read={!editEventModalEditable} />
                                         </div>
+                                    </div>
+                                    <div className="col-span-6 sm:col-span-3">
+                                        <label htmlFor="countries" className="block mb-2 text-sm font-medium text-gray-900 ">Frequency</label>
+                                        <select disabled={!editEventModalEditable} id="countries" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ">
+                                            <option value="">One Time Event</option>
+                                            <option value="US">Yearly</option>
+                                            <option value="CA">Monthly</option>
+                                            <option value="FR">Weekly</option>
+                                            <option value="DE">Daily</option>
+                                        </select>
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 ">Description</label>
@@ -107,32 +117,12 @@ const EditEventModal = () => {
                                         <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 p-2.5" aria-describedby="user_avatar_help" id="user_avatar" type="file" multiple={true} />
                                         <div className="mt-1 text-sm text-gray-500 " id="user_avatar_help">Please limit file size to 10MB</div>
                                     </div>
-                                    <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="phone-number" className="block mb-2 text-sm font-medium text-gray-900 ">Phone Number</label>
-                                        <input type="tel" name="phone-number" id="phone-number" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="e.g. +(12)3456 789" required="" />
-                                    </div>
-                                    <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="department" className="block mb-2 text-sm font-medium text-gray-900 ">Department</label>
-                                        <input type="text" name="department" id="department" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Development" required="" />
-                                    </div>
-                                    <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="company" className="block mb-2 text-sm font-medium text-gray-900 ">Company</label>
-                                        <input type="text" name="company" id="company" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="123456" required="" />
-                                    </div>
 
-                                    <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="countries" className="block mb-2 text-sm font-medium text-gray-900 ">Select a Frequency</label>
-                                        <select disabled={!editEventModalEditable} id="countries" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ">
-                                            <option value="">One Time Event</option>
-                                            <option value="US">Yearly</option>
-                                            <option value="CA">Monthly</option>
-                                            <option value="FR">Weekly</option>
-                                            <option value="DE">Daily</option>
-                                        </select>
-                                    </div>
+
+
                                 </div>
                                 <div className="lg:w-1/2 2xl:w-1/4">
-                                    <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 ">Add guests</label>
+                                    <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 ">Guests</label>
                                     <input type="text" name="first-name" id="first-name" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Add Email" required="" />
 
                                 </div>

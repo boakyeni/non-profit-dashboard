@@ -15,7 +15,10 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 import requests
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 from .serializers import UserSerializer
+
+from .serializers import TokenRefreshSerializer
 
 
 CENTRAL_AUTH_URL = settings.CENTRAL_AUTH_URL
@@ -45,13 +48,18 @@ def login_view(request):
         token["user_id"] = data["data"]["user"]["_id"]
         token["merchant_id"] = data["data"]["merchant"]["_id"]
         token["merchant_name"] = data["data"]["merchant"]["businessName"]
-
-        return Response(
+        drf_response = Response(
             {
-                "refresh": str(token),
+                "refresh": str(token),  # probably dont need
                 "access": str(token.access_token),
             }
         )
+        drf_response.set_cookie(
+            key=settings.SIMPLE_JWT["AUTH_COOKIE"],
+            value=str(token),
+            httponly=True,
+        )
+        return drf_response
     return Response(
         {"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
     )
@@ -65,7 +73,6 @@ def signup_view(request):
         "first_name": request.data.get("first_name"),
         "last_name": request.data.get("last_name"),
         "email": request.data.get("email"),
-        "password": request.data.get("password"),
         # Add other fields as needed
     }
     merchant_data = {}
@@ -78,6 +85,7 @@ def signup_view(request):
     # Post to central user db
     name = user_data.pop("first_name") + " " + user_data.pop("last_name")
     user_data["name"] = name
+    user_data["password"] = request.data.get("password")
 
     request_data = {
         "operation": "SIGNUP",
@@ -105,12 +113,18 @@ def signup_view(request):
         token["user_id"] = data["data"]["user"]["_id"]
         token["merchant_id"] = data["data"]["merchant"]["_id"]
         token["merchant_name"] = data["data"]["merchant"]["businessName"]
-        return Response(
+        drf_response = Response(
             {
-                "refresh": str(token),
+                "refresh": str(token),  # probably dont need
                 "access": str(token.access_token),
             }
         )
+        drf_response.set_cookie(
+            key=settings.SIMPLE_JWT["AUTH_COOKIE"],
+            value=str(token),
+            httponly=True,
+        )
+        return drf_response
     return Response(
         {"detail": "Account creation failed"}, status=status.HTTP_400_BAD_REQUEST
     )
@@ -178,3 +192,27 @@ def custom_password_reset_confirm_view(request):
         return Response(
             {"error": "Invalid UID or token."}, status=status.HTTP_400_BAD_REQUEST
         )
+
+
+# NEEDS TESTING
+# Gets new access token else should return 401
+# to get a new refresh token, login
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def refresh_token_view(request):
+    print("hellp")
+    # Access the refresh_token from the cookies sent with the request
+    refresh_token = request.COOKIES.get("refresh_token")
+    # if not refresh_token:
+    #     return Response({"error": "Refresh token not found."}, status=400)
+
+    # Prepare data for TokenRefreshView
+    data = {"refresh": refresh_token}
+
+    # Check simplejwt docs if this doesnt work
+    serializer = TokenRefreshSerializer(data=data)
+    try:
+        serializer.is_valid(raise_exception=True)
+    except TokenError:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    return Response(serializer.validated_data, status=status.HTTP_200_OK)

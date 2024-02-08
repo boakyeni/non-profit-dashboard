@@ -45,7 +45,7 @@
       preheaderLinkOption {
         label: Unsubscribe Link;
         widget: select;
-        options: [profile_link]=Profile|[unsubscribe_link]=Unsubscribe|none=None;
+        options: [unsubscribe_link]=Unsubscribe|none=None;
         help: If -None- is selected, preHeader text will be shown;
       }
      
@@ -114,7 +114,7 @@
       
       socialBlock fbVisible { label: Facebook; }
       socialBlock twVisible { label: Twitter }
-      socialBlock ggVisible { label: Google+ }
+      socialBlock ggVisible { label: TikTok }
       socialBlock inVisible { label: LinkedIn }
       socialBlock flVisible { label: Flickr }
       socialBlock viVisible { label: Vimeo }
@@ -123,7 +123,7 @@
       socialBlock youVisible { label: YouTube }
       socialBlock fbUrl { label: Facebook Link}
       socialBlock twUrl { label: Twitter Link}
-      socialBlock ggUrl { label: Google+ Link}
+      socialBlock ggUrl { label: TikTok Link}
       socialBlock inUrl { label: LinkedIn Link}
       socialBlock flUrl { label: Flickr Link}
       socialBlock viUrl { label: Vimeo Link}
@@ -432,7 +432,7 @@
                           -ko-font-size: @[linkStyle.size]px; -ko-color: @linkStyle.color; -ko-font-family: @linkStyle.face">
                           <a data-ko-display="preheaderLinkOption neq 'none'" data-ko-editable="unsubscribeText" href="[unsubscribe_link]" 
                              style="text-decoration: underline; color: #ffffff; -ko-attr-href: @preheaderLinkOption; 
-                             -ko-color: @linkStyle.color; -ko-text-decoration: @linkStyle.decoration">Unsubscribe</a> 
+                             -ko-color: @linkStyle.color; -ko-text-decoration: @linkStyle.decoration"></a>
                           <span data-ko-display="preheaderLinkOption eq 'none'" style="font-size: 13px;color: #919191; font-weight: normal; text-align:center;
                             font-family: Arial, Helvetica, sans-serif; -ko-font-size: @[longTextStyle.size]px; -ko-color: @longTextStyle.color;
                             -ko-font-family: @longTextStyle.face; -ko-bind-text: @preheaderText; display: none"></span>
@@ -451,7 +451,7 @@
                         -ko-color: @linkStyle.color; -ko-text-decoration: @linkStyle.decoration">
                           <a data-ko-editable="webversionText" href="[show_link]" 
                           style="text-decoration: underline; color: #ffffff;
-                           -ko-color: @linkStyle.color; -ko-text-decoration: @linkStyle.decoration">View in your browser</a>
+                           -ko-color: @linkStyle.color; -ko-text-decoration: @linkStyle.decoration"></a>
                          </span>
                        </td>
                       </tr>
@@ -1407,7 +1407,7 @@
                           </a>
                           <span data-ko-display="ggVisible" data-ko-wrap="false">&nbsp;</span>
                           <a data-ko-display="ggVisible" href="" style="-ko-attr-href: @ggUrl">
-                            <img src="img/social_def/google+_ok.png" alt="Google+" border="0" class="socialIcon" />
+                            <img src="img/social_def/tiktok_ok.png" alt="TikTok" border="0" class="socialIcon" />
                           </a>
                           <span data-ko-display="webVisible" data-ko-wrap="false" style="display: none">&nbsp;</span>
                           <a data-ko-display="webVisible" href="" style="-ko-attr-href: @webUrl; display: none">
@@ -1446,7 +1446,7 @@
                           </a>
                           <span data-ko-display="ggVisible" data-ko-wrap="false">&nbsp;</span>
                           <a data-ko-display="ggVisible" href="" style="-ko-attr-href: @ggUrl">
-                            <img src="img/social_def/google+_bw_ok.png" alt="Google+" border="0" class="socialIcon" />
+                            <img src="img/social_def/tiktok_bw_ok.png" alt="tiktok" border="0" class="socialIcon" />
                           </a>
                           <span data-ko-display="webVisible" data-ko-wrap="false" style="display: none">&nbsp;</span>
                           <a data-ko-display="webVisible" href="" style="-ko-attr-href: @webUrl; display: none">
@@ -1505,20 +1505,18 @@
           <tr>
             <td data-ko-editable="longText" class="long-text links-color" 
                 style="text-align:center; font-size: 13px;color: #919191; font-weight: normal; text-align:center; font-family: Arial, Helvetica, sans-serif;
-                -ko-font-size: @[longTextStyle.size]px; -ko-color: @longTextStyle.color; -ko-font-family: @longTextStyle.face"><p>Email sent to <a href="mailto:[mail]">[mail]</a></p></td>
+                -ko-font-size: @[longTextStyle.size]px; -ko-color: @longTextStyle.color; -ko-font-family: @longTextStyle.face"><p>Email sent to <a href="mailto:{{mail}}">[mail]</a></p></td>
           </tr>
           <tr>
             <td style="text-align: center;">
               <a style="text-decoration: underline; color: #ffffff; text-align: center; font-size: 13px; 
                 font-weight: normal; font-family: Arial, Helvetica, sans-serif;
                 -ko-text-decoration: @linkStyle.decoration; -ko-color: @linkStyle.color; -ko-font-size: @[linkStyle.size]px; -ko-font-family: @linkStyle.face"
-                href="[unsubscribe_link]"><span data-ko-editable="disiscrivitiText">Unsubscribe</span></a>
+                href="{{unsubscribe_link}}"><span data-ko-editable="disiscrivitiText">Unsubscribe</span></a>
             </td>
           </tr>
           <tr data-ko-display="_root_.sponsor.visible" style="display: none;text-align:center">
             <td align="center">
-                <a href="" style="-ko-attr-href: @_root_.sponsor.url;"><img border="0" hspace="0" vspace="0" src="img/sponsor.gif" alt="sponsor"
-                  style="Margin:auto;display:inline !important; -ko-attr-src: @_root_.sponsor.src; -ko-attr-alt: @_root_.sponsor.alt" /></a>
             </td>
           </tr>
         </table>

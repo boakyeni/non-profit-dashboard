@@ -5,7 +5,7 @@ import { Calendar, Views, DateLocalizer } from 'react-big-calendar'
 import moment from 'moment'
 // Storybook cannot alias this, so you would use 'react-big-calendar/lib/addons/dragAndDrop'
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
-import { editEvent, setEndDate, setStartDate, toggleCreateEventModal, toggleEditEventModal, setSelectedEvent, toggleEdit, getEvents, setEndTimeRange, setStartTimeRange } from '../../lib/features/events/eventSlice';
+import { setEvents, editEvent, setEndDate, setStartDate, toggleCreateEventModal, toggleEditEventModal, setSelectedEvent, toggleEdit, getEvents, setEndTimeRange, setStartTimeRange } from '../../lib/features/events/eventSlice';
 // Storybook cannot alias this, so you would use 'react-big-calendar/lib/addons/dragAndDrop/styles.scss'
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -27,14 +27,16 @@ const events = [
 const formatName = (name, count) => `${name} ID ${count}`
 
 export default function CalendarWidget({ localizer }) {
-    const { events } = useSelector((state) => state.events)
+    const { events, calendar, currentCalendarId } = useSelector((state) => state.events)
     const isValidDate = date => !isNaN(Date.parse(date));
-    const adjEvents = useMemo(() => events.map((it) => ({
-        ...it,
-        start: isValidDate(it.start) ? new Date(it.start) : null,
-        end: isValidDate(it.end) ? new Date(it.end) : null,
-        isDraggable: true,
-    })), [events])
+    const adjEvents = useMemo(() => events
+        .filter((it) => it.calendar?.id === Number(currentCalendarId)) // change to calendar.id
+        .map((it) => ({
+            ...it,
+            start: isValidDate(it.start) ? new Date(it.start) : null,
+            end: isValidDate(it.end) ? new Date(it.end) : null,
+            isDraggable: true,
+        })), [events, calendar, currentCalendarId])
     const [date, setDate] = useState(new Date());
     const [view, setView] = useState('month');
     const [draggedEvent, setDraggedEvent] = useState()
@@ -81,14 +83,27 @@ export default function CalendarWidget({ localizer }) {
 
             // add if statement to check for changes to avoid spam
             // Dispatch the action to edit (resize) the event
-            dispatch(editEvent(updatedEvent)).then(() => {
-                // events could also be editted to replace the changed event with updated event from above
-                // to limit a call to the server, but better to stay updated
-                dispatch(getEvents({ 'start': startTimeRange, 'end': endTimeRange }))
-            })
+            dispatch(editEvent(updatedEvent))
+
+            // Removes glitch from lag to get data from server
+            const newEvents = events.map(
+                e => {
+                    // Check if this event matches the updatedEvent criteria
+                    const uStartDate = new Date(updatedEvent.cancel_start);
+                    const eventStartDate = new Date(e.start);
+                    const uEndDate = new Date(updatedEvent.cancel_end);
+                    const eventEndDate = new Date(e.end);
+                    if (e.event === updatedEvent.event && eventStartDate.getTime() === uStartDate.getTime() && eventEndDate.getTime() == uEndDate.getTime()) {
+                        // If it matches, return the updated event instead
+                        return updatedEvent;
+                    }
+                    // Otherwise, return the event unchanged
+                    return e;
+                })
+            dispatch(setEvents(newEvents))
 
         },
-        [dispatch]
+        [dispatch, events]
     )
 
     const moveEvent = useCallback(
@@ -104,16 +119,26 @@ export default function CalendarWidget({ localizer }) {
 
             // add if statement to check for changes to avoid spam
             // Dispatch the action to edit the event
-            dispatch(editEvent(updatedEvent)).then(() => {
-                // events could also be editted to replace the changed event with updated event from above
-                // to limit a call to the server, but better to stay updated
-
-                dispatch(getEvents({ 'start': startTimeRange, 'end': endTimeRange }))
-            })
+            dispatch(editEvent(updatedEvent))
+            const newEvents = events.map(
+                e => {
+                    // Check if this event matches the updatedEvent criteria
+                    const uStartDate = new Date(updatedEvent.cancel_start);
+                    const eventStartDate = new Date(e.start);
+                    const uEndDate = new Date(updatedEvent.cancel_end);
+                    const eventEndDate = new Date(e.end);
+                    if (e.event === updatedEvent.event && eventStartDate.getTime() === uStartDate.getTime() && eventEndDate.getTime() == uEndDate.getTime()) {
+                        // If it matches, return the updated event instead
+                        return updatedEvent;
+                    }
+                    // Otherwise, return the event unchanged
+                    return e;
+                })
+            dispatch(setEvents(newEvents))
 
 
         },
-        [dispatch]
+        [dispatch, events]
     );
 
     /* We explicity set the selected event here so that it can be used when viewing or editing the event*/

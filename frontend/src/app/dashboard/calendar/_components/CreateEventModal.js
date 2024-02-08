@@ -91,28 +91,6 @@ const CreateEventModal = () => {
                                         </div>
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 ">Description</label>
-                                        <textarea name="description" id="description" value={localDescription} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Write a description here" required="" onChange={handleDescriptionChange} />
-                                    </div>
-                                    <div className="max-w-lg">
-                                        <label className="block text-sm font-medium text-gray-900" htmlFor="user_avatar">Upload file</label>
-                                        <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 p-2.5" aria-describedby="user_avatar_help" id="user_avatar" type="file" multiple={true} />
-                                        <div className="mt-1 text-sm text-gray-500 " id="user_avatar_help">Please limit file size to 10MB</div>
-                                    </div>
-                                    <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="phone-number" className="block mb-2 text-sm font-medium text-gray-900 ">Phone Number</label>
-                                        <input type="tel" name="phone-number" id="phone-number" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="e.g. +(12)3456 789" required="" />
-                                    </div>
-                                    <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="department" className="block mb-2 text-sm font-medium text-gray-900 ">Department</label>
-                                        <input type="text" name="department" id="department" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Development" required="" />
-                                    </div>
-                                    <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="company" className="block mb-2 text-sm font-medium text-gray-900 ">Company</label>
-                                        <input type="text" name="company" id="company" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="123456" required="" />
-                                    </div>
-
-                                    <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="countries" className="block mb-2 text-sm font-medium text-gray-900 ">Select a Frequency</label>
                                         <select id="countries" value={localFrequency}
                                             onChange={handleFrequencyChange} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 ">
@@ -124,12 +102,25 @@ const CreateEventModal = () => {
                                             <option value="DAILY">Daily</option>
                                         </select>
                                     </div>
+                                    <div className="col-span-6 sm:col-span-3">
+                                        <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 ">Description</label>
+                                        <textarea name="description" id="description" value={localDescription} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Write a description here" required="" onChange={handleDescriptionChange} />
+                                    </div>
+
+                                    <div className="max-w-lg">
+                                        <label className="block text-sm font-medium text-gray-900" htmlFor="user_avatar">Upload file</label>
+                                        <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 p-2.5" aria-describedby="user_avatar_help" id="user_avatar" type="file" multiple={true} />
+                                        <div className="mt-1 text-sm text-gray-500 " id="user_avatar_help">Please limit file size to 10MB</div>
+                                    </div>
+
+
+
                                 </div>
-                                <div className="lg:w-1/2 2xl:w-1/4">
+                                {/* <div className="lg:w-1/2 2xl:w-1/4">
                                     <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 ">Add guests</label>
                                     <input type="text" name="first-name" id="first-name" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Add Email" required="" />
 
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                         {/* // Modal Footer */}

@@ -1,23 +1,29 @@
 'use client'
 import ProfitChart from "../../components/ProfitChart"
 import AnalyticsBlock from "../_components/AnalyticsBlock"
+import { LuCalendar } from "react-icons/lu"
+import AnalyticsDateRangeModal from "../_components/AnalyticsDateRange"
+import { toggleDateRangeModal, toggleDateDropdown } from "../../lib/features/analytics/analyticSlice"
+import { useDispatch } from "react-redux"
+import AnalyticsDateDropdown from "../_components/AnalyticsDateDropdown"
+
 const AnalyticsPage = () => {
+    const dispatch = useDispatch()
     return (
-        <>
-            <div>
-                <h1 className="text-2xl p-4">Overview</h1>
-                <div className="w-full p-4 flex flex-row space-x-4">
-                    <div className="bg-white h-max w-1/5">
-                        <p className="text-slate-300 text-sm">Auto Date Range</p>
-                        <p className="text-lg">This Month</p>
+        <div className="flex w-full justify-around">
+            <AnalyticsDateRangeModal />
+            <div className="">
+
+                <div className=" p-4 flex flex-col sm:flex-row w-full 2xl:w-3/4 mx-auto ">
+                    <div className="relative bg-white h-max flex-grow rounded-xl border border-slate-300 shadow-md font-bold p-1 w-[300px] mx-auto" onClick={() => dispatch(toggleDateDropdown())}>
+                        <p className="text-slate-300 text-sm ml-4">Auto Date Range</p>
+                        <p className="text-lg ml-3 font-bold flex flex-row place-items-center gap-1 hover:cursor-pointer"><LuCalendar /> This Month</p>
+                        <AnalyticsDateDropdown />
                     </div>
-                    <div className="bg-white h-max w-1/5">
-                        <p className="text-slate-300 text-sm">Auto Date Range</p>
-                        <p className="text-lg">This Month</p>
-                    </div>
-                    <div className="bg-white h-max w-1/5">
-                        <p className="text-slate-300 text-sm">Auto Date Range</p>
-                        <p className="text-lg">This Month</p>
+
+                    <div className="bg-white h-max flex-grow rounded-xl border border-slate-300 shadow-md font-bold p-1 w-[300px] mx-auto hover:cursor-pointer" onClick={() => dispatch(toggleDateRangeModal())}>
+                        <p className="text-slate-300 text-sm ml-4">Custom Date Range</p>
+                        <p className="text-lg ml-3 font-bold flex flex-row place-items-center gap-1"><LuCalendar />  Enter Custom Range</p>
                     </div>
                 </div>
 
@@ -41,7 +47,7 @@ const AnalyticsPage = () => {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

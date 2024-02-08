@@ -70,6 +70,7 @@ class PhoneNumber(models.Model):
     company = models.ForeignKey(
         Company, on_delete=models.CASCADE, default=None, null=True, blank=True
     )
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, default=None)
 
     def __str__(self):
         return self.name
