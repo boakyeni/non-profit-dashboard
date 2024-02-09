@@ -1,23 +1,21 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 from django.db.models import fields, Count
 from datetime import date, datetime, timedelta
 from schedule.models import Event
 from apps.contact_analytics.models import AccountProfile
 
-
-class DonorType(models.TextChoices):
-    INDIVIDUAL = "Individual", "Individual"
-    INSTITUTION = "Institution", "Institution"
-
-
 # Create your models here.
 class Donor(models.Model):
-    donor_profile = models.ForeignKey(
-        AccountProfile, on_delete=models.CASCADE, default=None
+    class DonorType(models.TextChoices):
+        NONE = "None", _("None")
+        INDIVIDUAL = "Ind", _("Individual")
+        INSTITUTION = "Ins", _("Institution")
+    donor_profile = models.OneToOneField(
+        AccountProfile, on_delete=models.CASCADE, blank=True, null=True, related_name="donor_profile"
     )
-    donor_type = models.CharField(max_length=100, choices=DonorType.choices)
+    type_of_donor = models.CharField(max_length=100, choices=DonorType.choices, default=DonorType.NONE)
     amount_donated = models.DecimalField(max_digits=10, decimal_places=2)
-    institution = models.CharField(max_length=100, blank=True)
     email = models.EmailField(max_length=100)
     address = models.CharField(max_length=100)
     region = models.CharField(max_length=100)

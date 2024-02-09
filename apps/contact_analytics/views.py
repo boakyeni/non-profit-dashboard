@@ -1,11 +1,11 @@
 import csv
 
 from rest_framework import viewsets, status
-from rest_framework.parsers import FileUploadParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from django.db import transaction
+from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
 
 from .models import AccountProfile, PhoneNumber, Company
 from .serializers import (
@@ -36,7 +36,8 @@ Csv export for account profile:
 
 
 class CSVUploadView(APIView):
-    parser_classes = [FileUploadParser]
+    parser_classes = (MultiPartParser, FormParser)
+    # parser_classes = [FileUploadParser]
 
     def post(self, request, *args, **kwargs):
         # Get CSV file from the request
@@ -46,11 +47,6 @@ class CSVUploadView(APIView):
         if not csv_file:
             return Response({"error": "No file provided"}), status.HTTP_400_BAD_REQUEST
         # Check if the file has a ".csv" extension
-        if not csv_file.lower().endswith(".csv"):
-            return Response(
-                {"error": "Invalid file format. Please upload a CSV file"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
 
         try:
             with transaction.atomic():
@@ -59,11 +55,27 @@ class CSVUploadView(APIView):
 
                 # Create objects without relationships
                 for row in reader:
-                    phone_number_id = row.get("phone_number_id")
-                    if phone_number_id:
+
+                    mapped_row = {
+                        "name": row.get("name"),
+                        "given_name": row.get("given_name"),
+                        "last_name": row.get("last_names"),
+                        "phone_number": row.get("phone_number"),
+                        "email": row.get("email"),
+                        "organization": row.get("organization"),
+                    }
+                    serializer = AccountProfileSerializer(data=mapped_row)
+                    if serializer.is_valid:
+                        account_instance, created = (
+                            AccountProfile.objects.get_or_create(**mapped_row)
+                        )
+                        account_profiles.append(account_instance)
+
+                    phone_number = row.get("phone_number_id")
+                    if phone_number:
                         # Retrieve or create phone number
                         phone_number, created = PhoneNumber.objects.get_or_create(
-                            id=phone_number_id
+                            id=phone_number
                         )
                         serializer = AccountProfileSerializer(data=row)
 
@@ -71,8 +83,8 @@ class CSVUploadView(APIView):
                         if serializer.is_valid():
                             # save the accountprofile instance to handle relationships
                             account_instance = serializer.save()
-                            phone_number.profile = account_instance
-                            phone_number.save()
+                            account_instance.phone_number = phone_number
+                            account_instance.save()
 
                             company_id = row.get("company_id")
                             if company_id:

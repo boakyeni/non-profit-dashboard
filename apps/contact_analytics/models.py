@@ -8,40 +8,9 @@ from django_countries.fields import CountryField
 
 
 class Role(models.TextChoices):
+    NONE ="NONE", _("None")
     PATIENT = "PATIENT", _("Patient")
     INSTITUTION = "INSTITUTION", _("Institution")
-
-
-# class Contact(models.Model):
-#     Donor = models.ForeignKey(Donor, on_delete=models.CASCADE, default=None)
-#     nameOfDonor = models.CharField(max_length=50, verbose_name="Name of Donor")
-#     meetingStatus = models.CharField(max_length=50, verbose_name="Meeting Status")
-#     phone = PhoneNumberField(blank=True, max_length=128, verbose_name="Phone")
-#     email = models.EmailField(max_length=50, verbose_name="Email")
-
-#     def __str__(self):
-#         return self.nameOfDonor
-
-
-class AccountProfile(models.Model):
-    name = models.CharField(max_length=250)
-    given_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    email = models.EmailField(max_length=100)
-    role = models.CharField(
-        max_length=20,
-        choices=Role,
-        blank=True,
-        null=True,
-    )
-    address = models.CharField(max_length=100, blank=True, null=True)
-    country = CountryField(
-        verbose_name="Country", default="GH", max_length=2, blank=True, null=True
-    )
-    region = models.CharField(max_length=100, blank=True, null=True)
-
-    def __str__(self):
-        return self.name
 
 
 class Company(models.Model):
@@ -49,6 +18,25 @@ class Company(models.Model):
     address = models.CharField(max_length=100, verbose_name="Company Address")
     district = models.CharField(max_length=100, verbose_name="Company District")
     region = models.CharField(max_length=100, verbose_name="Company Region")
+
+    def __str__(self):
+        return self.name
+
+
+class AccountProfile(models.Model):
+    name = models.CharField(max_length=250)
+    given_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField(default="youremail@example.com")
+    role_of_account = models.CharField(choices=Role.choices, max_length=100, default=Role.NONE)
+    address = models.CharField(max_length=100, blank=True, null=True)
+    country = models.CharField(
+        max_length=200,
+        null=True,
+        choices=CountryField().choices + [("", "Select Country")],
+    )
+    region = models.CharField(max_length=100, blank=True, null=True)
+    organizations = models.ManyToManyField(Company, related_name="account_profiles")
 
     def __str__(self):
         return self.name
@@ -70,7 +58,6 @@ class PhoneNumber(models.Model):
     company = models.ForeignKey(
         Company, on_delete=models.CASCADE, default=None, null=True, blank=True
     )
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, default=None)
 
     def __str__(self):
         return self.name
