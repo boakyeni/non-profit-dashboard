@@ -1,5 +1,6 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from . import views
+from django.urls import path
 
-
-urlpatterns = []
+urlpatterns = [
+    path("", views.CSVUploadView.as_view(), name="CSVUpload"),
+]

@@ -73,10 +73,12 @@ class CSVUploadView(APIView):
                             account_instance = serializer.save()
                             phone_number.profile = account_instance
                             phone_number.save()
-                            
+
                             company_id = row.get("company_id")
                             if company_id:
-                                company, created = Company.objects.get_or_create(id=company_id)
+                                company, created = Company.objects.get_or_create(
+                                    id=company_id
+                                )
                                 account_instance.company = company
                                 account_instance.save()
 
