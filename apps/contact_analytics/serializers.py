@@ -11,8 +11,7 @@ class CompanySerializer(serializers.ModelSerializer):
 
 
 class AccountProfileSerializer(serializers.ModelSerializer):
-    organizations = CompanySerializer(many=True, read_only=True)
-    role = serializers.ChoiceField(choices=Role.choices)
+    organizations = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = AccountProfile

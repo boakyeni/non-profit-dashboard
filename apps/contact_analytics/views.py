@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view
 from django.db import transaction
 from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
 
+from apps.donor_management.models import Donor
 from .models import AccountProfile, PhoneNumber, Company
 from .serializers import (
     AccountProfileSerializer,
@@ -45,7 +46,7 @@ class CSVUploadView(APIView):
 
         # check if the file is provided
         if not csv_file:
-            return Response({"error": "No file provided"}), status.HTTP_400_BAD_REQUEST
+            return Response({"error": "No file provided"}, status.HTTP_400_BAD_REQUEST)
         # Check if the file has a ".csv" extension
 
         try:
@@ -60,9 +61,8 @@ class CSVUploadView(APIView):
                         "name": row.get("name"),
                         "given_name": row.get("given_name"),
                         "last_name": row.get("last_names"),
-                        "phone_number": row.get("phone_number"),
                         "email": row.get("email"),
-                        "organization": row.get("organization"),
+                        "phone_number": row.get("phone_number"),
                     }
                     serializer = AccountProfileSerializer(data=mapped_row)
                     if serializer.is_valid:
@@ -71,28 +71,31 @@ class CSVUploadView(APIView):
                         )
                         account_profiles.append(account_instance)
 
-                    phone_number = row.get("phone_number_id")
+                    phone_number = row.get(phone_number)
                     if phone_number:
-                        # Retrieve or create phone number
                         phone_number, created = PhoneNumber.objects.get_or_create(
-                            id=phone_number
+                            number=phone_number
                         )
-                        serializer = AccountProfileSerializer(data=row)
 
-                        # validate data using accountprofileserializer
-                        if serializer.is_valid():
-                            # save the accountprofile instance to handle relationships
-                            account_instance = serializer.save()
-                            account_instance.phone_number = phone_number
+                        account_instance.phone_number = phone_number
+                        account_instance.save()
+                        account_instance.phone_number.add(phone_number)
+
+                        organization = "organization"
+                        company = row.get(organization)
+                        if company:
+                            company, created = Company.objects.get_or_create(
+                                name=company
+                            )
+                            account_instance.company = company
                             account_instance.save()
 
-                            company_id = row.get("company_id")
-                            if company_id:
-                                company, created = Company.objects.get_or_create(
-                                    id=company_id
-                                )
-                                account_instance.company = company
-                                account_instance.save()
+                    donor = row.get("donor")
+                    if account_instance:
+                        donor, created = Donor.objects.get_or_create(id=donor)
+                        account_instance = serializer.save()
+                        account_instance.donor = donor
+                        account_instance.save()
 
                 return Response(
                     {"success": "Data uploaded successfully"},

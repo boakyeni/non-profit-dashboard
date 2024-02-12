@@ -8,7 +8,7 @@ from django_countries.fields import CountryField
 
 
 class Role(models.TextChoices):
-    NONE ="NONE", _("None")
+    NONE = "NONE", _("None")
     PATIENT = "PATIENT", _("Patient")
     INSTITUTION = "INSTITUTION", _("Institution")
 
@@ -27,8 +27,10 @@ class AccountProfile(models.Model):
     name = models.CharField(max_length=250)
     given_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    email = models.EmailField(default="youremail@example.com")
-    role_of_account = models.CharField(choices=Role.choices, max_length=100, default=Role.NONE)
+    email = models.EmailField(default="youremail@example.com", blank=True)
+    role_of_account = models.CharField(
+        choices=Role.choices, max_length=100, default=Role.NONE
+    )
     address = models.CharField(max_length=100, blank=True, null=True)
     country = models.CharField(
         max_length=200,
@@ -36,7 +38,7 @@ class AccountProfile(models.Model):
         choices=CountryField().choices + [("", "Select Country")],
     )
     region = models.CharField(max_length=100, blank=True, null=True)
-    organizations = models.ManyToManyField(Company, related_name="account_profiles")
+    # organization = models.ManyToManyField(Company, related_name="account_profiles")
 
     def __str__(self):
         return self.name
@@ -54,6 +56,7 @@ class PhoneNumber(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
+        related_name="phone_number"
     )
     company = models.ForeignKey(
         Company, on_delete=models.CASCADE, default=None, null=True, blank=True
