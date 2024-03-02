@@ -1,6 +1,6 @@
 'use client'
 import { useDispatch, useSelector } from "react-redux"
-import { fetchContacts, setSelectedContact, toggleContactCard, toggleContactTableAction, toggleContactSelection, toggleAllContacts, toggleEditUser, toggleContactSortModal, setSearchFilter, applyFilters } from "../../lib/features/contacts/contactSlice"
+import { fetchContacts, setSelectedContact, toggleContactCard, toggleContactTableAction, toggleContactSelection, toggleAllContacts, toggleEditUser, toggleContactSortModal, setSearchFilter, applyFilters, moreInfoClick, toggleUploadContactModal } from "../../lib/features/contacts/contactSlice"
 
 import { useEffect, useState, useRef } from "react"
 import ReactPaginate from 'react-paginate'
@@ -18,7 +18,7 @@ const ContactsTable = ({ itemsPerPage }) => {
 
 
     /* holds contacts, whether action dropdown is open, and which contacts the user has selected */
-    const { contacts, searchResults, contactTableActionOpen, selectedContacts, editUserOpen } = useSelector((state) => state.contact)
+    const { contacts, searchResults, contactTableActionOpen, selectedContacts, selectedContact, editUserOpen, contactCardOpen } = useSelector((state) => state.contact)
     /* Handle click outside of dropdown to close drowdown */
     const tableActionRef = useRef(null)
     useEffect(() => {
@@ -36,14 +36,14 @@ const ContactsTable = ({ itemsPerPage }) => {
 
     /* More Info opens a card, this makes sure the right user data is displayed in that card */
     const handleMoreInfoClick = (contact) => {
-        // dispatch(setSelectedContact(contact))
-        dispatch(toggleContactCard())
+        dispatch(moreInfoClick(contact))
     }
 
     const handleAddUserClick = () => {
         dispatch(setSelectedContact(null))
         dispatch(toggleEditUser())
         dispatch(toggleContactTableAction());
+        dispatch(toggleContactCard())
     }
     /*
         Adds a contact to a list of selected contacts 
@@ -82,6 +82,11 @@ const ContactsTable = ({ itemsPerPage }) => {
         dispatch(applyFilters())
     };
 
+    const handleUpload = () => {
+        dispatch(toggleUploadContactModal())
+        dispatch(toggleContactTableAction());
+    }
+
     return (
 
         <div className="relative overflow-x-auto shadow-xl rounded-2xl min-h-[30vh] lg:mt-10  flex-grow bg-white">
@@ -99,6 +104,9 @@ const ContactsTable = ({ itemsPerPage }) => {
                         <ul className="py-1 text-sm text-gray-700 " aria-labelledby="dropdownActionButton">
                             <li>
                                 <a href="#" className="block px-4 py-2 hover:bg-gray-100  " onClick={handleAddUserClick}>Add Contact</a>
+                            </li>
+                            <li>
+                                <a href="#" className="block px-4 py-2 hover:bg-gray-100  " onClick={handleUpload}>Upload DONORS</a>
                             </li>
                             <li>
                                 <a href="#" className="block px-4 py-2 hover:bg-gray-100  ">Show only Donors</a>
@@ -161,7 +169,7 @@ const ContactsTable = ({ itemsPerPage }) => {
 
                                     <div className="">
                                         <div className="text-base break-words font-semibold flex flex-col">
-                                            <span>Smotherson {contact.id} </span>
+                                            <span>{contact.name} </span>
                                         </div>
                                         <div className="font-normal text-gray-500">neil.sims@flowbite.com</div>
                                     </div>
@@ -171,7 +179,7 @@ const ContactsTable = ({ itemsPerPage }) => {
                                 </td>
                                 <td className="max-sm:hidden px-6 py-4">
                                     <div className="flex items-center">
-                                        <div className="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Online
+                                        <div className="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> {contact.type}
                                     </div>
                                 </td>
                                 <td className="px-6 py-4">

@@ -31,7 +31,9 @@ class Donation(models.Model):
 
 
 class Patient(models.Model):
-    name = models.ForeignKey(AccountProfile, on_delete=models.CASCADE, default=None)
+    profile = models.OneToOneField(
+        AccountProfile, on_delete=models.CASCADE, default=None
+    )
     hospital = models.CharField(max_length=100)
     description = models.TextField(max_length=250)
     illness = models.CharField(max_length=100)

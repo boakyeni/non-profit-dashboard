@@ -10,6 +10,7 @@ from .models import Donor
 from .serializers import DonorSerializer
 from django.template import Template, Context
 from apps.mosaico.models import Template as MosaicoTemplate
+from apps.contact_analytics.models import AccountProfile
 
 
 class DonorViewSet(viewsets.ModelViewSet):
@@ -71,18 +72,12 @@ def send_html_email_with_attachment(request):
     """
     Current design could be a problem without asynchronous task queue, could even still be a problem with it
     """
-    html_content = """
-    <html>
-        <body>
-            <h1>This is a heading</h1>
-            <p>This is a paragraph of text in the email body.</p>
-        </body>
-    </html>
-    """
-    template_id = request.POST.get("template_id")
+
+    template_id = request.data.get("template_id")
     files = request.FILES.getlist("files")  # 'files' is the name attribute in your form
-    recipient_ids = request.POST.getlist("recipientIds")
-    # get emails
+    recipient_ids = request.data.getlist("recipientIds")
+
+    # get html
     try:
         mosaico_template_instance = MosaicoTemplate.objects.get(id=template_id)
     except MosaicoTemplate.DoesNotExist:
@@ -90,11 +85,18 @@ def send_html_email_with_attachment(request):
             {"Email Not Sent, template not found"}, status=status.HTTP_400_BAD_REQUEST
         )
     html_content = mosaico_template_instance.html
-    recipients = []
-    for recipient in recipients:
+
+    # get account emails
+
+    for recipient in recipient_ids:
+        try:
+            account_instance = AccountProfile.objects.get(id=recipient)
+        except AccountProfile.DoesNotExist:
+            continue
+
         context = Context(
             {
-                "mail": recipient,
+                "mail": account_instance.email,
                 "unsubscribe_link": "http://example.com/unsubscribe",
             }
         )
@@ -106,7 +108,7 @@ def send_html_email_with_attachment(request):
             rendered_html,
             "from@yourdomain.com",
             to=[
-                recipient
+                account_instance.email
             ],  # Use bcc instead of to for privacy when sending to multiple, not needed here since we send individually
         )
 

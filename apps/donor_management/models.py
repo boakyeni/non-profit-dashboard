@@ -12,16 +12,19 @@ class DonorType(models.TextChoices):
 
 # Create your models here.
 class Donor(models.Model):
-    donor_profile = models.ForeignKey(
-        AccountProfile, on_delete=models.CASCADE, default=None
+    donor_profile = models.OneToOneField(
+        AccountProfile,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name="donor_profile",
     )
-    donor_type = models.CharField(max_length=100, choices=DonorType.choices)
-    amount_donated = models.DecimalField(max_digits=10, decimal_places=2)
-    institution = models.CharField(max_length=100, blank=True)
-    email = models.EmailField(max_length=100)
-    address = models.CharField(max_length=100)
-    region = models.CharField(max_length=100)
-    country = models.CharField(max_length=100)
+    donor_type = models.CharField(
+        max_length=100, choices=DonorType.choices, default=DonorType.INDIVIDUAL
+    )
+    amount_donated = models.DecimalField(
+        max_digits=10, decimal_places=2, default="0.00"
+    )
     notes = models.TextField(max_length=250, verbose_name="Notes")
     attended_events = models.ManyToManyField(Event, blank=True)
 

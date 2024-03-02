@@ -1,7 +1,7 @@
 'use client'
 import { useRef, useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { toggleContactCard, toggleContactCardMore, toggleEditUser, toggleDeleteModal } from '../../lib/features/contacts/contactSlice'
+import { toggleContactCard, toggleContactCardMore, toggleEditUser, toggleDeleteModal, setSelectedContact, toggleTrackFundsModal } from '../../lib/features/contacts/contactSlice'
 import { useDispatch } from 'react-redux'
 import { LuX, LuMinimize2, LuMoreHorizontal } from 'react-icons/lu'
 
@@ -14,6 +14,7 @@ const ContactCard = () => {
     const handleContactClose = () => {
 
         dispatch(toggleContactCard())
+        dispatch(setSelectedContact(null))
 
     }
 
@@ -84,6 +85,7 @@ const ContactCard = () => {
                         <div className="flex mt-4 md:mt-6">
 
                             <a href="#" className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700 ms-3">Message</a>
+                            <a href="#" className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700 ms-3" onClick={() => dispatch(toggleTrackFundsModal())}>Report Cash Flow</a>
                         </div>
                     </div>
 

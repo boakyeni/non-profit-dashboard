@@ -8,6 +8,7 @@ const AppointmentBlock = ({ icon }) => {
     const dispatch = useDispatch()
     const handleClick = () => {
         dispatch(toggleSelectedTab(0))
+        localStorage.setItem('selectedTab', 0)
     }
     return (
         <>

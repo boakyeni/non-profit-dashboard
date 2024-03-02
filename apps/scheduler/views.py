@@ -2,7 +2,12 @@ from django.shortcuts import render
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from schedule.models import Event, Rule
-from .serializers import EventSerializer, RuleSerializer, CalendarSerializer
+from .serializers import (
+    EventSerializer,
+    RuleSerializer,
+    CalendarSerializer,
+    AdditionalCalendarInfoSerializer,
+)
 from .models import AdditionalCalendarInfo
 
 # Create your views here.
@@ -70,15 +75,29 @@ class EventCreateView(APIView):
         return Response(event_serializer.data, status=status.HTTP_201_CREATED)
 
 
-@api_view(["GET"])
+@api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
 # @authentication_classes([JWTAuthentication])
+@transaction.atomic
 def create_calendar_view(request):
-    pass
+    data = request.data
+
+    calendar_serializer = CalendarSerializer(data=data)
+    calendar_serializer.is_valid(raise_exception=True)
+    calendar_instance = calendar_serializer.save()
+    add_data = {}
+    add_data["calendar"] = calendar_instance.id
+    add_data["private"] = request.data.get("private")
+    add_serializer = AdditionalCalendarInfoSerializer(data=add_data)
+    add_serializer.is_valid(raise_exception=True)
+    add_instance = add_serializer.save()
+    add_instance.users.add(request.user.id)
+    add_instance.save()
+    return Response(calendar_serializer.data, status=status.HTTP_201_CREATED)
 
 
 @api_view(["GET"])
-@permission_classes([permissions.IsAuthenticated])
+# @permission_classes([permissions.IsAuthenticated])
 # @authentication_classes([JWTAuthentication])
 def get_calendar_events(request):
     # Assuming you're retrieving events for a specific period

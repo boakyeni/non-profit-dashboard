@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { LuX } from "react-icons/lu"
-import { toggleEditUser, addContact, editContact } from "../../lib/features/contacts/contactSlice"
+import { toggleEditUser, addContact, editContact, setSelectedContact } from "../../lib/features/contacts/contactSlice"
 
 
 const ContactModal = () => {
@@ -33,7 +33,8 @@ const ContactModal = () => {
 
             dispatch(addContact(contactData))
         }
-
+        // So that Add Contact becomes available
+        dispatch(setSelectedContact(null))
     }
 
     return (

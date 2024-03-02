@@ -22,11 +22,27 @@ class Role(models.TextChoices):
 #         return self.nameOfDonor
 
 
+class Company(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Name of Company")
+    address = models.CharField(
+        max_length=100, verbose_name="Company Address", blank=True, null=True
+    )
+    district = models.CharField(
+        max_length=100, verbose_name="Company District", blank=True, null=True
+    )
+    region = models.CharField(
+        max_length=100, verbose_name="Company Region", blank=True, null=True
+    )
+
+    def __str__(self):
+        return self.name
+
+
 class AccountProfile(models.Model):
     name = models.CharField(max_length=250)
-    given_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    email = models.EmailField(max_length=100)
+    given_name = models.CharField(max_length=100, blank=True, null=True)
+    last_name = models.CharField(max_length=100, blank=True, null=True)
+    email = models.EmailField(max_length=100, blank=True, null=True)
     role = models.CharField(
         max_length=20,
         choices=Role,
@@ -37,16 +53,9 @@ class AccountProfile(models.Model):
     # change to django countries
     country = models.CharField(max_length=100, blank=True, null=True)
     region = models.CharField(max_length=100, blank=True, null=True)
-
-    def __str__(self):
-        return self.name
-
-
-class Company(models.Model):
-    name = models.CharField(max_length=100, verbose_name="Name of Company")
-    address = models.CharField(max_length=100, verbose_name="Company Address")
-    district = models.CharField(max_length=100, verbose_name="Company District")
-    region = models.CharField(max_length=100, verbose_name="Company Region")
+    company = models.ForeignKey(
+        Company, on_delete=models.CASCADE, default=None, blank=True, null=True
+    )
 
     def __str__(self):
         return self.name
@@ -60,7 +69,6 @@ class PhoneNumber(models.Model):
         AccountProfile,
         on_delete=models.CASCADE,
     )
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, default=None)
 
     def __str__(self):
         return self.name
