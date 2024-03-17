@@ -1,13 +1,13 @@
 'use client'
 import { useDispatch, useSelector } from "react-redux"
-import { fetchContacts, setSelectedContact, toggleContactCard, toggleContactTableAction, toggleContactSelection, toggleAllContacts, toggleEditUser, toggleContactSortModal, setSearchFilter, applyFilters, moreInfoClick, toggleUploadContactModal, setContactTypeFilter, initialFilterState, removeAllFilters, handleContactTypeChange, handleApplyFilters } from "../../lib/features/contacts/contactSlice"
+import { fetchContacts, setSelectedContact, toggleContactCard, toggleContactTableAction, toggleContactSelection, toggleAllContacts, toggleEditUser, togglePatientSortModal, setSearchFilter, applyFilters, moreInfoClick, toggleUploadContactModal, setContactTypeFilter, initialFilterState, removeAllFilters, handleContactTypeChange, handleApplyFilters } from "../../lib/features/contacts/contactSlice"
 import { isEqual } from "../../../utils/equalCheck"
 import { useEffect, useState, useRef } from "react"
 import ReactPaginate from 'react-paginate'
 
 
 
-const ContactsTable = ({ itemsPerPage }) => {
+const PatientTransactionsTable = ({ itemsPerPage }) => {
 
     /* State management for contacts */
     const dispatch = useDispatch()
@@ -68,7 +68,10 @@ const ContactsTable = ({ itemsPerPage }) => {
 
 
     useEffect(() => {
-        const active = isEqual(filter, initialFilterState) ? contacts : searchResults
+        const filteredContacts = contacts?.filter(contact => contact.contact_type === 'patient');
+        const filteredSearchResults = searchResults?.filter(contact => contact.contact_type === 'patient');
+
+        const active = isEqual(filter, initialFilterState) ? filteredContacts : filteredSearchResults
         const endOffset = itemOffset + itemsPerPage;
         setCurrentItems(active.slice(itemOffset, endOffset));
         setPageCount(Math.ceil(active.length / itemsPerPage));
@@ -107,6 +110,10 @@ const ContactsTable = ({ itemsPerPage }) => {
         dispatch(toggleUploadContactModal())
         dispatch(toggleContactTableAction());
     }
+    const handleCheckboxOnChange = (e, id) => {
+        e.stopPropagation(); // Prevent click from propagating to the parent tr element
+        dispatch(toggleContactSelection(id));
+    }
     const handlePreviewClick = (e) => {
         e.preventDefault(); // Prevent default anchor link behavior
 
@@ -125,10 +132,6 @@ const ContactsTable = ({ itemsPerPage }) => {
                 selectedContacts.some(selected => selected === result.id)
             );
         }
-    }
-    const handleCheckboxOnChange = (e, id) => {
-        e.stopPropagation(); // Prevent click from propagating to the parent tr element
-        dispatch(toggleContactSelection(id));
     }
     const contactTypeMapping = {
         major_donor: "Major Donor",
@@ -161,22 +164,18 @@ const ContactsTable = ({ itemsPerPage }) => {
                     <div id="dropdownAction" className={`${contactTableActionOpen ? '' : 'hidden'} fixed z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 `}>
                         <ul className="py-1 text-sm text-gray-700 " aria-labelledby="dropdownActionButton">
                             <li>
-                                <a href="#" className="block px-4 py-2 hover:bg-gray-100  " onClick={handleAddUserClick}>Add Contact</a>
+                                <a href="#" className="block px-4 py-2 hover:bg-gray-100  " onClick={handleAddUserClick}>Add Patient</a>
                             </li>
+
                             <li>
-                                <a href="#" className="block px-4 py-2 hover:bg-gray-100  " onClick={handleUpload}>Upload DONORS</a>
+                                <a href="/dashboard/contacts/" className="block w-full text-left px-4 py-2 hover:bg-gray-100  ">Go to Donors</a>
                             </li>
-                            <li>
-                                <button type='button' onClick={() => handleContactChange('donor')} className="block w-full text-left px-4 py-2 hover:bg-gray-100  ">Show only Donors</button>
-                            </li>
-                            <li>
-                                <button type='button' onClick={() => handleContactChange('patient')} className="block w-full text-left px-4 py-2 hover:bg-gray-100  ">Show only Patients</button>
-                            </li>
+
                             <li>
                                 <button type='button' onClick={() => handleShowAll()} className="block w-full text-left px-4 py-2 hover:bg-gray-100  ">Show All</button>
                             </li>
                             <li>
-                                <button href="#" className="block px-4 py-2 hover:bg-gray-100 w-full text-left " onClick={() => dispatch(toggleContactSortModal())}>Sort/Filter</button>
+                                <button href="#" className="block px-4 py-2 hover:bg-gray-100 w-full text-left " onClick={() => dispatch(togglePatientSortModal())}>Sort/Filter</button>
                             </li>
 
                         </ul>
@@ -188,7 +187,7 @@ const ContactsTable = ({ itemsPerPage }) => {
                 <label htmlFor="table-search" className="sr-only">Search</label>
                 <div className="relative m-3">
 
-                    <input type="text" id="table-search-users" className="rounded-2xl block py-1 ps-2 text-sm text-gray-900 border border-gray-300 w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500  " placeholder="Search for contacts" onChange={handleSearchChange} />
+                    <input type="text" id="table-search-users" className="rounded-2xl block py-1 ps-2 text-sm text-gray-900 border border-gray-300 w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500  " placeholder="Search for Patients" onChange={handleSearchChange} />
                 </div>
             </div>
 
@@ -204,16 +203,16 @@ const ContactsTable = ({ itemsPerPage }) => {
                                 </div>
                             </th>
                             <th scope="col" className=" py-3">
-                                Name
+                                Patient Name
                             </th>
                             <th scope="col" className="max-sm:hidden px-6 py-3">
-                                Phone
+                                Main Cause
                             </th>
                             <th scope="col" className="max-sm:hidden px-6 py-3">
-                                Lead
+                                Amount Raised
                             </th>
                             <th scope="col" className="px-6 py-3">
-                                Action
+                                Transactions
                             </th>
                         </tr>
                     </thead>
@@ -223,8 +222,7 @@ const ContactsTable = ({ itemsPerPage }) => {
                                 <td className="w-4 p-4">
                                     <div className="flex items-center">
                                         <input id="checkbox-table-search-1" type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500   focus:ring-2  " checked={selectedContacts.includes(contact.id)} onChange={(e) => handleCheckboxOnChange(e, contact?.id)}
-                                            onClick={(e) => e.stopPropagation()} // Also stop propagation on click to handle any edge cases
-                                        />
+                                            onClick={(e) => e.stopPropagation()} />
                                         <label htmlFor="checkbox-table-search-1" className="sr-only">checkbox</label>
                                     </div>
                                 </td>
@@ -247,7 +245,7 @@ const ContactsTable = ({ itemsPerPage }) => {
                                 </td>
                                 <td className="px-6 py-4">
                                     {/* // Modal Toggle */}
-                                    <a href="#" onClick={() => handleMoreInfoClick(contact)} type="button" className="font-medium text-blue-600  hover:underline">More Info</a>
+                                    <a href="#" onClick={() => handleMoreInfoClick(contact)} type="button" className="font-medium text-blue-600  hover:underline">Export Data</a>
                                 </td>
                             </tr>
                         ))}
@@ -281,4 +279,4 @@ const ContactsTable = ({ itemsPerPage }) => {
     )
 }
 
-export default ContactsTable
+export default PatientTransactionsTable

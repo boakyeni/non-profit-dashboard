@@ -57,7 +57,7 @@ const UploadContactsModal = () => {
                                     <label htmlFor="dislaimer" className="block mb-2 text-sm font-medium text-red-900 ">Disclaimer</label>
                                     <p>For proper upload and to prevent corruption of data, please only upload .csv files and ensure column labels are as follows: </p>
                                     <div className="flex flex-row max-sm:flex-wrap space-x-1 font-bold">
-                                        <p>name</p><span>|</span><p>given_name</p><span>|</span><p>last_names</p><span>|</span><p>phone_number</p><span>|</span><p>email</p><span>|</span><p>organization</p>
+                                        <p>name</p><span>|</span><p>given_names</p><span>|</span><p>last_names</p><span>|</span><p>phone_number</p><span>|</span><p>email</p><span>|</span><p>organisation</p>
                                     </div>
                                 </div>
                                 <div className="col-span-6 sm:col-span-3">

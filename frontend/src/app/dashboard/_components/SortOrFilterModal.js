@@ -2,16 +2,22 @@
 import { useSelector, useDispatch } from "react-redux"
 import { toggleContactSortModal } from "../../lib/features/contacts/contactSlice"
 import { LuX } from "react-icons/lu"
-import { toggleCheckbox, applyFilters } from "../../lib/features/contacts/contactSlice"
+import { toggleCheckbox, applyFilters, removeAllFilters } from "../../lib/features/contacts/contactSlice"
 
 const SortOrFilterModal = () => {
     const dispatch = useDispatch()
-    const { contactSortModalOpen } = useSelector((state) => state.contact)
+    const { contactSortModalOpen, checkboxes } = useSelector((state) => state.contact)
     const handleCheckboxChange = (checkboxName) => () => {
         dispatch(toggleCheckbox({ checkbox: checkboxName }));
     };
     const handleSortFliter = (e) => {
         e.preventDefault()
+        dispatch(applyFilters())
+        dispatch(toggleContactSortModal())
+    }
+    const handleRemoveFilters = (e) => {
+        e.preventDefault()
+        dispatch(removeAllFilters())
         dispatch(applyFilters())
         dispatch(toggleContactSortModal())
     }
@@ -39,16 +45,16 @@ const SortOrFilterModal = () => {
                                     <div htmlFor="donor-type" className="block mb-2 text-sm font-medium text-gray-900 ">Donor Type</div>
                                     <div className="place-items-center flex space-x-3">
 
-                                        <input type="checkbox" id="major_donors" name="major_donors" value="major_donors" onChange={handleCheckboxChange('major_donor')} />
+                                        <input type="checkbox" id="major_donors" name="major_donors" value={checkboxes['major_donors']} checked={checkboxes['major_donors']} onChange={handleCheckboxChange('major_donor')} />
                                         <label htmlFor="major_donors">Major Donors</label>
                                     </div>
                                     <div className="place-items-center flex space-x-3">
-                                        <input type="checkbox" id="mid_range_donors" name="mid_range_donors" value="mid_range_donors" onChange={handleCheckboxChange('mid_range_donor')} />
+                                        <input type="checkbox" id="mid_range_donors" name="mid_range_donors" value={checkboxes['mid_range_donor']} checked={checkboxes['mid_range_donor']} onChange={handleCheckboxChange('mid_range_donor')} />
                                         <label htmlFor="mid_range_donors">Mid Range Donors</label>
                                     </div>
                                     <div className="place-items-center flex space-x-3">
 
-                                        <input type="checkbox" id="broad_base_donors" name="broad_base_donors" value="broad_base_donors" onChange={handleCheckboxChange('broad_base_donor')} />
+                                        <input type="checkbox" id="broad_base_donors" name="broad_base_donors" value={checkboxes['broad_base_donor']} checked={checkboxes['broad_base_donor']} onChange={handleCheckboxChange('broad_base_donor')} />
                                         <label htmlFor="broad_base_donors">Broad Base Donors</label>
                                     </div>
 
@@ -75,7 +81,7 @@ const SortOrFilterModal = () => {
                         {/* // Modal Footer */}
                         <div className="flex items-center p-6 space-x-3 rtl:space-x-reverse border-t border-gray-200 rounded-b ">
                             <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center " onClick={handleSortFliter}>Sort/Filter</button>
-                            <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ">Remove All Filters</button>
+                            <button onClick={handleRemoveFilters} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ">Remove All Filters</button>
                         </div>
                     </form>
                 </div>

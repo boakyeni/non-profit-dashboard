@@ -6,6 +6,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getHTML } from '../../lib/features/newsletter/newsletterSlice';
 import { useSearchParams } from 'next/navigation'
 import SubscriberTable from './SubscriberTable';
+import SortOrFilterModal from './SortOrFilterModal';
+import UploadContactsModal from './UploadContactsModal';
+import ContactModal from './ContactModal';
 
 const PreviewForm = () => {
     const dispatch = useDispatch()
@@ -97,7 +100,7 @@ const PreviewForm = () => {
                                     </div>
                                     <div className="md:w-1/2 2xl:w-1/4">
                                         <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 border-b border-gray-300 pb-2">Recipients</label>
-                                        <SubscriberTable />
+                                        <SubscriberTable itemsPerPage={5} />
 
                                     </div>
                                 </div>
@@ -113,6 +116,9 @@ const PreviewForm = () => {
                     </div>
                 </div>
             </form>
+            <SortOrFilterModal />
+            <UploadContactsModal />
+            <ContactModal />
         </>
     )
 }

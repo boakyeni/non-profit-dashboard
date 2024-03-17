@@ -66,8 +66,7 @@ class PhoneNumber(models.Model):
     number = PhoneNumberField(blank=True, max_length=128)
     notes = models.TimeField(auto_now=True, blank=True)
     profile = models.ForeignKey(
-        AccountProfile,
-        on_delete=models.CASCADE,
+        AccountProfile, on_delete=models.CASCADE, related_name="phone_number"
     )
 
     def __str__(self):

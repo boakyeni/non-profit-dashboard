@@ -1,10 +1,16 @@
 'use client'
-
+import ContactModal from "../../_components/ContactModal"
+import SortOrFilterModal from "../../_components/SortOrFilterModal"
+import SubscriberTable from "../../_components/SubscriberTable"
 const CreateCampaignForm = () => {
     return (
         <>
             <div id="createEventModal" tabIndex="-1" aria-hidden="true" className={` p-4 h-max lg:m-auto max-lg:w-full`}>
+                {/* Currently contact will not be selected after creation, maybe add a toast to alert user*/}
+                <ContactModal />
+                <SortOrFilterModal />
                 <div className="relative w-full lg:w-[70vw] ">
+
                     {/* // Modal Content */}
                     <div className="relative bg-white rounded-2xl shadow ">
                         {/* //Modal Header */}
@@ -14,6 +20,7 @@ const CreateCampaignForm = () => {
                             </h3>
 
                         </div>
+
                         {/* // Modal Body */}
                         <div className="p-6  max-h-[calc(100vh-20rem)] overflow-x-auto ">
                             <div className="flex flex-col md:flex-row space-x-6">
@@ -54,8 +61,9 @@ const CreateCampaignForm = () => {
                                     </div>
                                 </div>
                                 <div className="md:w-1/2 2xl:w-1/4">
-                                    <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 ">Add guests</label>
-                                    <input type="text" name="first-name" id="first-name" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Add Email" required="" />
+                                    <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 border-b border-gray-300 pb-2">Add Subscribers</label>
+                                    <p className="text-sm -mb-4 text-red-500">Please, if contact created on this page, remember to select</p>
+                                    <SubscriberTable itemsPerPage={5} />
 
                                 </div>
                             </div>
@@ -67,6 +75,8 @@ const CreateCampaignForm = () => {
                     </div>
                 </div>
             </div>
+
+
         </>
     )
 }

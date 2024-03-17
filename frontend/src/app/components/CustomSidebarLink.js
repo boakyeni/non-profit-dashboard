@@ -6,7 +6,7 @@ const CustomSidebarLink = ({ title, icon, href }) => {
         <div className="hover:bg-black hover:bg-opacity-25 px-6">
             <Link href={href} className="text-white">
                 <div className="flex flex-row place-items-center py-3">
-                    {icon}
+                    <div>{icon}</div>
                     <p className="pl-3 text-lg font-bold">{title}</p>
                 </div>
             </Link>

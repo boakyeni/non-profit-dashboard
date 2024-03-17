@@ -37,11 +37,15 @@ const Charts = () => {
             </section>
 
             <section className="flex my-4 px-4 gap-8 max-md:grid max-md:grid-cols-1 mx-auto">
-                <div className=" md:w-1/3 h-[250px] bg-white drop-shadow-xl rounded-2xl">
+                <div className=" md:w-1/3 bg-white drop-shadow-xl rounded-2xl">
                     <ActivePieChart />
                 </div>
-                <Link href={`/dashboard/campaigns/1`} className=" md:w-1/3 h-[250px] bg-white drop-shadow-xl rounded-2xl flex place-items-center">
-                    <div className="w-1/2 mx-auto my-2 text-sm">
+                <Link href={`/dashboard/campaigns/1`} className=" md:w-1/3 bg-white drop-shadow-xl rounded-2xl flex flex-col place-items-center py-3">
+                    <div className="w-1/2 mx-auto my-2">
+                        <div className="flex flex-row space-x-2 justify-around mb-2">
+                            <p className="">Campaign 1</p>
+                            <p>67% to goal</p>
+                        </div>
                         <CircularProgressbarWithChildren
                             value={67} styles={{
                                 root: {
@@ -59,17 +63,21 @@ const Charts = () => {
                                 },
                             }}
                         >
-                            <p className="text-2xl font-bold">₵ 10,234</p>
-                            <p className="text-xl">Campaign 1</p>
-                            <br></br>
-                            <p>67% to goal</p>
+                            <div className="text-center">
+                                <p className="text-[28px] font-bold">₵ 10,234</p>
+                            </div>
                         </CircularProgressbarWithChildren>
 
                     </div>
 
+
                 </Link>
-                <Link href={`/dashboard/campaigns/2`} className=" md:w-1/3 h-[250px] bg-white drop-shadow-xl rounded-2xl flex place-items-center">
-                    <div className="w-1/2 mx-auto my-2 ">
+                <Link href={`/dashboard/campaigns/2`} className=" md:w-1/3  bg-white drop-shadow-xl rounded-2xl flex flex-col place-items-center py-3">
+                    <div className="w-1/2 mx-auto my-2">
+                        <div className="flex flex-row space-x-2 justify-around mb-2">
+                            <p className="text-md">Campaign 2</p>
+                            <p>32% to goal</p>
+                        </div>
                         <CircularProgressbarWithChildren
                             value={32} styles={{
                                 root: {
@@ -87,11 +95,10 @@ const Charts = () => {
                                 },
                             }}
                         >
-                            <p className="text-2xl font-bold">₵ 4,321</p>
-                            <p>Campaign 2</p>
-                            <br></br>
-                            <p>32% to goal</p>
+                            <p className="text-[28px] font-bold">₵ 4,321</p>
+
                         </CircularProgressbarWithChildren>
+
                     </div>
 
                 </Link>
