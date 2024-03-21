@@ -40,6 +40,7 @@ THIRD_PARTY_APPS = [
     "schedule",
     "jsonify",
     "corsheaders",
+    "djoser",
 ]
 
 LOCAL_APPS = [
@@ -174,6 +175,29 @@ SIMPLE_JWT = {
     "AUTH_COOKIE_HTTP_ONLY": True,  # Http only cookie flag.It's not fetch by javascript.
     "AUTH_COOKIE_PATH": "/",  # The path of the auth cookie.
     "AUTH_COOKIE_SAMESITE": None,  # Whether to set the flag restricting cookie leaks on cross-site requests.
+}
+
+DJOSER = {
+    "LOGIN_FIELD": "email",
+    "USER_CREATE_PASSWORD_RETYPE": True,
+    "USERNAME_CHANGED_EMAIL_CONFIRMATION": True,
+    "PASSWORD_CHANGED_EMAIL_CONFIRMATION": True,
+    "SEND_CONFIRMATION_EMAIL": True,
+    "SEND_ACTIVATION_EMAIL": False,
+    "PASSWORD_RESET_CONFIRM_URL": "password/reset/confirm/{uid}/{token}",
+    "SET_PASSWORD_RETYPE": True,
+    "PASSWORD_RESET_CONFIRM_RETYPE": True,
+    "SERIALIZERS": {
+        "user_create": "apps.users.serializers.CreateUserSerializer",
+        "user": "apps.users.serializers.UserSerializer",
+        "current_user": "apps.users.serializers.UserSerializer",
+        "user_delete": "djoser.serializers.UserDeleteSerializer",
+    },
+    # "EMAIL": {
+    #     "confirmation": "apps.users.email.ConfirmationEmail",
+    #     "password_reset": "apps.users.email.PasswordResetEmail",
+    #     "password_changed_confirmation": "apps.users.email.PasswordChangedConfirmationEmail",
+    # },
 }
 
 

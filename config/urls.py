@@ -12,4 +12,6 @@ urlpatterns = [
     path("mosaico/", include("apps.mosaico.urls")),
     path("api/scheduler/", include("apps.scheduler.urls")),
     path("api/auth/", include("apps.users.urls")),
+    path("api/auth/", include("djoser.urls")),
+    path("api/auth/", include("djoser.urls.jwt")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

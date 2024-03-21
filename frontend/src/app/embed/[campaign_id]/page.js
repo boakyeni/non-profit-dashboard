@@ -3,12 +3,53 @@ import { useSearchParams } from "next/navigation"
 import { LuHeartHandshake } from "react-icons/lu"
 import CurrencyInput from 'react-currency-input-field'
 import ReactCardFlip from 'react-card-flip';
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const EmbededCampaignPage = ({ params }) => {
     const searchParams = useSearchParams()
+
+
+
     const [isFlipped, setIsFlipped] = useState(false);
     const [donated, setDonated] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const [description, setDescription] = useState('Lorem ipsum dolor sit amet, consectetur adipiscing elit. In a lorem et augue blandit pulvinar at id lorem. Integer sed ipsum sed dolor ornare laoreet. Curabitur ut tristique mauris, porta dictum arcu. Duis vitae dui porta ante bibendum euismod quis sed ipsum. Morbi efficitur sodales venenatis. Duis elementum nunc quis lorem luctus efficitur. Aenean facilisis eu orci in bibendum. Vivamus commodo interdum tellus. Pellentesque pretium porttitor leo')
+    const MAX_CHARS = 450; // set this in redux or utils just not here
+
+
+    // Make more secure
+    useEffect(() => {
+        setIsLoggedIn(typeof window !== 'undefined' ? localStorage.getItem('access_token') : false)
+    }, [])
+
+
+    // Auto Resizing textarea
+    const textareaRef = useRef(null);
+    // Function to adjust textarea height
+    const adjustTextareaHeight = () => {
+        const textarea = textareaRef.current;
+        if (textarea) {
+            // Reset the height to 'auto' to ensure the scrollHeight is calculated correctly
+            textarea.style.height = 'auto';
+            // Set the height to the scrollHeight to fit the content
+            textarea.style.height = `${textarea.scrollHeight}px`;
+        }
+    };
+    // Adjust textarea height upon description change
+    useEffect(() => {
+        adjustTextareaHeight();
+    }, [description]);
+    // Also adjust on initial render
+    useEffect(() => {
+        adjustTextareaHeight();
+    }, []);
+
+    const handleChange = (event) => {
+        const inputValue = event.target.value;
+        if (inputValue.length <= MAX_CHARS) {
+            setDescription(inputValue);
+        }
+    };
     const handleClick = () => {
         setIsFlipped(!isFlipped);
     };
@@ -29,9 +70,12 @@ const EmbededCampaignPage = ({ params }) => {
                         <div className={`flex flex-grow h-max place-items-center sm:max-w-[75%]`}>
                             <div className={`flex flex-col w-full h-max space-y-3`}>
                                 <h1 className="">Campaign</h1>
-                                <div className=" sm:h-[175px] overscroll-none" >
+                                <div className="flex sm:h-[175px] overscroll-none" >
                                     <button onClick={handleClick} className="sm:hidden">Click To See More Info</button>
-                                    <p className="hidden xs:inline-block bg-transparent resize-none w-full  overscroll-none ">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In a lorem et augue blandit pulvinar at id lorem. Integer sed ipsum sed dolor ornare laoreet. Curabitur ut tristique mauris, porta dictum arcu. Duis vitae dui porta ante bibendum euismod quis sed ipsum. Morbi efficitur sodales venenatis. Duis elementum nunc quis lorem luctus efficitur. Aenean facilisis eu orci in bibendum. Vivamus commodo interdum tellus. Pellentesque pretium porttitor leo </p>
+                                    {isLoggedIn ?
+                                        (<textarea ref={textareaRef} value={description} className="hidden xs:inline-block bg-transparent text-base w-full h-full resize-none overflow-hidden" onChange={handleChange} ></textarea>)
+                                        :
+                                        (<p className="hidden xs:inline-block bg-transparent resize-none w-full  overscroll-none ">{description} </p>)}
                                 </div>
                                 <div className="flex flex-row justify-between w-full mb-2">
                                     <button className="rounded-full w-[30%] py-2 border border-blue-500">
@@ -69,9 +113,11 @@ const EmbededCampaignPage = ({ params }) => {
                                 <div className={`flex flex-col w-full h-max space-y-3 overflow-hidden`}>
                                     <button onClick={handleClick}>{'Click to Donate'}</button>
                                     <h1 className="">Campaign</h1>
-                                    <div className=" sm:h-[175px]" >
-
-                                        <p className="xs:inline-block bg-transparent resize-none">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In a lorem et augue blandit pulvinar at id lorem. Integer sed ipsum sed dolor ornare laoreet. Curabitur ut tristique mauris, porta dictum arcu. Duis vitae dui porta ante bibendum euismod quis sed ipsum. Morbi efficitur sodales venenatis. Duis elementum nunc quis lorem luctus efficitur. Aenean facilisis eu orci in bibendum. Vivamus commodo interdum tellus. Pellentesque pretium porttitor leo </p>
+                                    <div className="flex sm:h-[175px]" >
+                                        {isLoggedIn ?
+                                            (<textarea ref={textareaRef} value={description} className="xs:inline-block bg-transparent text-base resize-none w-full overflow-hidden" onChange={handleChange}></textarea>)
+                                            :
+                                            (<p className="xs:inline-block bg-transparent resize-none">{description} </p>)}
                                     </div>
 
 

@@ -3,8 +3,23 @@ from rest_framework import serializers, viewsets, status
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings
+from djoser.serializers import UserCreateSerializer
 
 User = get_user_model()
+
+
+class CreateUserSerializer(UserCreateSerializer):
+    class Meta(UserCreateSerializer.Meta):
+        model = User
+        fields = [
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "phone_number",
+            "reference",
+            "password",
+        ]
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -45,9 +60,8 @@ class TokenRefreshSerializer(serializers.Serializer):
         refresh = self.token_class(attrs["refresh"])
 
         data = {"access": str(refresh.access_token)}
-
-        if settings.ROTATE_REFRESH_TOKENS:
-            if settings.BLACKLIST_AFTER_ROTATION:
+        if settings.SIMPLE_JWT.get("ROTATE_REFRESH_TOKENS"):
+            if settings.SIMPLE_JWT.get("BLACKLIST_AFTER_ROTATION"):
                 try:
                     # Attempt to blacklist the given refresh token
                     refresh.blacklist()

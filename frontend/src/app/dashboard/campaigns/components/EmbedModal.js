@@ -26,7 +26,8 @@ const EmbedModal = () => {
                         <div className="p-6 space-y-6 max-h-[calc(100vh-15rem)] overflow-auto">
                             <div className="flex flex-row justify-between">
                                 <p>This will appear on your site</p>
-                                <button>Change Description</button>
+                                {/* Remove magiv numbers replace with redux variable in campaignSlice */}
+                                <p className="text-right">{450 - 20} characters left</p>
                             </div>
                             <iframe style={{ borderRadius: '12px' }} src="http://localhost:3000/embed/1" width="100%" height="352" frameBorder="0" allowFullScreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 

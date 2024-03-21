@@ -1,17 +1,19 @@
 'use client'
-import { use, useState } from "react"
+import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import { useDispatch } from "react-redux"
 import { toggleSettingsButton, toggleSelectedTab } from "../../lib/features/profile/profileSlice"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { toggleAccountDropdown } from "../../lib/features/dropdown/dropdownSlice"
+import { logout, get_logged_in_user } from "../../lib/features/auth/authSlice"
+
 
 
 const AccountDropdown = () => {
     const dispatch = useDispatch()
     const router = useRouter()
     const { accountDropdownOpen } = useSelector((state) => state.dropdowns)
+    const { user } = useSelector((state) => state.auth)
 
     /* Going to settings requires changing redux state, but a link refreshes the state.
        This way the page redirects and then sets state*/
@@ -24,6 +26,16 @@ const AccountDropdown = () => {
             router.push('/dashboard/profile')
         }
     };
+    const handleLogout = () => {
+        dispatch(logout())
+        if (typeof window !== 'undefined') {
+            window.location.href = '/auth/login'
+        }
+    }
+
+    useEffect(() => {
+        dispatch(get_logged_in_user())
+    }, [])
     return (
 
 
@@ -32,8 +44,8 @@ const AccountDropdown = () => {
                 <svg display="block" viewBox="0 0 30 30"><g transform="rotate(0 15 15)"><path fill="none" d="M23,27.8c1.1,1.2,3.4,2.2,5,2.2h2H0h2c1.7,0,3.9-1,5-2.2l6.6-7.2c0.7-0.8,2-0.8,2.7,0L23,27.8L23,27.8z"></path><path stroke="none" d="M23,27.8c1.1,1.2,3.4,2.2,5,2.2h2H0h2c1.7,0,3.9-1,5-2.2l6.6-7.2c0.7-0.8,2-0.8,2.7,0L23,27.8L23,27.8z"></path></g></svg>
             </div>
             <div className="px-4 py-3">
-                <span className="block text-sm text-white">Esi Green</span>
-                <span className="block text-sm  text-gray-400">name@flowbite.com</span>
+                <span className="block text-md text-white">{user?.first_name} {user?.last_name}</span>
+                <span className="block text-sm  text-gray-400">{user?.email}</span>
             </div>
 
             <ul className="py-2" aria-labelledby="user-menu-button">
@@ -47,7 +59,7 @@ const AccountDropdown = () => {
                     <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Earnings</a>
                 </li>
                 <li>
-                    <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</a>
+                    <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</button>
                 </li>
             </ul>
         </div>

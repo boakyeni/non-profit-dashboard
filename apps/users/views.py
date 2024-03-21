@@ -10,24 +10,141 @@ from django.conf import settings
 from django.db import transaction
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.decorators import (
+    api_view,
+    permission_classes,
+    authentication_classes,
+)
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
 import requests
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
-from .serializers import UserSerializer
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from .serializers import UserSerializer, CreateUserSerializer
 
 from .serializers import TokenRefreshSerializer
-
+from django.contrib.auth import (
+    authenticate,
+    login,
+    logout,
+)
 
 CENTRAL_AUTH_URL = settings.CENTRAL_AUTH_URL
 User = get_user_model()
 
 
+# NEEDS TESTING
+# Gets new access token else should return 401
+# to get a new refresh token, login
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def refresh_token_view(request):
+    # Access the refresh_token from the cookies sent with the request
+    refresh_token = request.COOKIES.get("refresh_token")
+    # if not refresh_token:
+    #     return Response({"error": "Refresh token not found."}, status=400)
+
+    # Prepare data for TokenRefreshView
+    data = {"refresh": refresh_token}
+    # Check simplejwt docs if this doesnt work
+    serializer = TokenRefreshSerializer(data=data)
+    try:
+        serializer.is_valid(raise_exception=True)
+    except TokenError:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def login_view(request):
+    """Login view for local authentication"""
+    email = request.data.get("email")
+    password = request.data.get("password")
+
+    user = authenticate(request, email=email, password=password)
+
+    if user and user.is_active:
+        # If valid, issue JWT token
+        token = RefreshToken().for_user(user)
+        drf_response = Response(
+            {
+                "access": str(token.access_token),
+            }
+        )
+        drf_response.set_cookie(
+            key=settings.SIMPLE_JWT["AUTH_COOKIE"],
+            value=str(token),
+            httponly=True,
+        )
+        return drf_response
+    return Response(
+        {"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
+    )
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+@transaction.atomic
+def signup_view(request):
+    """Register view for local authentication"""
+    user_data = {
+        "first_name": request.data.get("first_name"),
+        "last_name": request.data.get("last_name"),
+        "email": request.data.get("email"),
+        "password": request.data.get("password"),
+        "phone_number": request.data.get("phone_number"),
+        # Add other fields as needed
+    }
+
+    # Post to app db
+    serializer = CreateUserSerializer(data=user_data)
+    serializer.is_valid(raise_exception=True)
+    user = serializer.save()
+
+    # Send user data to centralized service for account creation
+
+    if user:
+        # If account creation successful, issue JWT token
+        token = RefreshToken().for_user(user)
+        drf_response = Response(
+            {
+                "access": str(token.access_token),
+            }
+        )
+        drf_response.set_cookie(
+            key=settings.SIMPLE_JWT["AUTH_COOKIE"],
+            value=str(token),
+            httponly=True,
+        )
+        return drf_response
+    return Response(
+        {"detail": "Account creation failed"}, status=status.HTTP_400_BAD_REQUEST
+    )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def get_logged_in_user(request):
+    serializer = UserSerializer(instance=request.user)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def logout(request):
+    drf_response = Response(status=status.HTTP_200_OK)
+    drf_response.delete_cookie(settings.SIMPLE_JWT["AUTH_COOKIE"])
+    return drf_response
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def central_auth_login_view(request):
+    """Login view for a central authentication service"""
     email = request.data.get("email")
     password = request.data.get("password")
 
@@ -68,7 +185,7 @@ def login_view(request):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 @transaction.atomic
-def signup_view(request):
+def central_auth_signup_view(request):
     user_data = {
         "first_name": request.data.get("first_name"),
         "last_name": request.data.get("last_name"),
@@ -192,27 +309,3 @@ def custom_password_reset_confirm_view(request):
         return Response(
             {"error": "Invalid UID or token."}, status=status.HTTP_400_BAD_REQUEST
         )
-
-
-# NEEDS TESTING
-# Gets new access token else should return 401
-# to get a new refresh token, login
-@api_view(["GET"])
-@permission_classes([AllowAny])
-def refresh_token_view(request):
-    print("hellp")
-    # Access the refresh_token from the cookies sent with the request
-    refresh_token = request.COOKIES.get("refresh_token")
-    # if not refresh_token:
-    #     return Response({"error": "Refresh token not found."}, status=400)
-
-    # Prepare data for TokenRefreshView
-    data = {"refresh": refresh_token}
-
-    # Check simplejwt docs if this doesnt work
-    serializer = TokenRefreshSerializer(data=data)
-    try:
-        serializer.is_valid(raise_exception=True)
-    except TokenError:
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
-    return Response(serializer.validated_data, status=status.HTTP_200_OK)

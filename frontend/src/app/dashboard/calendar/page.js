@@ -5,11 +5,12 @@ import { useEffect, useState, useRef } from "react";
 import moment from 'moment';
 import { momentLocalizer } from 'react-big-calendar'
 import { useDispatch, useSelector } from "react-redux";
-import { getEvents, setCalendar, getCalendars, toggleCreateEventModal, setEndDate, setStartDate, toggleCalendarAction, setCurrentCalendarId } from "../../lib/features/events/eventSlice";
+import { getEvents, setCalendar, getCalendars, toggleCreateEventModal, toggleCreateCalendarModal, setEndDate, setStartDate, toggleCalendarAction, setCurrentCalendarId, toggleInviteModal } from "../../lib/features/events/eventSlice";
 import CreateEventModal from "./_components/CreateEventModal";
 import EditAppointmentModal from "../profile/components/EditAppointmentModal";
 import EditEventModal from "./_components/EditEventModal";
-
+import CreateCalendarModal from "./_components/CreateCalendarModal";
+import InviteCollaboratorsModal from "./_components/InviteCollaboratorsModal";
 
 
 const CalendarPage = () => {
@@ -90,8 +91,8 @@ const CalendarPage = () => {
 
                             </ul>
                             <div className="py-1">
-                                <button className="text-sm p-2 px-4 rounded-lg hover:bg-gray-100 w-full text-left">Create New</button>
-                                <button className="text-sm p-2 px-4 rounded-lg hover:bg-gray-100 w-full text-left">Invite</button>
+                                <button className="text-sm p-2 px-4 rounded-lg hover:bg-gray-100 w-full text-left" onClick={() => dispatch(toggleCreateCalendarModal())}>Create New</button>
+                                <button className="text-sm p-2 px-4 rounded-lg hover:bg-gray-100 w-full text-left" onClick={() => dispatch(toggleInviteModal())}>Invite</button>
                             </div>
 
 
@@ -102,6 +103,8 @@ const CalendarPage = () => {
             </div>
             <CreateEventModal />
             <EditEventModal />
+            <CreateCalendarModal />
+            <InviteCollaboratorsModal />
         </div>
     )
 }

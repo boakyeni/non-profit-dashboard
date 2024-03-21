@@ -124,6 +124,15 @@ const ContactModal = () => {
                                         <option value="major_donor">Major Donor</option>
                                     </select>
                                 </div> : null}
+                                {contactType === 'patient' ? <div className="col-span-6 sm:col-span-3">
+                                    <label htmlFor="cause" className="block mb-2 text-sm font-medium text-gray-900 ">Cause</label>
+                                    <select name="cause" id="cause" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="" required="" value={donorType} onChange={handleDonorTypeChange}>
+                                        <option value="">Select a Cause</option>
+                                        <option value="broad_base_donor">Broad Base Donor</option>
+                                        <option value="mid_range_donor">Mid Range Donor</option>
+                                        <option value="major_donor">Major Donor</option>
+                                    </select>
+                                </div> : null}
                             </div>
                         </div>
                         {/* // Modal Footer */}

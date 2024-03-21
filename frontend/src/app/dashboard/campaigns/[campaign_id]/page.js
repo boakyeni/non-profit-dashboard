@@ -14,6 +14,15 @@ import { toggleAddPatientModal } from "../../../lib/features/campaigns/campaignS
 const CampaignDetails = ({ params }) => {
     const dispatch = useDispatch()
     const { embedModalOpen } = useSelector((state) => state.dropdowns)
+    const handlePreviewClick = (e) => {
+        e.preventDefault(); // Prevent default anchor link behavior
+
+        // Convert selectedContacts array to a JSON string and store it
+        localStorage.setItem('selectedCampaigns', JSON.stringify([params.campaign_id]));
+
+        // Redirect to the URL
+        window.location.href = 'http://localhost:8000/mosaico';
+    };
     return (
         <>
             <EmbedModal />
@@ -129,7 +138,7 @@ const CampaignDetails = ({ params }) => {
                         <h3 className="h-1/4 px-4 font-bold text-center">Send an Update Email to Donors</h3>
                         <div className="flex h-1/4 justify-around p-6"><LuMailCheck className="scale-[1.75]" /></div>
 
-                        <div className="w-full h-1/2 flex flex-row justify-around">
+                        <div className="w-full h-1/2 flex flex-row justify-around" onClick={handlePreviewClick}>
                             <button className="mt-5 hover:bg-blue-700 h-1/2 bg-blue-500 px-10 drop-shadow-sm rounded-xl text-white">Preview</button>
                         </div>
 

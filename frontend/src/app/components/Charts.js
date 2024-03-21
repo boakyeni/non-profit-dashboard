@@ -10,6 +10,7 @@ import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-pro
 import 'react-circular-progressbar/dist/styles.css';
 import RevenueBlock from "./RevenueBlock";
 import ContactBlock from "./ContactBlock";
+import ProgressProvider from "../../utils/ProgressProvider";
 
 const Charts = () => {
 
@@ -46,27 +47,30 @@ const Charts = () => {
                             <p className="">Campaign 1</p>
                             <p>67% to goal</p>
                         </div>
-                        <CircularProgressbarWithChildren
-                            value={67} styles={{
-                                root: {
-                                    transformOrigin: 'center center',
-                                },
-                                path: {
-                                    // Path color
-                                    stroke: `rgba(136, 132, 216, ${67 / 100})`,
-                                    // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
-                                    strokeLinecap: 'butt',
-                                    // Customize transition animation
-                                    transition: 'stroke-dashoffset 0.5s ease 0s',
-                                    // Rotate the path
-                                    transformOrigin: 'center center',
-                                },
-                            }}
-                        >
-                            <div className="text-center">
-                                <p className="text-[28px] font-bold">₵ 10,234</p>
-                            </div>
-                        </CircularProgressbarWithChildren>
+                        <ProgressProvider valueStart={0} valueEnd={67}>
+                            {value => (
+                                <CircularProgressbarWithChildren
+                                    value={value} text={`₵ 10,234`} styles={{
+                                        root: {
+                                            transformOrigin: 'center center',
+                                        },
+                                        path: {
+                                            // Path color
+                                            stroke: `rgba(70, 130, 180, ${67 / 100})`,
+                                            // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
+                                            strokeLinecap: 'butt',
+                                            // Customize transition animation
+                                            transition: 'stroke-dashoffset 0.5s ease 0s',
+                                            // Rotate the path
+                                            transformOrigin: 'center center',
+                                        },
+                                    }}
+                                >
+                                    {/* <div className="text-center">
+                                        <p className="text-[28px] font-bold">₵ 10,234</p>
+                                    </div> */}
+                                </CircularProgressbarWithChildren>)}
+                        </ProgressProvider>
 
                     </div>
 
@@ -78,26 +82,29 @@ const Charts = () => {
                             <p className="text-md">Campaign 2</p>
                             <p>32% to goal</p>
                         </div>
-                        <CircularProgressbarWithChildren
-                            value={32} styles={{
-                                root: {
-                                    transformOrigin: 'center center',
-                                },
-                                path: {
-                                    // Path color
-                                    stroke: `rgba(202, 232, 213, ${32 / 100})`,
-                                    // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
-                                    strokeLinecap: 'butt',
-                                    // Customize transition animation
-                                    transition: 'stroke-dashoffset 0.5s ease 0s',
-                                    // Rotate the path
-                                    transformOrigin: 'center center',
-                                },
-                            }}
-                        >
-                            <p className="text-[28px] font-bold">₵ 4,321</p>
+                        <ProgressProvider valueStart={0} valueEnd={32} >
+                            {value => (
+                                <CircularProgressbarWithChildren
+                                    value={value} text={`₵ 4,321`} styles={{
+                                        root: {
+                                            transformOrigin: 'center center',
+                                        },
+                                        path: {
+                                            // Path color
+                                            stroke: `rgba(70, 130, 180, ${32 / 100})`,
+                                            // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
+                                            strokeLinecap: 'butt',
+                                            // Customize transition animation
+                                            transition: 'stroke-dashoffset 0.5s ease 0s',
+                                            // Rotate the path
+                                            transformOrigin: 'center center',
+                                        },
+                                    }}
+                                >
+                                    {/* <p className="text-[28px] font-bold">₵ 4,321</p> */}
 
-                        </CircularProgressbarWithChildren>
+                                </CircularProgressbarWithChildren>)}
+                        </ProgressProvider>
 
                     </div>
 
