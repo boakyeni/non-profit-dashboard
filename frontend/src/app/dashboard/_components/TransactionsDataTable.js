@@ -4,17 +4,47 @@ import { fetchContacts, setSelectedContact, toggleContactCard, toggleContactTabl
 import { isEqual } from "../../../utils/equalCheck"
 import { useEffect, useState, useRef } from "react"
 import ReactPaginate from 'react-paginate'
+import { useSearchParams } from "next/navigation"
 
 
 
-const PatientTransactionsTable = ({ itemsPerPage }) => {
+const TransactionsDataTable = ({ itemsPerPage }) => {
+    // This ones logic is gonna be different than the other tables because there could be alot of transactions and i only want to get whats needed from the backend
+    const searchParams = useSearchParams()
 
+    const contact = searchParams.get('single') //get transaction data with this id
+    const selected = searchParams.get('selected') // boolean, should then check local storage for selected contacts
+    const all = searchParams.get('all') // get all transaction data for all contacts
+    /* 
+        handles pagination, logic is taken from react-paginate github
+     */
+    const [currentItems, setCurrentItems] = useState(null);
+    const [pageCount, setPageCount] = useState(0);
+    const [itemOffset, setItemOffset] = useState(0);
     /* State management for contacts */
     const dispatch = useDispatch()
     /* Grabs all contacts */
     useEffect(() => {
         dispatch(fetchContacts())
+        // these should not only dispact a fetch for transaction, but also set the current choice i.e. transtype
+        if (contact) {
+
+        } else if (selected) {
+
+        } else if (all) {
+
+        }
     }, [dispatch])
+
+    // waht transtype changes, fetch transactions based on transtype
+    // useEffect(() => {
+    //     // if (transtype === 'all') {
+    //     //     dispatch(fetchContacts())
+    //     // }
+
+    //     // these should not only dispact a fetch for transaction, but also set the current choice i.e. transtype
+
+    // }, [dispatch, transtype]) // transtype
 
 
     /* holds contacts, whether action dropdown is open, and which contacts the user has selected */
@@ -49,22 +79,9 @@ const PatientTransactionsTable = ({ itemsPerPage }) => {
 
     }
 
-    const handleAddUserClick = () => {
-        dispatch(setSelectedContact(null))
-        dispatch(toggleEditUser())
-        dispatch(toggleContactTableAction());
-        if (contactCardOpen) {
-            dispatch(toggleContactCard())
-        }
-    }
+    const handleExportCurrentData = () => {
 
-    /* 
-        handles pagination, logic is taken from react-paginate github
-     */
-    const [currentItems, setCurrentItems] = useState(null);
-    const [pageCount, setPageCount] = useState(0);
-    const [itemOffset, setItemOffset] = useState(0);
-    const [activeContacts, setActiveContacts] = useState(contacts)
+    }
 
 
     useEffect(() => {
@@ -75,7 +92,7 @@ const PatientTransactionsTable = ({ itemsPerPage }) => {
         const endOffset = itemOffset + itemsPerPage;
         setCurrentItems(active.slice(itemOffset, endOffset));
         setPageCount(Math.ceil(active.length / itemsPerPage));
-    }, [itemOffset, itemsPerPage, contacts, searchResults, filter, selectedContact]);
+    }, [itemOffset, itemsPerPage, contacts, searchResults, filter, selectedContact]); // replace selectedContact with transtype
 
     // Invoke when user click to request another page.
     const handlePageClick = (event) => {
@@ -90,13 +107,8 @@ const PatientTransactionsTable = ({ itemsPerPage }) => {
     };
 
 
-    const handleContactChange = (contact_type) => {
-        dispatch(setContactTypeFilter(contact_type)) // useState's contactType
-        dispatch(applyFilters())
-        dispatch(toggleContactTableAction())
-    }
-    useEffect(() => {
 
+    useEffect(() => {
         dispatch(applyFilters())
     }, [dispatch, filter.contact_type])
 
@@ -106,33 +118,7 @@ const PatientTransactionsTable = ({ itemsPerPage }) => {
         dispatch(toggleContactTableAction())
     }
 
-    const handleUpload = () => {
-        dispatch(toggleUploadContactModal())
-        dispatch(toggleContactTableAction());
-    }
-    const handleCheckboxOnChange = (e, id) => {
-        e.stopPropagation(); // Prevent click from propagating to the parent tr element
-        dispatch(toggleContactSelection(id));
-    }
-    const handlePreviewClick = (e) => {
-        e.preventDefault(); // Prevent default anchor link behavior
 
-        // Convert selectedContacts array to a JSON string and store it
-        localStorage.setItem('selectedContacts', JSON.stringify(selectedContacts));
-
-        // Redirect to the URL
-        window.location.href = 'http://localhost:8000/mosaico';
-    };
-
-    const allChecked = () => {
-        if (isEqual(filter, initialFilterState)) {
-            return selectedContacts.length === contacts.length
-        } else {
-            return searchResults.every(result =>
-                selectedContacts.some(selected => selected === result.id)
-            );
-        }
-    }
     const contactTypeMapping = {
         major_donor: "Major Donor",
         mid_range_donor: "Mid Range Donor",
@@ -164,12 +150,9 @@ const PatientTransactionsTable = ({ itemsPerPage }) => {
                     <div id="dropdownAction" className={`${contactTableActionOpen ? '' : 'hidden'} fixed z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 `}>
                         <ul className="py-1 text-sm text-gray-700 " aria-labelledby="dropdownActionButton">
                             <li>
-                                <a href="#" className="block px-4 py-2 hover:bg-gray-100  " onClick={handleAddUserClick}>Add Patient</a>
+                                <a href="#" className="block px-4 py-2 hover:bg-gray-100  " onClick={handleExportCurrentData}>Export Current Data</a>
                             </li>
 
-                            <li>
-                                <a href="/dashboard/contacts/" className="block w-full text-left px-4 py-2 hover:bg-gray-100  ">Go to Donors</a>
-                            </li>
 
                             <li>
                                 <button type='button' onClick={() => handleShowAll()} className="block w-full text-left px-4 py-2 hover:bg-gray-100  ">Show All</button>
@@ -179,9 +162,7 @@ const PatientTransactionsTable = ({ itemsPerPage }) => {
                             </li>
 
                         </ul>
-                        <div className="py-1">
-                            <a href="http://localhost:8000/mosaico" onClick={handlePreviewClick} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100  ">Preview Email to Send</a>
-                        </div>
+
                     </div>
                 </div>
                 <label htmlFor="table-search" className="sr-only">Search</label>
@@ -196,12 +177,7 @@ const PatientTransactionsTable = ({ itemsPerPage }) => {
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                     <thead className="text-xs text-gray-700 uppercase bg-gray-50 ">
                         <tr>
-                            <th scope="col" className="p-4 w-[48px]">
-                                <div className="flex items-center">
-                                    <input id="checkbox-all-search" type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500   focus:ring-2  " onChange={() => dispatch(toggleAllContacts())} checked={allChecked()} />
-                                    <label htmlFor="checkbox-all-search" className="sr-only">checkbox</label>
-                                </div>
-                            </th>
+
                             <th scope="col" className=" py-3">
                                 Patient Name
                             </th>
@@ -219,13 +195,7 @@ const PatientTransactionsTable = ({ itemsPerPage }) => {
                     <tbody className="">
                         {currentItems && currentItems.map((contact) => (
                             <tr key={contact.id} className="bg-white border-b  hover:bg-gray-50 " onClick={() => handleMoreInfoClick(contact)}>
-                                <td className="w-4 p-4">
-                                    <div className="flex items-center">
-                                        <input id="checkbox-table-search-1" type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500   focus:ring-2  " checked={selectedContacts.includes(contact.id)} onChange={(e) => handleCheckboxOnChange(e, contact?.id)}
-                                            onClick={(e) => e.stopPropagation()} />
-                                        <label htmlFor="checkbox-table-search-1" className="sr-only">checkbox</label>
-                                    </div>
-                                </td>
+
                                 <th scope="row" className="flex items-center py-4 text-gray-900 ">
 
                                     <div className="">
@@ -279,4 +249,4 @@ const PatientTransactionsTable = ({ itemsPerPage }) => {
     )
 }
 
-export default PatientTransactionsTable
+export default TransactionsDataTable

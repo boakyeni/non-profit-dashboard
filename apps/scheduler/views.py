@@ -33,7 +33,10 @@ from datetime import datetime, timedelta
 from django.db import transaction
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
-from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.authentication import (
+    JWTAuthentication,
+    JWTStatelessUserAuthentication,
+)
 
 
 class EventCreateView(APIView):

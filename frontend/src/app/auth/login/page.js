@@ -18,7 +18,6 @@ const LoginPage = () => {
         if (isError) {
             toast.error('Either email or password is incorrect')
         }
-        console.log(isSuccess)
         if (isSuccess || user) {
             setTimeout(() => window.location.href = "/dashboard", 1000)
         }
@@ -86,7 +85,7 @@ const LoginPage = () => {
                     <div className="mt-4">
                         <div className="flex justify-between">
                             <label className="block mb-2 text-sm font-medium text-gray-600" htmlFor="loggingPassword">Password</label>
-                            <a href="#" className="text-xs text-gray-500 dark:text-gray-300 hover:underline">Forgot Password?</a>
+                            <a href="/auth/password" className="text-xs text-gray-500 dark:text-gray-300 hover:underline">Forgot Password?</a>
                         </div>
 
                         <input id="loggingPassword" value={password} className="block w-full px-4 py-2 text-gray-700 bg-white border rounded-lg focus:border-blue-400 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-300" type="password" onChange={(e) => setLocalPassword(e.target.value)} />

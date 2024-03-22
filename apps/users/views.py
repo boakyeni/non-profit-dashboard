@@ -22,13 +22,15 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .serializers import UserSerializer, CreateUserSerializer
-
+from djoser.serializers import PasswordSerializer, CurrentPasswordSerializer
+from djoser.compat import get_user_email
 from .serializers import TokenRefreshSerializer
 from django.contrib.auth import (
     authenticate,
     login,
     logout,
 )
+from django.template.loader import render_to_string
 
 CENTRAL_AUTH_URL = settings.CENTRAL_AUTH_URL
 User = get_user_model()
@@ -139,6 +141,39 @@ def logout(request):
     drf_response = Response(status=status.HTTP_200_OK)
     drf_response.delete_cookie(settings.SIMPLE_JWT["AUTH_COOKIE"])
     return drf_response
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+@transaction.atomic
+def set_password(request):
+    serializer = CurrentPasswordSerializer(
+        context={"request": request}, data=request.data
+    )
+    serializer.is_valid(raise_exception=True)
+    serializer = PasswordSerializer(context={"request": request}, data=request.data)
+    serializer.is_valid(raise_exception=True)
+    request.user.set_password(serializer.data["new_password"])
+    request.user.save()
+
+    if settings.DJOSER.get("PASSWORD_CHANGED_EMAIL_CONFIRMATION"):
+        context = {"user": request.user}
+        to = [get_user_email(request.user)]
+        subject = "Your password has been changed"
+        message = render_to_string("users/password_changed.html", context)
+
+        # Send email using Django's send_mail
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=to,
+            fail_silently=False,
+            html_message=message,
+        )
+
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(["POST"])

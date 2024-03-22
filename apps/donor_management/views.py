@@ -72,11 +72,12 @@ def send_html_email_with_attachment(request):
     """
     Current design could be a problem without asynchronous task queue, could even still be a problem with it
     """
-
+    print("reached")
+    subject = request.data.get("subject")
     template_id = request.data.get("template_id")
     files = request.FILES.getlist("files")  # 'files' is the name attribute in your form
     recipient_ids = request.data.getlist("recipientIds")
-
+    print(recipient_ids, "rec")
     # get html
     try:
         mosaico_template_instance = MosaicoTemplate.objects.get(id=template_id)
@@ -91,20 +92,21 @@ def send_html_email_with_attachment(request):
     for recipient in recipient_ids:
         try:
             account_instance = AccountProfile.objects.get(id=recipient)
+            print(account_instance, "acc")
         except AccountProfile.DoesNotExist:
             continue
 
         context = Context(
             {
                 "mail": account_instance.email,
-                "unsubscribe_link": "http://example.com/unsubscribe",
+                "unsubscribe_link": "example.com/unsubscribe",
             }
         )
         template = Template(html_content)
         rendered_html = template.render(context)
 
         email = EmailMessage(
-            "Subject Here",
+            subject,
             rendered_html,
             "from@yourdomain.com",
             to=[
@@ -116,9 +118,13 @@ def send_html_email_with_attachment(request):
         email.content_subtype = "html"
 
         for file in files:
+            file.seek(0)
             email.attach(file.name, file.read(), file.content_type)
 
         # Send the email
-        email.send()
+        try:
+            email.send(fail_silently=False)
+        except Exception as e:
+            print(e)
 
     return Response(status=status.HTTP_200_OK)

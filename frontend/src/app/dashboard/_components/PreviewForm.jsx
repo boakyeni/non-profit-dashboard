@@ -22,7 +22,8 @@ const PreviewForm = () => {
     useEffect(() => {
         dispatch(getHTML(template_id))
         setSafeHTML(DOMPurify.sanitize(rawHTML));
-    }, [rawHTML, template_id]);
+        console.log(safeHTML)
+    }, [rawHTML, template_id, safeHTML]);
 
     const [subject, setSubject] = useState('');
     const [emailSent, setEmailSent] = useState(false); // State to track if email is sent
@@ -48,7 +49,7 @@ const PreviewForm = () => {
 
 
         try {
-            const response = await apiClient.post('http://localhost:8000/your-api-endpoint2/', formData, {
+            const response = await apiClient.post('http://localhost:8000/api/donor_management/send-newsletter/', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -83,7 +84,7 @@ const PreviewForm = () => {
                                     <div className=" md:w-1/2 2xl:w-3/4 space-y-6">
                                         <div className="col-span-6 sm:col-span-4">
                                             <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 ">Subject</label>
-                                            <input type="text" name="title" id="title" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Bonnie" required="" />
+                                            <input type="text" name="title" id="title" value={subject} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Bonnie" required="" onChange={(e) => setSubject(e.target.value)} />
                                         </div>
                                         <div className="max-w-lg">
                                             <label className="block text-sm font-medium text-gray-900" htmlFor="user_avatar">Upload Attachments</label>

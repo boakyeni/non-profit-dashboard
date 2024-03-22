@@ -12,7 +12,7 @@ const AddPatientsTable = ({ itemsPerPage }) => {
     /* Grabs all contacts */
     useEffect(() => {
         dispatch(fetchContacts())
-        dispatch(setContactTypeFilter('patient'))
+        // dispatch(setContactTypeFilter('patient'))
     }, [dispatch])
     const { selectedPatient } = useSelector((state) => state.campaigns)
     const { contacts, selectedContacts, filter, searchResults } = useSelector((state) => state.contact)
@@ -37,7 +37,9 @@ const AddPatientsTable = ({ itemsPerPage }) => {
 
 
     useEffect(() => {
-        const active = isEqual(filter, initialFilterState) ? contacts : searchResults
+        const filteredContacts = contacts?.filter(contact => contact.contact_type === 'patient');
+        const filteredSearchResults = searchResults?.filter(contact => contact.contact_type === 'patient');
+        const active = isEqual(filter, initialFilterState) ? filteredContacts : filteredSearchResults
         const endOffset = itemOffset + itemsPerPage;
         setCurrentItems(active.slice(itemOffset, endOffset));
         setPageCount(Math.ceil(active.length / itemsPerPage));

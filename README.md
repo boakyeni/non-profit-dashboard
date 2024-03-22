@@ -4,4 +4,4 @@ If you open this project in vscode, all the next.js files will have a red squigg
 
 ## Djoser
 
-Though this project uses djoser, it does NOT use the DEFAULT_AUTHENTICATION_CLASSES settings in rest_framework. Authentication classes must be set manually for each view. This includes djoser views, so they should be overridden. The code will probably work if you just add the defult_authentication_classes setting, but it's fine without it so why fix?
+Though this project uses djoser, it does NOT use the DEFAULT_AUTHENTICATION_CLASSES settings in rest_framework. Authentication classes must be set manually for each view. This includes djoser views, so they should be overridden. This is because the was original written to work with JWTSTATELESSAUTHENTICATION and using DEFAULT_AUTHENTICATION_CLASSES with permissions decorators, does not work with the default permissions. The default permissions require a user object linked to the authentication, which JWTSTATELESSAUTHENTICATION does not provide. I'm sure a custom permission handler could be made but we have deadlines to meet, plus the code is more explicit this way.

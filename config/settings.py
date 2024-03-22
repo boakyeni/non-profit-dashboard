@@ -41,6 +41,7 @@ THIRD_PARTY_APPS = [
     "jsonify",
     "corsheaders",
     "djoser",
+    "djcelery_email",
 ]
 
 LOCAL_APPS = [
@@ -184,7 +185,8 @@ DJOSER = {
     "PASSWORD_CHANGED_EMAIL_CONFIRMATION": True,
     "SEND_CONFIRMATION_EMAIL": True,
     "SEND_ACTIVATION_EMAIL": False,
-    "PASSWORD_RESET_CONFIRM_URL": "password/reset/confirm/{uid}/{token}",
+    "PASSWORD_RESET_CONFIRM_URL": "auth/password/reset/confirm/{uid}/{token}",
+    "LOGOUT_ON_PASSWORD_CHANGE": False,
     "SET_PASSWORD_RETYPE": True,
     "PASSWORD_RESET_CONFIRM_RETYPE": True,
     "SERIALIZERS": {
@@ -193,12 +195,29 @@ DJOSER = {
         "current_user": "apps.users.serializers.UserSerializer",
         "user_delete": "djoser.serializers.UserDeleteSerializer",
     },
-    # "EMAIL": {
-    #     "confirmation": "apps.users.email.ConfirmationEmail",
-    #     "password_reset": "apps.users.email.PasswordResetEmail",
-    #     "password_changed_confirmation": "apps.users.email.PasswordChangedConfirmationEmail",
-    # },
+    "EMAIL": {
+        "confirmation": "apps.users.email.ConfirmationEmail",
+        "password_reset": "apps.users.email.PasswordResetEmail",
+        "password_changed_confirmation": "apps.users.email.PasswordChangedConfirmationEmail",
+    },
 }
 
 
 PHONENUMBER_DEFAULT_REGION = "GH"
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_USE_TLS = env("EMAIL_USE_TLS")
+EMAIL_PORT = env("EMAIL_PORT")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = "TradePayAfrica <info@tradepayafrica.com>"
+SITE_NAME = "TradePayAfrica"
+
+CELERY_BROKER_URL = env("CELERY_BROKER")
+
+CELERY_RESULT_BACKEND = env("CELERY_BACKEND")
+
+CELERY_TIMEZONE = "Africa/Accra"
+
+CELERY_WORKER_MAX_TASKS_PER_CHILD = 100

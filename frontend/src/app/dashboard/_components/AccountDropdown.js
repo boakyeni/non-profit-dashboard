@@ -17,11 +17,20 @@ const AccountDropdown = () => {
 
     /* Going to settings requires changing redux state, but a link refreshes the state.
        This way the page redirects and then sets state*/
-    const handleSettingsRedirect = (e) => {
+    const handleProfileRedirect = (e) => {
         if (typeof window !== 'undefined') {
             e.preventDefault(); // Prevent default anchor behavior
             localStorage.setItem('selectedTab', '3'); // Save to localStorage
             dispatch(toggleSelectedTab(3));
+            dispatch(toggleAccountDropdown())
+            router.push('/dashboard/profile')
+        }
+    };
+    const handleSettingsRedirect = (e) => {
+        if (typeof window !== 'undefined') {
+            e.preventDefault(); // Prevent default anchor behavior
+            localStorage.setItem('selectedTab', '2'); // Save to localStorage
+            dispatch(toggleSelectedTab(2));
             dispatch(toggleAccountDropdown())
             router.push('/dashboard/profile')
         }
@@ -50,16 +59,17 @@ const AccountDropdown = () => {
 
             <ul className="py-2" aria-labelledby="user-menu-button">
                 <li>
-                    <a href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Dashboard</a>
+                    <a href="/dashboard" className="block px-4 py-2 text-sm  hover:bg-gray-600 text-gray-200 hover:text-white">Dashboard</a>
                 </li>
                 <li>
-                    <a className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white" onClick={handleSettingsRedirect}>Settings</a>
+                    <a className="block px-4 py-2 text-sm  hover:bg-gray-600 text-gray-200 hover:text-white" onClick={handleProfileRedirect}>Profile</a>
                 </li>
                 <li>
-                    <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Earnings</a>
+                    <a className="block px-4 py-2 text-sm hover:bg-gray-600 text-gray-200 hover:text-white" onClick={handleSettingsRedirect}>Settings</a>
                 </li>
+
                 <li>
-                    <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</button>
+                    <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm  hover:bg-gray-600 text-gray-200 hover:text-white">Sign out</button>
                 </li>
             </ul>
         </div>
