@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { isEqual } from "../../../../utils/equalCheck"
 import { useDispatch, useSelector } from "react-redux"
 import { initialFilterState } from "../../../lib/features/contacts/contactSlice"
-import { toggleAllContacts, toggleContactSelection, fetchContacts, applyFilters, setContactTypeFilter, setSearchFilter } from "../../../lib/features/contacts/contactSlice"
+import { toggleAllContacts, toggleContactSelection, fetchContacts, applyFilters, setContactTypeFilter, setSearchFilter, } from "../../../lib/features/contacts/contactSlice"
 
 const AddPatientsTable = ({ itemsPerPage }) => {
     /* State management for contacts */
@@ -12,6 +12,7 @@ const AddPatientsTable = ({ itemsPerPage }) => {
     /* Grabs all contacts */
     useEffect(() => {
         dispatch(fetchContacts())
+
         // dispatch(setContactTypeFilter('patient'))
     }, [dispatch])
     const { selectedPatient } = useSelector((state) => state.campaigns)

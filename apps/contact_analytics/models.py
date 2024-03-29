@@ -39,7 +39,7 @@ class Company(models.Model):
 
 
 class AccountProfile(models.Model):
-    name = models.CharField(max_length=250)
+    name = models.CharField(max_length=250, blank=True)
     given_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(max_length=100, blank=True, null=True)
@@ -56,13 +56,13 @@ class AccountProfile(models.Model):
     company = models.ForeignKey(
         Company, on_delete=models.CASCADE, default=None, blank=True, null=True
     )
+    profile_photo = models.FileField(blank=True, null=True)
 
     def __str__(self):
         return self.name
 
 
 class PhoneNumber(models.Model):
-    name = models.CharField(max_length=100, verbose_name="Name of Donor")
     number = PhoneNumberField(blank=True, max_length=128)
     notes = models.TimeField(auto_now=True, blank=True)
     profile = models.ForeignKey(
@@ -70,4 +70,4 @@ class PhoneNumber(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return self.number if self.number else None

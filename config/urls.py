@@ -6,8 +6,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/campaigns/", include("apps.campaigns.urls")),
-    path("api/contact_analytics/", include("apps.contact_analytics.urls")),
-    path("api/donor_management/", include("apps.donor_management.urls")),
+    path("api/contact-analytics/", include("apps.contact_analytics.urls")),
+    path("api/donor-management/", include("apps.donor_management.urls")),
     path("schedule/", include("schedule.urls")),
     path("mosaico/", include("apps.mosaico.urls")),
     path("api/scheduler/", include("apps.scheduler.urls")),

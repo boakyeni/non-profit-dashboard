@@ -2,7 +2,7 @@
 import ReactPaginate from "react-paginate"
 import { useState, useEffect, useRef } from "react"
 import { isEqual } from "../../../utils/equalCheck"
-import { fetchContacts, setSelectedContact, toggleContactCard, toggleContactTableAction, toggleContactSelection, toggleAllContacts, toggleEditUser, toggleContactSortModal, setSearchFilter, applyFilters, moreInfoClick, toggleUploadContactModal, setContactTypeFilter, initialFilterState, removeAllFilters } from "../../lib/features/contacts/contactSlice"
+import { fetchContacts, setSelectedContact, toggleContactCard, toggleContactTableAction, toggleContactSelection, toggleAllContacts, toggleEditUser, toggleContactSortModal, setSearchFilter, applyFilters, moreInfoClick, toggleUploadContactModal, setContactTypeFilter, initialFilterState, removeAllFilters, fetchCauses } from "../../lib/features/contacts/contactSlice"
 import { useDispatch, useSelector } from "react-redux"
 import axios from "axios"
 
@@ -12,6 +12,7 @@ const SubscriberTable = ({ itemsPerPage }) => {
     /* Grabs all contacts */
     useEffect(() => {
         dispatch(fetchContacts())
+        dispatch(fetchCauses()) // here since this component should always render i.e. doesn't start off hidden
     }, [dispatch])
 
 

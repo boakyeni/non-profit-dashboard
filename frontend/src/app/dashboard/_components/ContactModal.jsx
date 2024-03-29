@@ -1,31 +1,62 @@
 'use client'
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { LuX } from "react-icons/lu"
-import { toggleEditUser, addContact, editContact, setSelectedContact } from "../../lib/features/contacts/contactSlice"
+import { toggleEditUser, addContact, editContact, setSelectedContact, reset } from "../../lib/features/contacts/contactSlice"
 import { toast } from "react-toastify"
 
 
 const ContactModal = () => {
     const dispatch = useDispatch()
-    const { selectedContact, editUserOpen } = useSelector((state) => state.contact)
+    const { selectedContact, editUserOpen, causes, isSuccess } = useSelector((state) => state.contact)
 
-    const [firstName, setFirstName] = useState(selectedContact?.first_name || '');
+    const [firstName, setFirstName] = useState(selectedContact?.given_name || '');
     const [lastName, setLastName] = useState(selectedContact?.last_name || '');
     const [email, setEmail] = useState(selectedContact?.email || '');
-    const [contactType, setContactType] = useState(selectedContact?.type || '')
+    const [contactType, setContactType] = useState(selectedContact?.contact_type || '')
     const [phoneNumber, setPhoneNumber] = useState(selectedContact?.phone_number || '')
     const [company, setCompany] = useState(selectedContact?.company || '')
-    const [profilePhoto, setProfilePhoto] = useState(selectedContact?.profile_photo || null);
-    const [donorType, setDonorType] = useState(selectedContact?.contact_type || '');
+    const [hospital, setHospital] = useState(selectedContact?.hospital || '')
+    const [profilePhoto, setProfilePhoto] = useState(selectedContact?.profile_photo || '');
+    const [donorType, setDonorType] = useState(selectedContact?.donor_type || '');
+    const [notes, setNotes] = useState(selectedContact?.notes || '')
+    const [cause, setCause] = useState('')
+
+    useEffect(() => {
+
+        setFirstName(selectedContact?.given_name || selectedContact?.name || '');
+        setLastName(selectedContact?.last_name || '');
+        setEmail(selectedContact?.email || '');
+        setContactType(selectedContact?.contact_type || '');
+        setPhoneNumber(selectedContact?.phone_number || '');
+        setCompany(selectedContact?.company || '');
+        setHospital(selectedContact?.hospital || '');
+        setProfilePhoto(selectedContact?.profile_photo || '');
+        setDonorType(selectedContact?.donor_type || '');
+        setNotes(selectedContact?.notes || '');
+        setCause(selectedContact?.causes?.length > 0 ? selectedContact.causes[0] : '');
+    }, [selectedContact]); // This effect depends on selectedContact
+
+
 
     const handleFileChange = (event) => {
-        setProfilePhoto(event.target.files[0]); // Capture the first file
+        if (event.target.files && event.target.files[0]) {
+            setProfilePhoto(event.target.files[0]);
+            // Optionally, create a URL for preview
+            // const filePreview = URL.createObjectURL(event.target.files[0]);
+            // setProfilePhotoPreview(filePreview);
+        } else {
+            setProfilePhoto(null);
+            // setProfilePhotoPreview(null);
+        }
     };
     const handleDonorTypeChange = (event) => {
 
         setDonorType(event.target.value);
     };
+    const handleCauseChange = (e) => {
+        setCause(e.target.value)
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -36,14 +67,19 @@ const ContactModal = () => {
         // }
         const contactData = new FormData();
         contactData.append('id', selectedContact?.id || '')
-        contactData.append('given_names', firstName);
-        contactData.append('last_names', lastName);
+        contactData.append('given_name', firstName);
+        contactData.append('last_name', lastName);
+        contactData.append('email', email);
         contactData.append('contact_type', contactType);
         contactData.append('company', company);
-        contactData.append('phone_number', phone_number);
+        contactData.append('phone_number', phoneNumber);
+        contactData.append('hospital', hospital)
+        contactData.append('notes', notes)
+        contactData.append('donor_type', donorType)
+        contactData.append('cause', cause)
 
         if (profilePhoto) {
-            formData.append('profile_photo', profilePhoto); // Ensure your backend expects this field
+            contactData.append('profile_photo', profilePhoto); // Ensure your backend expects this field
         }
         if (selectedContact) {
 
@@ -54,11 +90,21 @@ const ContactModal = () => {
                 toast.error('Please select a contact type (Donor or Patient)');
                 return;
             }
+            if (!firstName && !lastName) {
+                toast.error('Please give either a given name or last name')
+            }
             dispatch(addContact(contactData))
         }
         // So that Add Contact becomes available
         dispatch(setSelectedContact(null))
     }
+
+    useEffect(() => {
+        if (isSuccess) {
+            toast.success('Donor or Patient successfully created')
+        }
+        dispatch(reset())
+    }, [dispatch, isSuccess])
 
     return (
         <>
@@ -93,12 +139,15 @@ const ContactModal = () => {
                                 </div>
                                 <div className="col-span-6 sm:col-span-3">
                                     <label htmlFor="phone-number" className="block mb-2 text-sm font-medium text-gray-900 ">Phone Number</label>
-                                    <input type="number" name="phone-number" id="phone-number" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="e.g. +(12)3456 789" required="" />
+                                    <input type="tel" name="phone-number" id="phone-number" value={phoneNumber} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="e.g. +(12)3456 789" onChange={(e) => setPhoneNumber(e.target.value)} required="" />
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-3">
-                                    <label htmlFor="company" className="block mb-2 text-sm font-medium text-gray-900 ">Company</label>
-                                    <input type="number" name="company" id="company" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="123456" required="" />
+                                    {contactType === 'donor' ? <><label htmlFor="company" className="block mb-2 text-sm font-medium text-gray-900 ">Organization</label>
+                                        <input type="text" name="company" id="company" value={company} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Accra Company Limited" onChange={(e) => setCompany(e.target.value)} required="" /></> :
+
+                                        <><label htmlFor="company" className="block mb-2 text-sm font-medium text-gray-900 ">Hospital</label>
+                                            <input type="text" name="company" id="company" value={hospital} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Legon Hospital" onChange={(e) => setHospital(e.target.value)} required="" /></>}
                                 </div>
                                 <div className="col-span-6 sm:col-span-3">
                                     <div>Contact Type</div>
@@ -112,8 +161,8 @@ const ContactModal = () => {
                                     </div>
                                 </div>
                                 <div className="col-span-6 sm:col-span-3">
-                                    <label htmlFor="current-password" className="block mb-2 text-sm font-medium text-gray-900 " onChange={handleFileChange}>Upload Profile Photo</label>
-                                    <input type="file" name="current-password" id="current-password" accept="image/png, image/jpeg" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " />
+                                    <label htmlFor="current-password" className="block mb-2 text-sm font-medium text-gray-900 " >Upload Profile Photo</label>
+                                    <input key={selectedContact ? selectedContact.id : 'no-contact'} type="file" name="current-password" id="current-password" accept="image/png, image/jpeg" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " onChange={handleFileChange} />
                                 </div>
                                 {contactType === 'donor' ? <div className="col-span-6 sm:col-span-3">
                                     <label htmlFor="donor_type" className="block mb-2 text-sm font-medium text-gray-900 ">Donor Type</label>
@@ -126,13 +175,17 @@ const ContactModal = () => {
                                 </div> : null}
                                 {contactType === 'patient' ? <div className="col-span-6 sm:col-span-3">
                                     <label htmlFor="cause" className="block mb-2 text-sm font-medium text-gray-900 ">Cause</label>
-                                    <select name="cause" id="cause" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="" required="" value={donorType} onChange={handleDonorTypeChange}>
+                                    <select name="cause" id="cause" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="" required="" value={cause} onChange={handleCauseChange}>
                                         <option value="">Select a Cause</option>
-                                        <option value="broad_base_donor">Broad Base Donor</option>
-                                        <option value="mid_range_donor">Mid Range Donor</option>
-                                        <option value="major_donor">Major Donor</option>
+                                        {causes.map((cause) => (
+                                            <option key={cause?.id} value={cause?.title}>{cause?.title}</option>
+                                        ))}
                                     </select>
                                 </div> : null}
+                                <div className="col-span-6">
+                                    <label htmlFor="notes" className="block mb-2 text-sm font-medium text-gray-900 ">Notes</label>
+                                    <textarea type="text" name="last-name" id="notes" value={notes} className="resize-none shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5" placeholder="Notes about the individual" onChange={(e) => setNotes(e.target.value)} required=""></textarea>
+                                </div>
                             </div>
                         </div>
                         {/* // Modal Footer */}

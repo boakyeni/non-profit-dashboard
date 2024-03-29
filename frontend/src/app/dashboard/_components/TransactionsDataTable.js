@@ -5,6 +5,7 @@ import { isEqual } from "../../../utils/equalCheck"
 import { useEffect, useState, useRef } from "react"
 import ReactPaginate from 'react-paginate'
 import { useSearchParams } from "next/navigation"
+import { fetchTransactions, setSelectionType } from "../../lib/features/transactions/transactionSlice"
 
 
 
@@ -21,34 +22,49 @@ const TransactionsDataTable = ({ itemsPerPage }) => {
     const [currentItems, setCurrentItems] = useState(null);
     const [pageCount, setPageCount] = useState(0);
     const [itemOffset, setItemOffset] = useState(0);
-    /* State management for contacts */
+
+    /* State management for transactions */
     const dispatch = useDispatch()
+    const { transactions, selectionType } = useSelector((state) => state.transactions)
     /* Grabs all contacts */
     useEffect(() => {
         dispatch(fetchContacts())
         // these should not only dispact a fetch for transaction, but also set the current choice i.e. transtype
         if (contact) {
-
+            dispatch(fetchTransactions([contact]))
+            dispatch(setSelectionType('single'))
         } else if (selected) {
+            if (typeof window !== 'undefined') {
+                const select = localStorage.getItem('selectedContacts')
+
+                // select probablt needs JSON parse or unparsing
+                dispatch(fetchTransactions(select))
+                dispatch(setSelectionType('select'))
+            }
 
         } else if (all) {
-
+            dispatch(fetchTransactions())
+            dispatch(setSelectionType('all'))
         }
     }, [dispatch])
 
-    // waht transtype changes, fetch transactions based on transtype
-    // useEffect(() => {
-    //     // if (transtype === 'all') {
-    //     //     dispatch(fetchContacts())
-    //     // }
 
-    //     // these should not only dispact a fetch for transaction, but also set the current choice i.e. transtype
+    useEffect(() => {
+        if (selectionType === 'all') {
+            dispatch(fetchTransactions())
+        }
+        // these should not only dispact a fetch for transaction, but also set the current choice i.e. transtype
+    }, [dispatch, selectionType])
 
-    // }, [dispatch, transtype]) // transtype
+    const handleShowAll = () => {
+        dispatch(setSelectionType('all'))
+    }
+    const handleExportCurrentData = () => {
 
+    }
 
     /* holds contacts, whether action dropdown is open, and which contacts the user has selected */
-    const { contacts, searchResults, contactTableActionOpen, selectedContacts, selectedContact, editUserOpen, contactCardOpen, filter } = useSelector((state) => state.contact)
+    const { searchResults, contactTableActionOpen, selectedContact, contactCardOpen, filter } = useSelector((state) => state.contact)
 
     /* Handle click outside of dropdown to close drowdown */
     const tableActionRef = useRef(null)
@@ -65,6 +81,29 @@ const TransactionsDataTable = ({ itemsPerPage }) => {
         };
     }, [dispatch, contactTableActionOpen]);
 
+    useEffect(() => {
+
+        const active = isEqual(filter, initialFilterState) ? transactions : searchResults
+        const endOffset = itemOffset + itemsPerPage;
+        setCurrentItems(active.slice(itemOffset, endOffset));
+        setPageCount(Math.ceil(active.length / itemsPerPage));
+    }, [itemOffset, itemsPerPage, transactions, searchResults, filter]); // replace selectedContact with transtype
+
+    // Invoke when user click to request another page.
+    const handlePageClick = (event) => {
+        const newOffset = event.selected * itemsPerPage % currentItems.length;
+        console.log(`User requested page number ${event.selected}, which is offset ${newOffset}`);
+        setItemOffset(newOffset);
+    };
+
+    const handleSearchChange = (event) => {
+        dispatch(setSearchFilter(event.target.value))
+        dispatch(applyFilters())
+    };
+    useEffect(() => {
+        dispatch(applyFilters())
+    }, [dispatch, filter.contact_type])
+
     /* More Info opens a card, this makes sure the right user data is displayed in that card */
     const handleMoreInfoClick = (contact) => {
         if (!contactCardOpen) {
@@ -79,44 +118,6 @@ const TransactionsDataTable = ({ itemsPerPage }) => {
 
     }
 
-    const handleExportCurrentData = () => {
-
-    }
-
-
-    useEffect(() => {
-        const filteredContacts = contacts?.filter(contact => contact.contact_type === 'patient');
-        const filteredSearchResults = searchResults?.filter(contact => contact.contact_type === 'patient');
-
-        const active = isEqual(filter, initialFilterState) ? filteredContacts : filteredSearchResults
-        const endOffset = itemOffset + itemsPerPage;
-        setCurrentItems(active.slice(itemOffset, endOffset));
-        setPageCount(Math.ceil(active.length / itemsPerPage));
-    }, [itemOffset, itemsPerPage, contacts, searchResults, filter, selectedContact]); // replace selectedContact with transtype
-
-    // Invoke when user click to request another page.
-    const handlePageClick = (event) => {
-        const newOffset = event.selected * itemsPerPage % currentItems.length;
-        console.log(`User requested page number ${event.selected}, which is offset ${newOffset}`);
-        setItemOffset(newOffset);
-    };
-
-    const handleSearchChange = (event) => {
-        dispatch(setSearchFilter(event.target.value))
-        dispatch(applyFilters())
-    };
-
-
-
-    useEffect(() => {
-        dispatch(applyFilters())
-    }, [dispatch, filter.contact_type])
-
-    const handleShowAll = () => {
-        dispatch(removeAllFilters())
-        dispatch(applyFilters())
-        dispatch(toggleContactTableAction())
-    }
 
 
     const contactTypeMapping = {
@@ -193,8 +194,8 @@ const TransactionsDataTable = ({ itemsPerPage }) => {
                         </tr>
                     </thead>
                     <tbody className="">
-                        {currentItems && currentItems.map((contact) => (
-                            <tr key={contact.id} className="bg-white border-b  hover:bg-gray-50 " onClick={() => handleMoreInfoClick(contact)}>
+                        {currentItems && currentItems.map((transaction) => (
+                            <tr key={transaction.id} className="bg-white border-b  hover:bg-gray-50 " onClick={() => handleMoreInfoClick(transaction)}>
 
                                 <th scope="row" className="flex items-center py-4 text-gray-900 ">
 
@@ -215,7 +216,7 @@ const TransactionsDataTable = ({ itemsPerPage }) => {
                                 </td>
                                 <td className="px-6 py-4">
                                     {/* // Modal Toggle */}
-                                    <a href="#" onClick={() => handleMoreInfoClick(contact)} type="button" className="font-medium text-blue-600  hover:underline">Export Data</a>
+                                    <a href="#" onClick={() => handleMoreInfoClick(transaction)} type="button" className="font-medium text-blue-600  hover:underline">Export Data</a>
                                 </td>
                             </tr>
                         ))}

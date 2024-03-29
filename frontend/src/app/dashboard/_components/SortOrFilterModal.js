@@ -45,7 +45,7 @@ const SortOrFilterModal = () => {
                                     <div htmlFor="donor-type" className="block mb-2 text-sm font-medium text-gray-900 ">Donor Type</div>
                                     <div className="place-items-center flex space-x-3">
 
-                                        <input type="checkbox" id="major_donors" name="major_donors" value={checkboxes['major_donors']} checked={checkboxes['major_donors']} onChange={handleCheckboxChange('major_donor')} />
+                                        <input type="checkbox" id="major_donors" name="major_donors" value={checkboxes['major_donors']} checked={checkboxes['major_donor']} onChange={handleCheckboxChange('major_donor')} />
                                         <label htmlFor="major_donors">Major Donors</label>
                                     </div>
                                     <div className="place-items-center flex space-x-3">

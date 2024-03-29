@@ -1,5 +1,6 @@
 'use client'
 
+import CauseModal from "../../_components/CauseModal"
 import ContactCard from "../../_components/ContactCard"
 import ContactModal from "../../_components/ContactModal"
 import DeleteContactConfirm from "../../_components/DeleteContactConfirm"
@@ -16,6 +17,7 @@ const PatientTransactionsPage = () => {
             <TrackFundsModal />
             <ContactModal />
             <DeleteContactConfirm />
+            <CauseModal />
         </div>
     )
 }

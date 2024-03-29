@@ -1,14 +1,15 @@
 import csv
 import magic
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from django.db import transaction
 from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
 from .models import AccountProfile, PhoneNumber, Company
-from apps.donor_management.models import Donor
-from apps.donor_management.serializers import DonorSerializer
+from apps.donor_management.models import Donor, LeadType
+from apps.donor_management.serializers import DonorSerializer, LeadTypeSerializer
+from apps.campaigns.models import Cause
 from apps.campaigns.serializers import PatientSerializer
 from .serializers import (
     AccountProfileSerializer,
@@ -131,40 +132,81 @@ class addContact(APIView):
 
     @transaction.atomic
     def post(self, request):
-        data = request.data
-        name = data.get("given_name") + data.get("last_name")
+        data = (
+            request.data.copy()
+        )  # THIS IS IMPORTANT, SINCE IT IS FORM DATA THE DATA OBJECT IS IMMUTABLE
+        name = data.get("given_name") + " " + data.get("last_name")
         data["name"] = name
 
         profile_photo = request.FILES.get("profile_photo")
         if profile_photo:
             # Handle the file upload. For example, saving the file to a model associated with the contact.
             validate_file_type(profile_photo)
-
-        if "company" in data:
+        # Add company relation to AccountProfile model
+        if data.get("company"):
             company_name = data["company"]
             company_data = {"name": company_name}
-            company_serializer = CompanySerializer(data=company_data)
-            company_serializer.is_valid(raise_exception=True)
-            company_instance = company_serializer.save()
+            try:
+                company_instance = Company.objects.get(name__iexact=company_name)
+            except Company.DoesNotExist:
+                company_serializer = CompanySerializer(data=company_data)
+                company_serializer.is_valid(raise_exception=True)
+                company_instance = company_serializer.save()
             data["company"] = company_instance.id
 
-        account_serializer = AccountProfileSerializer(data=data)
-        account_serializer.is_valid(raise_exception=True)
-        account_instance = account_serializer.save()
+        # add lead type relation to Donor model
+        donor_type = data.get("donor_type")
+        if donor_type:
+            try:
+                lead_type_instance = LeadType.objects.get(lead_type=donor_type)
+            except LeadType.DoesNotExist:
+                lead_type_serializer = LeadTypeSerializer(
+                    data={"lead_type": donor_type}
+                )
+                lead_type_serializer.is_valid(raise_exception=True)
+                lead_type_instance = lead_type_serializer.save()
 
-        if "contact_type" in data:
+            data["donor_type"] = lead_type_instance.id
+
+        account_serializer = AccountProfileSerializer(data=data)
+
+        account_serializer.is_valid(raise_exception=True)
+
+        account_instance = account_serializer.save()
+        patient_instance = None
+        donor_instance = None
+        if data.get("contact_type"):
             if data["contact_type"].lower() == "donor":
-                type_data = {"donor_profile": account_instance.id}
+                type_data = {
+                    "donor_profile": account_instance.id,
+                    "donor_type": data.get("donor_type"),
+                    "notes": data.get("notes"),
+                }
                 donor_serializer = DonorSerializer(data=type_data)
                 donor_serializer.is_valid(raise_exception=True)
-                donor_serializer.save()
+                donor_instance = donor_serializer.save()
             elif data["contact_type"].lower() == "patient":
-                type_data = {"profile": account_instance.id}
+                type_data = {
+                    "profile": account_instance.id,
+                    "notes": data.get("notes"),
+                    "hospital": data.get("hospital"),
+                }
                 patient_serializer = PatientSerializer(data=type_data)
                 patient_serializer.is_valid(raise_exception=True)
-                patient_serializer.save()
+                patient_instance = patient_serializer.save()
 
-        if "phone_number" in data:
+        if patient_instance and data.get("cause"):
+            try:
+                cause_instance = Cause.objects.get(title=data.get("cause"))
+                patient_instance.causes.add(cause_instance)
+                patient_instance.save()
+            except Cause.DoesNotExist:
+                return Response(
+                    "Cause does not exist, error creating patient",
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+        # Add phone_number relation to AccountProfile model
+        if data.get("phone_number"):
             phone_data = {
                 "number": data["phone_number"],
                 "profile": account_instance.id,
@@ -177,3 +219,10 @@ class addContact(APIView):
             AccountProfileReturnSerializer(instance=account_instance).data,
             status=status.HTTP_201_CREATED,
         )
+
+
+class GetContacts(generics.ListAPIView):
+    serializer_class = AccountProfileReturnSerializer
+
+    def get_queryset(self):
+        return AccountProfile.objects.all()

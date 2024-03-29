@@ -1,6 +1,6 @@
 'use client'
 import { useDispatch, useSelector } from "react-redux"
-import { fetchContacts, setSelectedContact, toggleContactCard, toggleContactTableAction, toggleContactSelection, toggleAllContacts, toggleEditUser, toggleContactSortModal, setSearchFilter, applyFilters, moreInfoClick, toggleUploadContactModal, setContactTypeFilter, initialFilterState, removeAllFilters, handleContactTypeChange, handleApplyFilters } from "../../lib/features/contacts/contactSlice"
+import { fetchContacts, setSelectedContact, toggleContactCard, toggleContactTableAction, toggleContactSelection, toggleAllContacts, toggleEditUser, toggleContactSortModal, setSearchFilter, applyFilters, moreInfoClick, toggleUploadContactModal, setContactTypeFilter, initialFilterState, removeAllFilters, handleContactTypeChange, handleApplyFilters, fetchCauses } from "../../lib/features/contacts/contactSlice"
 import { isEqual } from "../../../utils/equalCheck"
 import { useEffect, useState, useRef } from "react"
 import ReactPaginate from 'react-paginate'
@@ -14,6 +14,7 @@ const ContactsTable = ({ itemsPerPage }) => {
     /* Grabs all contacts */
     useEffect(() => {
         dispatch(fetchContacts())
+        dispatch(fetchCauses()) // here since this component should always render i.e. doesn't start off hidden
     }, [dispatch])
 
 
@@ -242,7 +243,7 @@ const ContactsTable = ({ itemsPerPage }) => {
                                 </td>
                                 <td className="max-sm:hidden px-6 py-4">
                                     <div className="flex items-center">
-                                        <div className={`h-2.5 w-2.5 rounded-full me-2 ${leadTypeColorMapping[contact.lead_type] || 'bg-purple-500'}`}></div> {contactTypeMapping[contact.lead_type] || 'Patient or n/a'}
+                                        <div className={`h-2.5 w-2.5 rounded-full me-2 ${leadTypeColorMapping[contact.donor_type] || (contact?.contact_type === 'patient' ? 'bg-purple-500' : 'bg-gray-500')}`}></div> {contactTypeMapping[contact.donor_type] || (contact?.contact_type === 'patient' ? 'Patient' : 'unknown')}
                                     </div>
                                 </td>
                                 <td className="px-6 py-4">

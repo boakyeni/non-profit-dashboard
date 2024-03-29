@@ -35,6 +35,14 @@ class Donation(models.Model):
         return f"{self.donor.name} - {self.amount}"
 
 
+class Cause(models.Model):
+    title = models.CharField(max_length=500, blank=True, null=True, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.title if self.title else "Cause"
+
+
 class Patient(models.Model):
     profile = models.OneToOneField(
         AccountProfile,
@@ -42,18 +50,10 @@ class Patient(models.Model):
         default=None,
         related_name="patient_profile",
     )
-    hospital = models.CharField(max_length=100)
-    description = models.TextField(max_length=250)
-    illness = models.CharField(max_length=100)
+    hospital = models.CharField(max_length=100, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+    illness = models.CharField(max_length=100, blank=True, null=True)
+    causes = models.ManyToManyField(Cause, blank=True, related_name="patients")
 
     def __str__(self):
-        return self.name
-
-
-class Cause(models.Model):
-    patients_name = models.ManyToManyField("Patient")
-    description = models.TextField(max_length=250)
-    campaign_type = models.ManyToManyField("MonetaryCampaign")
-
-    def __str__(self):
-        return self.description
+        return self.profile.name

@@ -49,7 +49,7 @@ const PreviewForm = () => {
 
 
         try {
-            const response = await apiClient.post('http://localhost:8000/api/donor_management/send-newsletter/', formData, {
+            const response = await apiClient.post('http://localhost:8000/api/donor-management/send-newsletter/', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
