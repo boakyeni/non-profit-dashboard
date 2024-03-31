@@ -21,7 +21,7 @@ class LeadType(models.Model):
     )
 
     def __str__(self):
-        return self.type
+        return self.lead_type
 
 
 # Create your models here.

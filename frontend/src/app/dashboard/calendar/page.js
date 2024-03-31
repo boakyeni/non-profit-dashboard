@@ -24,19 +24,20 @@ const CalendarPage = () => {
 
     // Grab state from db, this updates the events variable above
     useEffect(() => {
-        dispatch(getEvents())
-        // dispatch(getCalendars())
+        // dispatch(getEvents())
+        dispatch(getCalendars())
         if (typeof window !== 'undefined') {
             const calendar_id = localStorage.getItem('current_calendar')
             dispatch(setCurrentCalendarId(calendar_id));
             // Check if `calendars` is truthy and has at least one item before proceeding
         }
 
-    }, [dispatch, calendars])
+    }, [dispatch])
 
     useEffect(() => {
         if (calendars && calendars.length > 0) {
-            const foundCalendar = calendars.find(it => it.id === currentCalendarId) || calendars[0];
+            const foundCalendar = calendars.find(it => String(it.id) === String(currentCalendarId));
+
             dispatch(setCalendar(foundCalendar))
         }
     }, [currentCalendarId, calendars, dispatch]);
@@ -82,12 +83,11 @@ const CalendarPage = () => {
                         {/* Dropdown */}
                         <div id="calendarDropdown" className={`${calendarActionOpen ? '' : 'hidden'} absolute right-0 p-2 top-full z-10 bg-white divide-y divide-gray-100 rounded-lg max-sm:rounded-r-none shadow w-44 text-gray-700 `}>
                             <ul className="py-1 text-sm overflow-y-scroll max-sm:max-h-[30vh] max-h-[50vh]" aria-labelledby="calendarDropdownButton">
-                                <li>
-                                    <button onClick={() => handleCalendarSelection(1)} className="block px-4 py-2 w-full text-left hover:bg-gray-100 rounded-lg  ">Personal Calendar</button>
-                                </li>
-                                <li>
-                                    <button onClick={() => handleCalendarSelection(2)} className="block px-4 py-2 hover:bg-gray-100 w-full rounded-lg text-left " >Collaborative Calendar</button>
-                                </li>
+                                {calendars.map((cal) => (
+                                    <li key={cal.id}>
+                                        <button onClick={() => handleCalendarSelection(cal.id)} className="block px-4 py-2 w-full text-left hover:bg-gray-100 rounded-lg  ">{cal?.name}</button>
+                                    </li>
+                                ))}
 
                             </ul>
                             <div className="py-1">

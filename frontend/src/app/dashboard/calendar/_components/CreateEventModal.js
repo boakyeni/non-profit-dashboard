@@ -41,6 +41,7 @@ const CreateEventModal = () => {
     const handleAddNewEvent = () => {
         const newEvent = {
             ...selectedEvent,
+            cal_id: localStorage.getItem('current_calendar'),
             title: localTitle,
             start: localStartDate,
             end: localEndDate,

@@ -35,6 +35,7 @@ const AddColaboratorsTable = ({ itemsPerPage }) => {
 
     useEffect(() => {
         const active = isEqual(filter, initialFilterState) ? users : searchResults
+        setActiveContacts(active)
         const endOffset = itemOffset + itemsPerPage;
         setCurrentItems(active.slice(itemOffset, endOffset));
         setPageCount(Math.ceil(active.length / itemsPerPage));
@@ -43,7 +44,7 @@ const AddColaboratorsTable = ({ itemsPerPage }) => {
 
     // Invoke when user click to request another page.
     const handlePageClick = (event) => {
-        const newOffset = event.selected * itemsPerPage % currentItems.length;
+        const newOffset = event.selected * itemsPerPage % activeContacts.length;
         console.log(`User requested page number ${event.selected}, which is offset ${newOffset}`);
         setItemOffset(newOffset);
     };
@@ -110,9 +111,9 @@ const AddColaboratorsTable = ({ itemsPerPage }) => {
 
                                     <div className="">
                                         <div className="text-base break-words font-semibold flex flex-col">
-                                            <span>{user?.name}</span>
+                                            <span>{user?.full_name}</span>
                                         </div>
-                                        <div className="font-normal text-gray-500">neil.sims@flowbite.com</div>
+                                        <div className="font-normal text-gray-500">{user?.email}</div>
                                     </div>
                                 </th>
 

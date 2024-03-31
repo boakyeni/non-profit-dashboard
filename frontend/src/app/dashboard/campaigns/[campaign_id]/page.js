@@ -144,7 +144,7 @@ const CampaignDetails = ({ params }) => {
 
                     </div >
                     <div className=" h-[200px] bg-white shadow-md rounded-xl flex flex-col relative overflow-visible">
-                        <h3 className="h-1/4 pt-6 px-4 font-bold text-center pb-10">View Other Statistics</h3>
+                        <h3 className="h-1/4 pt-6 px-4 font-bold text-center pb-10">View Subscribers</h3>
                         <div className="flex h-1/4 justify-around p-6">
                             <LuBarChart3 className="scale-[1.75] " />
                         </div>

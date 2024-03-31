@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { LuX } from "react-icons/lu"
-import { toggleEditUser, addContact, editContact, setSelectedContact, reset } from "../../lib/features/contacts/contactSlice"
+import { toggleEditUser, addContact, editContact, setSelectedContact, reset, toggleContactCard } from "../../lib/features/contacts/contactSlice"
 import { toast } from "react-toastify"
 
 
@@ -28,7 +28,7 @@ const ContactModal = () => {
         setLastName(selectedContact?.last_name || '');
         setEmail(selectedContact?.email || '');
         setContactType(selectedContact?.contact_type || '');
-        setPhoneNumber(selectedContact?.phone_number || '');
+        setPhoneNumber(selectedContact?.phone_number[0] || '');
         setCompany(selectedContact?.company || '');
         setHospital(selectedContact?.hospital || '');
         setProfilePhoto(selectedContact?.profile_photo || '');
@@ -95,13 +95,27 @@ const ContactModal = () => {
             }
             dispatch(addContact(contactData))
         }
-        // So that Add Contact becomes available
-        dispatch(setSelectedContact(null))
+
     }
 
     useEffect(() => {
         if (isSuccess) {
-            toast.success('Donor or Patient successfully created')
+            toast.success('Changes Successfull!')
+            // So that Add Contact becomes available
+            dispatch(setSelectedContact(null))
+
+            setFirstName('');
+            setLastName('');
+            setEmail('');
+            setContactType('');
+            setPhoneNumber('');
+            setCompany('');
+            setHospital('');
+            setProfilePhoto('');
+            setDonorType('');
+            setNotes('');
+            setCause('');
+
         }
         dispatch(reset())
     }, [dispatch, isSuccess])
@@ -140,6 +154,14 @@ const ContactModal = () => {
                                 <div className="col-span-6 sm:col-span-3">
                                     <label htmlFor="phone-number" className="block mb-2 text-sm font-medium text-gray-900 ">Phone Number</label>
                                     <input type="tel" name="phone-number" id="phone-number" value={phoneNumber} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="e.g. +(12)3456 789" onChange={(e) => setPhoneNumber(e.target.value)} required="" />
+                                    {/* Needs better UI */}
+                                    <ul className="flex flex-wrap">
+                                        {selectedContact?.phone_number.map((number) => (
+                                            <li key={number}>
+                                                {number}
+                                            </li>
+                                        ))}
+                                    </ul>
                                 </div>
 
                                 <div className="col-span-6 sm:col-span-3">

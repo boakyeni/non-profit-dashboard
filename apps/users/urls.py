@@ -12,4 +12,5 @@ urlpatterns = [
     path("users/me/", views.get_logged_in_user, name="get_logged_in"),
     path("users/logout/", views.logout, name="logout"),
     path("users/set_password/", views.set_password),
+    path("users/all/", views.GetUsers.as_view()),
 ]

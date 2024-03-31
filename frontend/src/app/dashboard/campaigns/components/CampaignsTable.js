@@ -36,11 +36,12 @@ const CampaignsTable = ({ itemsPerPage }) => {
     const [currentItems, setCurrentItems] = useState(null);
     const [pageCount, setPageCount] = useState(0);
     const [itemOffset, setItemOffset] = useState(0);
+    const [activeCampaigns, setActiveCampaigns] = useState([])
 
     useEffect(() => {
 
         const active = isEqual(filter, initialFilterState) ? campaigns : searchResults
-        console.log(searchResults, 'hhh')
+        setActiveCampaigns(active)
         const endOffset = itemOffset + itemsPerPage;
         console.log(`Loading items from ${itemOffset} to ${endOffset}`);
         setCurrentItems(active.slice(itemOffset, endOffset));
@@ -49,7 +50,7 @@ const CampaignsTable = ({ itemsPerPage }) => {
 
     // Invoke when user click to request another page.
     const handlePageClick = (event) => {
-        const newOffset = event.selected * itemsPerPage % items.length;
+        const newOffset = (event.selected * itemsPerPage) % activeCampaigns.length;
         console.log(`User requested page number ${event.selected}, which is offset ${newOffset}`);
         setItemOffset(newOffset);
     };

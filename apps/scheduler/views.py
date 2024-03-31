@@ -37,6 +37,7 @@ from rest_framework_simplejwt.authentication import (
     JWTAuthentication,
     JWTStatelessUserAuthentication,
 )
+from django.utils.text import slugify
 
 
 class EventCreateView(APIView):
@@ -61,7 +62,7 @@ class EventCreateView(APIView):
         """
         HERE WE ARE TESTING, THIS SHOULD BE REPLACED WITH EITHER THE INSTITUTIONS CALENDAR OR PERSONAL CALENDAR
         """
-        data["calendar"] = Calendar.objects.get(name="Test").id
+        data["calendar"] = Calendar.objects.get(id=data.get("cal_id")).id
         """
         TEST
         """
@@ -78,13 +79,27 @@ class EventCreateView(APIView):
         return Response(event_serializer.data, status=status.HTTP_201_CREATED)
 
 
+def generate_unique_slug(model_class, title):
+    """
+    django-scheduler models aren't great but i'd rather not touch them/
+    This function is here so that the slug field in the Calendar model is unique
+    """
+    original_slug = slugify(title)
+    unique_slug = original_slug
+    num = 1
+    while model_class.objects.filter(slug=unique_slug).exists():
+        unique_slug = "{}-{}".format(original_slug, num)
+        num += 1
+    return unique_slug
+
+
 @api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
-# @authentication_classes([JWTAuthentication])
+@authentication_classes([JWTAuthentication])
 @transaction.atomic
 def create_calendar_view(request):
     data = request.data
-
+    data["slug"] = generate_unique_slug(Calendar, data.get("name"))
     calendar_serializer = CalendarSerializer(data=data)
     calendar_serializer.is_valid(raise_exception=True)
     calendar_instance = calendar_serializer.save()
@@ -95,8 +110,32 @@ def create_calendar_view(request):
     add_serializer.is_valid(raise_exception=True)
     add_instance = add_serializer.save()
     add_instance.users.add(request.user.id)
+    if not data.get("private"):
+        for uid in data.get("users"):
+            add_instance.users.add(uid)
     add_instance.save()
     return Response(calendar_serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(["POST"])
+@permission_classes([permissions.IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+@transaction.atomic
+def invite_to_calendar_view(request):
+    data = request.data
+    try:
+        add_info_instance = AdditionalCalendarInfo.objects.get(calendar=data.get("id"))
+    except AdditionalCalendarInfo.DoesNotExist:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    if add_info_instance.private:
+        return Response(
+            "Cannot add collaborators to a private calendar",
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    for uid in data.get("users"):
+        add_info_instance.users.add(uid)
+    add_info_instance.save()
+    return Response("Users succesfully added", status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])
@@ -134,11 +173,11 @@ def get_calendar_events(request):
 
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])
-# @authentication_classes([JWTAuthentication])
+@authentication_classes([JWTAuthentication])
 def get_calendars(request):
     users_calendars_info = AdditionalCalendarInfo.objects.filter(
         users=request.user
-    ).select_related("calendar")
+    ).prefetch_related("calendar")
     users_calendars = [info.calendar for info in users_calendars_info]
     serializer = CalendarSerializer(instance=users_calendars, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)

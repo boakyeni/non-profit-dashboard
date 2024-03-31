@@ -57,6 +57,8 @@ class AccountProfile(models.Model):
         Company, on_delete=models.CASCADE, default=None, blank=True, null=True
     )
     profile_photo = models.FileField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    is_patient = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -70,4 +72,4 @@ class PhoneNumber(models.Model):
     )
 
     def __str__(self):
-        return self.number if self.number else None
+        return str(self.number) if self.number else None

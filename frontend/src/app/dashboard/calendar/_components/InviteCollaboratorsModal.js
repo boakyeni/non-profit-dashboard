@@ -1,20 +1,39 @@
 'use client'
 import { useSelector, useDispatch } from "react-redux"
 import { LuX } from "react-icons/lu"
-import { toggleInviteModal } from "../../../lib/features/events/eventSlice"
+import { inviteCalendar, reset, resetSelectedUsers, toggleInviteModal } from "../../../lib/features/events/eventSlice"
 import { useState, useEffect } from "react"
 import AddColaboratorsTable from "./AddCollaboratorsTable"
+import { toast } from "react-toastify"
 
 
 const InviteCollaboratorsModal = () => {
     const dispatch = useDispatch()
-    const { inviteModalOpen } = useSelector((state) => state.events)
+    const { inviteModalOpen, selectedUsers, error } = useSelector((state) => state.events)
     const [localTitle, setLocalTitle] = useState('');
     useEffect(() => {
         setLocalTitle("");
     }, []);
     const handleTitleChange = (e) => {
         setLocalTitle(e.target.value)
+    }
+
+    useEffect(() => {
+        if (error) {
+            toast.error(error)
+        }
+    }, [dispatch, error])
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        const data = {
+            id: localStorage.getItem('current_calendar'),
+            users: selectedUsers,
+        }
+        dispatch(inviteCalendar(data))
+        dispatch(toggleInviteModal())
+        dispatch(resetSelectedUsers())
+        dispatch(reset())
     }
     return (
         <>
@@ -44,7 +63,7 @@ const InviteCollaboratorsModal = () => {
                         </div>
                         {/* // Modal Footer */}
                         <div className="flex items-center p-6 space-x-3 rtl:space-x-reverse border-t border-gray-200 rounded-b ">
-                            <button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center " >Invite</button>
+                            <button onClick={handleSubmit} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center " >Invite</button>
 
                         </div>
                     </form>

@@ -70,14 +70,16 @@ const ContactsTable = ({ itemsPerPage }) => {
 
     useEffect(() => {
         const active = isEqual(filter, initialFilterState) ? contacts : searchResults
+        setActiveContacts(active)
         const endOffset = itemOffset + itemsPerPage;
         setCurrentItems(active.slice(itemOffset, endOffset));
         setPageCount(Math.ceil(active.length / itemsPerPage));
+
     }, [itemOffset, itemsPerPage, contacts, searchResults, filter, selectedContact]);
 
     // Invoke when user click to request another page.
     const handlePageClick = (event) => {
-        const newOffset = event.selected * itemsPerPage % currentItems.length;
+        const newOffset = (event.selected * itemsPerPage) % activeContacts.length;
         console.log(`User requested page number ${event.selected}, which is offset ${newOffset}`);
         setItemOffset(newOffset);
     };

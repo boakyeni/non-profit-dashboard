@@ -16,7 +16,7 @@ from rest_framework.decorators import (
     authentication_classes,
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework import status
+from rest_framework import status, generics
 import requests
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
@@ -31,6 +31,12 @@ from django.contrib.auth import (
     logout,
 )
 from django.template.loader import render_to_string
+from schedule.models import Calendar
+from apps.scheduler.serializers import (
+    CalendarSerializer,
+    AdditionalCalendarInfoSerializer,
+)
+from django.utils.text import slugify
 
 CENTRAL_AUTH_URL = settings.CENTRAL_AUTH_URL
 User = get_user_model()
@@ -86,6 +92,29 @@ def login_view(request):
     )
 
 
+class GetUsers(generics.ListAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def get_queryset(self):
+        return User.objects.all()
+
+
+def generate_unique_slug(model_class, title):
+    """
+    django-scheduler models aren't great but i'd rather not touch them/
+    This function is here so that the slug field in the Calendar model is unique
+    """
+    original_slug = slugify(title)
+    unique_slug = original_slug
+    num = 1
+    while model_class.objects.filter(slug=unique_slug).exists():
+        unique_slug = "{}-{}".format(original_slug, num)
+        num += 1
+    return unique_slug
+
+
 @api_view(["POST"])
 @permission_classes([AllowAny])
 @transaction.atomic
@@ -104,6 +133,25 @@ def signup_view(request):
     serializer = CreateUserSerializer(data=user_data)
     serializer.is_valid(raise_exception=True)
     user = serializer.save()
+
+    # Each user gets a private personal calendar
+    calendar_serializer = CalendarSerializer(
+        data={
+            "name": "Personal Calendar",
+            "slug": generate_unique_slug(Calendar, "Personal Calendar"),
+        }
+    )
+    calendar_serializer.is_valid(raise_exception=True)
+    calendar_instance = calendar_serializer.save()
+
+    info_cal_serializer = AdditionalCalendarInfoSerializer(
+        data={"calendar": calendar_instance.id, "private": True}
+    )
+    info_cal_serializer.is_valid(raise_exception=True)
+    info_cal_instance = info_cal_serializer.save()
+
+    info_cal_instance.users.add(user)
+    info_cal_instance.save()
 
     # Send user data to centralized service for account creation
 

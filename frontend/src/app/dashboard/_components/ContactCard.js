@@ -1,5 +1,5 @@
 'use client'
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { toggleContactCard, toggleContactCardMore, toggleEditUser, toggleDeleteModal, setSelectedContact, toggleTrackFundsModal } from '../../lib/features/contacts/contactSlice'
 import { useDispatch } from 'react-redux'
@@ -11,6 +11,7 @@ import { LuUser2 } from "react-icons/lu"
 const ContactCard = () => {
     const dispatch = useDispatch()
     const { selectedContact, contactCardOpen, contactCardMoreOpen, editUserOpen } = useSelector((state) => state.contact)
+    const [imageError, setImageError] = useState(false);
     const handleContactClose = () => {
 
         dispatch(toggleContactCard())
@@ -78,7 +79,14 @@ const ContactCard = () => {
 
                     <div className="flex flex-col items-center pb-10 w-full">
                         <div className='w-16 h-16 mx-auto flex items-center justify-around rounded-full'>
-                            {selectedContact?.profile_photo || <LuUser2 className="scale-[4.0] rounded-full bg-slate-200 stroke-1" />}
+                            {!imageError && selectedContact?.profile_photo
+                                ? <img
+                                    src={selectedContact.profile_photo}
+                                    alt="Profile"
+                                    onError={() => setImageError(true)}
+                                />
+                                : <LuUser2 className="scale-[4.0] rounded-full bg-slate-200 stroke-1" />
+                            }
                         </div>
                         <h5 className="mb-1 text-xl font-medium text-gray-900 ">{selectedContact?.name}</h5>
                         <span className="text-sm text-gray-500 dark:text-gray-400">{selectedContact?.email}</span>
