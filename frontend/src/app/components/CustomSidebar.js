@@ -7,7 +7,7 @@ import { CiCalendarDate } from 'react-icons/ci'
 import { GoPerson } from 'react-icons/go'
 import { PiNewspaperClippingThin, PiChartLineUp } from 'react-icons/pi'
 import SidebarAccordian from "./SidebarAccordian"
-import { LuTornado, LuUsers2, LuX, LuScatterChart, LuKanbanSquareDashed, LuUser2, LuHeart } from "react-icons/lu"
+import { LuTornado, LuUsers2, LuX, LuScatterChart, LuKanbanSquareDashed, LuUser2, LuHeart, LuThumbsUp, LuHeartHandshake } from "react-icons/lu"
 import { useDispatch, useSelector } from "react-redux"
 
 import { toggleSidebar } from "../lib/features/dropdown/dropdownSlice"
@@ -51,7 +51,7 @@ const CustomSidebar = () => {
                         <CustomSidebarLink title="Contacts" icon={<LuUsers2 className="scale-[1.75] stroke-1" />} href="/dashboard/contacts" />
                         <CustomSidebarLink title="Patients" icon={<LuHeart className="scale-[1.5] stroke-1" />} href="/dashboard/patients/transactions" />
                         <CustomSidebarLink title="Analytics" icon={<LuScatterChart className="scale-[1.5] stroke-1" />} href="/dashboard/analytics" />
-                        <CustomSidebarLink title="Campaigns" icon={<FaCediSign className="scale-[1.5] stroke-1" />} href={`/dashboard/campaigns`} />
+                        <CustomSidebarLink title="Campaigns" icon={<LuHeartHandshake className="scale-[1.55] stroke-1" />} href={`/dashboard/campaigns`} />
                         <SidebarAccordian title="Tasks" subtitles={["Kanban", "Appointments"]} icons={[<LuKanbanSquareDashed className="scale-[1.5]" />, <LuTornado className="scale-[1.5]" />]} />
                         <CustomSidebarLink title="Profile" icon={<LuUser2 className="scale-[1.5] stroke-1" />} href="/dashboard/profile" click={handleProfileClick} />
                     </div>

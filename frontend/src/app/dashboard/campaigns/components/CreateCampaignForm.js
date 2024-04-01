@@ -2,7 +2,19 @@
 import ContactModal from "../../_components/ContactModal"
 import SortOrFilterModal from "../../_components/SortOrFilterModal"
 import SubscriberTable from "../../_components/SubscriberTable"
+import DateComponent from "../../_components/DateComponent"
+import { useState, useEffect } from "react"
+
 const CreateCampaignForm = () => {
+    const [localStartDate, setLocalStartDate] = useState(new Date())
+    const [localEndDate, setLocalEndDate] = useState(new Date())
+
+    const handleStartDateChange = () => {
+
+    }
+    const handleEndDateChange = () => {
+
+    }
     return (
         <>
             <div id="createEventModal" tabIndex="-1" aria-hidden="true" className={` p-4 h-max lg:m-auto max-lg:w-full`}>
@@ -29,11 +41,18 @@ const CreateCampaignForm = () => {
                                         <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 ">Title</label>
                                         <input type="text" name="title" id="title" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Bonnie" required="" />
                                     </div>
-
-                                    <div className="col-span-6 sm:col-span-4">
-                                        <label htmlFor="select-date" className="block mb-2 text-sm font-medium text-gray-900 ">Select Type</label>
-                                        <input type="text" name="select-date" id="select-date" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5" placeholder="Green" required="" />
+                                    <div className="flex flex-row w-full space-x-3">
+                                        <div className="max-sm:w-1/2">
+                                            <label htmlFor="select-date" className="block mb-2 text-sm font-medium text-gray-900 ">Select Start</label>
+                                            <DateComponent selected={localStartDate} setDate={handleStartDateChange} />
+                                        </div>
+                                        {/* <div className="max-sm:w-1/2">
+                                            <label htmlFor="select-date" className="block mb-2 text-sm font-medium text-gray-900 ">Select End</label>
+                                            <DateComponent selected={localEndDate} setDate={handleEndDateChange} />
+                                        </div> */}
                                     </div>
+
+
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 ">Description</label>
                                         <textarea name="description" id="description" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Write a description here" required="" />
@@ -44,16 +63,20 @@ const CreateCampaignForm = () => {
                                         <div className="mt-1 text-sm text-gray-500 " id="user_avatar_help">Please limit file size to 10MB</div>
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="phone-number" className="block mb-2 text-sm font-medium text-gray-900 ">Phone Number</label>
-                                        <input type="number" name="phone-number" id="phone-number" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="e.g. +(12)3456 789" required="" />
+                                        <label htmlFor="currency" className="block mb-2 text-sm font-medium text-gray-900 ">Currency</label>
+                                        <select name="currency" id="currency" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Development" required="">
+                                            <option value="cedi">₵ GHC</option>
+                                            <option value="dollar">$ USD</option>
+                                            <option value="euro">€ EUR</option>
+                                        </select>
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="department" className="block mb-2 text-sm font-medium text-gray-900 ">Department</label>
-                                        <input type="text" name="department" id="department" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Development" required="" />
+                                        <label htmlFor="goal" className="block mb-2 text-sm font-medium text-gray-900 ">Goal</label>
+                                        <input type="number" min="1" step="any" name="goal" id="goal" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="10000" required="" />
                                     </div>
+
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="company" className="block mb-2 text-sm font-medium text-gray-900 ">Company</label>
-                                        <input type="number" name="company" id="company" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="123456" required="" />
+
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">

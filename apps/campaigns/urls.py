@@ -3,7 +3,6 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     CampaignViewSet,
     PatientViewSet,
-    DonorViewSet,
     CampaignCauseViewSet,
 )
 from . import views
@@ -12,7 +11,6 @@ from . import views
 router = DefaultRouter()
 router.register("campaigns", CampaignViewSet, basename="campaigns")
 router.register("patients", PatientViewSet, basename="patients")
-router.register("donors", DonorViewSet, basename="donors")
 router.register("causes", CampaignCauseViewSet, basename="causes")
 
 

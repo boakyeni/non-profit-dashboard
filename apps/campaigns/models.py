@@ -16,6 +16,7 @@ class MonetaryCampaign(models.Model):
     start_date = models.DateField(default=date.today)
     end_date = models.DateField(blank=True, null=True)
     subscribers = models.ManyToManyField(AccountProfile, blank=True)
+    photo = models.FileField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -27,7 +28,7 @@ class Donation(models.Model):
         Donor, on_delete=models.CASCADE, default=None, related_name="Donations"
     )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    campaign_type = models.ManyToManyField(MonetaryCampaign)
+    campaign = models.ManyToManyField(MonetaryCampaign, blank=True)
     currency = models.CharField(max_length=100)
     date = models.DateField(auto_now=True)
 

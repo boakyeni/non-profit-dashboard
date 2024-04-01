@@ -1,21 +1,23 @@
 from rest_framework import viewsets, status, permissions, generics
+from utils.photo_validation import validate_file_type
 from rest_framework.response import Response
-from rest_framework.exceptions import NotFound
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import (
     api_view,
     permission_classes,
     authentication_classes,
+    parser_classes,
 )
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import MonetaryCampaign, Patient, Donation, Cause
 from .serializers import (
     MonetaryCampaignSerializer,
     PatientSerializer,
-    CampaignDonorSerializer,
     DonationSerializer,
     CauseSerializer,
 )
 from django.db import transaction
+from apps.contact_analytics.models import AccountProfile
 
 
 class CampaignViewSet(viewsets.ModelViewSet):
@@ -43,11 +45,6 @@ class PatientViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(instance=queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class DonorViewSet(viewsets.ModelViewSet):
-    queryset = Donation.objects.all()
-    serializer_class = CampaignDonorSerializer
 
 
 class CampaignCauseViewSet(viewsets.ModelViewSet):
@@ -87,4 +84,75 @@ def edit_cause(request):
     serializer = CauseSerializer(instance=cause_instance, data=request.data)
     serializer.is_valid(raise_exception=True)
     cause_instance = serializer.save()
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetCampaigns(generics.ListAPIView):
+    serializer_class = MonetaryCampaignSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def get_queryset(self):
+        return MonetaryCampaign.objects.all()
+
+
+@api_view(["POST"])
+@parser_classes([MultiPartParser, FormParser])
+@permission_classes([permissions.IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+@transaction.atomic
+def create_campaign(request):
+    data = request.data
+    serializer = MonetaryCampaignSerializer(data=data)
+    serializer.is_valid(raise_exception=True)
+    campaign_instance = serializer.save()
+    photo = request.FILES.get("photo")
+    if photo:
+        # Handle the file upload. For example, saving the file to a model associated with the contact.
+        validate_file_type(photo)
+
+    for uid in data.get("subscribers"):
+        try:
+            account = AccountProfile.objects.get(id=uid)
+            campaign_instance.subscribers.add(account)
+        except AccountProfile.DoesNotExist:
+            pass
+    campaign_instance.save()
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(["PATCH"])
+@parser_classes([MultiPartParser, FormParser])
+@permission_classes([permissions.IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+@transaction.atomic
+def edit_campaign(request):
+    data = request.data.copy()
+    photo = request.FILES.get("photo")
+
+    if photo:
+        # Handle the file upload. For example, saving the file to a model associated with the contact.
+        validate_file_type(photo)
+    else:
+        data.pop("photo", None)
+
+
+@api_view(["PATCH"])
+@parser_classes([MultiPartParser, FormParser])
+@permission_classes([permissions.IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+@transaction.atomic
+def delete_campaign(request):
+    """
+    Soft Delete
+    """
+    data = request.data
+    try:
+        campaign_instance = MonetaryCampaign.objects.get(id=data.get("id"))
+        serializer = MonetaryCampaignSerializer(
+            instance=campaign_instance, data={"is_active": False}
+        )
+        serializer.is_valid(raise_exception=True)
+    except MonetaryCampaign.DoesNotExist:
+        pass
     return Response(serializer.data, status=status.HTTP_200_OK)

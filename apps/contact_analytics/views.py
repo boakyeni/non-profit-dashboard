@@ -1,5 +1,5 @@
 import csv
-import magic
+from utils.photo_validation import validate_file_type
 from rest_framework import viewsets, status, generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -22,7 +22,6 @@ from .serializers import (
     PhoneNumberSerializer,
     CompanySerializer,
 )
-from django.core.exceptions import ValidationError
 
 
 class AccountProfileViewSet(viewsets.ModelViewSet):
@@ -117,15 +116,6 @@ class CSVUploadView(APIView):
                 {"error": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
-
-# Function to make sure file is safe
-def validate_file_type(uploaded_file):
-    ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "application/pdf"]
-    mime_type = magic.from_buffer(uploaded_file.read(1024), mime=True)
-    uploaded_file.seek(0)  # Reset file pointer after reading
-    if mime_type not in ALLOWED_MIME_TYPES:
-        raise ValidationError("Unsupported file type.")
 
 
 class addContact(APIView):
@@ -284,7 +274,6 @@ class editContact(APIView):
 
         account_serializer.is_valid(raise_exception=True)
         account_instance = account_serializer.save()
-        print(profile_photo)
         patient_instance = None
         donor_instance = None
         if data.get("contact_type"):

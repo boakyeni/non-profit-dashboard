@@ -41,6 +41,7 @@ const AddPatientsTable = ({ itemsPerPage }) => {
         const filteredContacts = contacts?.filter(contact => contact.contact_type === 'patient');
         const filteredSearchResults = searchResults?.filter(contact => contact.contact_type === 'patient');
         const active = isEqual(filter, initialFilterState) ? filteredContacts : filteredSearchResults
+        setActiveContacts(active)
         const endOffset = itemOffset + itemsPerPage;
         setCurrentItems(active.slice(itemOffset, endOffset));
         setPageCount(Math.ceil(active.length / itemsPerPage));
@@ -49,7 +50,7 @@ const AddPatientsTable = ({ itemsPerPage }) => {
 
     // Invoke when user click to request another page.
     const handlePageClick = (event) => {
-        const newOffset = event.selected * itemsPerPage % currentItems.length;
+        const newOffset = event.selected * itemsPerPage % activeContacts.length;
         console.log(`User requested page number ${event.selected}, which is offset ${newOffset}`);
         setItemOffset(newOffset);
     };
