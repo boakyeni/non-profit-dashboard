@@ -3,18 +3,65 @@ import ContactModal from "../../_components/ContactModal"
 import SortOrFilterModal from "../../_components/SortOrFilterModal"
 import SubscriberTable from "../../_components/SubscriberTable"
 import DateComponent from "../../_components/DateComponent"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { createCampaign } from "../../../lib/features/campaigns/campaignSlice"
+import moment from "moment"
+import CurrencyInput from 'react-currency-input-field';
 
 const CreateCampaignForm = () => {
     const [localStartDate, setLocalStartDate] = useState(new Date())
     const [localEndDate, setLocalEndDate] = useState(new Date())
+    const [localName, setLocalName] = useState('')
+    const [localGoal, setLocalGoal] = useState('')
+    const [localDescription, setLocalDescription] = useState('')
+    const [photo, setPhoto] = useState(null)
 
-    const handleStartDateChange = () => {
+    const dispatch = useDispatch()
 
+    const { selectedContacts } = useSelector((state) => state.contact)
+
+    const handleStartDateChange = (date) => {
+        const local_time = moment(date).format('YYYY-MM-DDTHH:mm:ss')
+        setLocalStartDate(local_time)
+        console.log(local_time)
     }
     const handleEndDateChange = () => {
 
     }
+    const handleFileChange = (event) => {
+        if (event.target.files && event.target.files[0]) {
+            setPhoto(event.target.files[0]);
+            // Optionally, create a URL for preview
+            // const filePreview = URL.createObjectURL(event.target.files[0]);
+            // setProfilePhotoPreview(filePreview);
+        } else {
+            setPhoto(null);
+            // setProfilePhotoPreview(null);
+        }
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        const formData = new FormData();
+        formData.append('name', localName)
+        formData.append('description', localDescription)
+        formData.append('start_date', localStartDate)
+        formData.append('goal', localGoal)
+        // Don't add photo if it is null, that will throw error on backend
+        if (photo) {
+            formData.append('photo', photo)
+        }
+
+        selectedContacts.forEach(id => formData.append('subscribers', id));
+        formData.append('is_active', true)
+        console.log(localGoal)
+
+        dispatch(createCampaign(formData))
+
+
+    }
+
     return (
         <>
             <div id="createEventModal" tabIndex="-1" aria-hidden="true" className={` p-4 h-max lg:m-auto max-lg:w-full`}>
@@ -39,7 +86,7 @@ const CreateCampaignForm = () => {
                                 <div className=" md:w-1/2 2xl:w-3/4 space-y-6">
                                     <div className="col-span-6 sm:col-span-4">
                                         <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 ">Title</label>
-                                        <input type="text" name="title" id="title" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Bonnie" required="" />
+                                        <input type="text" value={localName} name="title" id="title" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Bonnie" required="" onChange={(e) => setLocalName(e.target.value)} />
                                     </div>
                                     <div className="flex flex-row w-full space-x-3">
                                         <div className="max-sm:w-1/2">
@@ -55,11 +102,11 @@ const CreateCampaignForm = () => {
 
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 ">Description</label>
-                                        <textarea name="description" id="description" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Write a description here" required="" />
+                                        <textarea name="description" id="description" value={localDescription} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Write a description here" onChange={(e) => setLocalDescription(e.target.value)} required="" />
                                     </div>
                                     <div className="max-w-lg">
                                         <label className="block text-sm font-medium text-gray-900" htmlFor="user_avatar">Upload Image</label>
-                                        <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 p-2.5" aria-describedby="user_avatar_help" id="user_avatar" type="file" />
+                                        <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 p-2.5" accept="image/png, image/jpeg" aria-describedby="user_avatar_help" id="user_avatar" type="file" onChange={handleFileChange} />
                                         <div className="mt-1 text-sm text-gray-500 " id="user_avatar_help">Please limit file size to 10MB</div>
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
@@ -72,7 +119,8 @@ const CreateCampaignForm = () => {
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="goal" className="block mb-2 text-sm font-medium text-gray-900 ">Goal</label>
-                                        <input type="number" min="1" step="any" name="goal" id="goal" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="10000" required="" />
+                                        <CurrencyInput value={localGoal} decimalsLimit={2} name="goal" id="goal" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="10,000" required="" onValueChange={(value, name, values) => setLocalGoal(value)} />
+
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-3">
@@ -93,7 +141,7 @@ const CreateCampaignForm = () => {
                         </div>
                         {/* // Modal Footer */}
                         <div className="flex items-center p-6 space-x-3 rtl:space-x-reverse border-t border-gray-200 rounded-b ">
-                            <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ">Add New Campaign</button>
+                            <button type="submit" onClick={handleSubmit} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ">Add New Campaign</button>
                         </div>
                     </div>
                 </div>

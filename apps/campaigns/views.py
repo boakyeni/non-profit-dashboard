@@ -18,6 +18,7 @@ from .serializers import (
 )
 from django.db import transaction
 from apps.contact_analytics.models import AccountProfile
+from decimal import Decimal
 
 
 class CampaignViewSet(viewsets.ModelViewSet):
@@ -102,14 +103,15 @@ class GetCampaigns(generics.ListAPIView):
 @authentication_classes([JWTAuthentication])
 @transaction.atomic
 def create_campaign(request):
-    data = request.data
-    serializer = MonetaryCampaignSerializer(data=data)
-    serializer.is_valid(raise_exception=True)
-    campaign_instance = serializer.save()
+    data = request.data.copy()
+    print(data)
     photo = request.FILES.get("photo")
     if photo:
         # Handle the file upload. For example, saving the file to a model associated with the contact.
         validate_file_type(photo)
+    serializer = MonetaryCampaignSerializer(data=data)
+    serializer.is_valid(raise_exception=True)
+    campaign_instance = serializer.save()
 
     for uid in data.get("subscribers"):
         try:

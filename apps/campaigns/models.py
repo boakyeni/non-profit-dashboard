@@ -11,10 +11,10 @@ class MonetaryCampaign(models.Model):
     progress = models.DecimalField(
         max_digits=10, decimal_places=2, blank=True, null=True
     )
-    goal = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    goal = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
     description = models.TextField(max_length=250, blank=True, null=True)
-    start_date = models.DateField(default=date.today)
-    end_date = models.DateField(blank=True, null=True)
+    start_date = models.DateTimeField(default=date.today)
+    end_date = models.DateTimeField(blank=True, null=True)
     subscribers = models.ManyToManyField(AccountProfile, blank=True)
     photo = models.FileField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
