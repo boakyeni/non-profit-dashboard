@@ -3,6 +3,7 @@ from django.db.models import fields, Count
 from datetime import date, datetime, timedelta
 from schedule.models import Event
 from apps.contact_analytics.models import AccountProfile
+from apps.campaigns.models import MonetaryCampaign, Patient
 from django.utils.translation import gettext_lazy as _
 
 
@@ -49,4 +50,56 @@ class Donor(models.Model):
 
     @property
     def total_amount_donated(self):
-        return sum([float(donation) for donation in self.donations])
+        total = self.donations.all().aggregate(
+            total_donated=models.Sum("transaction__amount")
+        )["total_donated"]
+
+        return total if total is not None else 0.0
+
+
+class Transaction(models.Model):
+    # General fields applicable to all transactions
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=100, default="GHC")
+    date = models.DateTimeField(auto_now_add=True)
+    description = models.TextField(blank=True, null=True)
+
+    # Type to distinguish between incoming (e.g., donation) and outgoing (e.g., expense) funds
+    TRANSACTION_TYPE_CHOICES = (
+        ("IN", "Incoming"),
+        ("OUT", "Outgoing"),
+    )
+    transaction_type = models.CharField(max_length=3, choices=TRANSACTION_TYPE_CHOICES)
+
+    def __str__(self):
+        return f"{self.transaction_type} - {self.amount} {self.currency} on {self.date}"
+
+
+class Donation(models.Model):
+    donor = models.ForeignKey(
+        Donor, on_delete=models.CASCADE, default=None, related_name="donations"
+    )
+    transaction = models.OneToOneField(
+        Transaction, on_delete=models.CASCADE, related_name="donation"
+    )
+    campaign = models.ManyToManyField(MonetaryCampaign, blank=True)
+
+    def __str__(self):
+        return f"Donation by {self.donor.name} - {self.transaction.amount}"
+
+
+class Expense(models.Model):
+    patient = models.ForeignKey(
+        Patient,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name="expenses",
+    )
+    transaction = models.OneToOneField(
+        Transaction, on_delete=models.CASCADE, related_name="expense"
+    )
+    campaign = models.ManyToManyField(MonetaryCampaign, blank=True)
+
+    def __str__(self):
+        return f"Donation by {self.donor.name} - {self.transaction.amount}"

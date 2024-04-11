@@ -3,12 +3,30 @@ import { useSelector, useDispatch } from "react-redux"
 import { toggleContactSortModal } from "../../lib/features/contacts/contactSlice"
 import { LuX } from "react-icons/lu"
 import DateComponent from "./DateComponent"
-import { toggleDateRangeModal } from "../../lib/features/analytics/analyticSlice"
+import { toggleDateRangeModal, fetchDonorAnalytics, updateTimeFrame } from "../../lib/features/analytics/analyticSlice"
+import { useState } from "react"
+import moment from "moment"
 
 const AnalyticsDateRangeModal = () => {
     const dispatch = useDispatch()
     const { dateRangeModalOpen } = useSelector((state) => state.analytics)
+    const [start_date, setStartDate] = useState('2024-01-12T00:00:00')
+    const [end_date, setEndDate] = useState('2024-01-12T00:00:00')
+    const handleStartDateChange = (date) => {
+        const local_time = moment(date).format('YYYY-MM-DDTHH:mm:ss')
+        setStartDate(local_time)
+    }
+    const handleEndDateChange = (date) => {
+        const local_time = moment(date).format('YYYY-MM-DDTHH:mm:ss')
+        setEndDate(local_time)
+    }
+    const handleSubmit = (e) => {
+        e.preventDefault(); // Prevent the default form submit action
 
+        dispatch(updateTimeFrame({ timeRange: "custom", customStart: start_date, customEnd: end_date }))
+        // Close the modal
+        dispatch(toggleDateRangeModal());
+    }
     return (
         <>
             <div className={`${dateRangeModalOpen ? 'fixed inset-0 bg-black bg-opacity-50 z-40' : 'hidden'}`} onClick={() => dispatch(toggleDateRangeModal())}></div>
@@ -32,13 +50,13 @@ const AnalyticsDateRangeModal = () => {
                                 <div className="col-span-6 sm:col-span-3">
                                     <div className="max-sm:w-1/2">
                                         <label htmlFor="select-date" className="block mb-2 text-sm font-medium text-gray-900 ">Select Start</label>
-                                        <DateComponent selected={"2024-01-12T00:00:00Z"} />
+                                        <DateComponent selected={start_date} setDate={handleStartDateChange} />
                                     </div>
                                 </div>
                                 <div className="col-span-6 sm:col-span-3">
                                     <div className="max-sm:w-1/2">
                                         <label htmlFor="select-date" className="block mb-2 text-sm font-medium text-gray-900 ">Select End</label>
-                                        <DateComponent selected={"2024-01-12T00:00:00Z"} />
+                                        <DateComponent selected={end_date} setDate={handleEndDateChange} />
                                     </div>
                                 </div>
 
@@ -46,8 +64,8 @@ const AnalyticsDateRangeModal = () => {
                         </div>
                         {/* // Modal Footer */}
                         <div className="flex items-center p-6 space-x-3 rtl:space-x-reverse border-t border-gray-200 rounded-b ">
-                            <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ">Save Dates</button>
-                            <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ">Remove Date Range</button>
+                            <button onClick={handleSubmit} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ">Show Data</button>
+                            {/* <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ">Remove Date Range</button> */}
                         </div>
                     </form>
                 </div>

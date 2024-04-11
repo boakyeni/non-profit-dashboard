@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Cause, MonetaryCampaign, Donation, Patient
+from .models import Cause, MonetaryCampaign, Patient
 
 
 class CauseSerializer(serializers.ModelSerializer):
@@ -11,12 +11,6 @@ class CauseSerializer(serializers.ModelSerializer):
 class MonetaryCampaignSerializer(serializers.ModelSerializer):
     class Meta:
         model = MonetaryCampaign
-        fields = "__all__"
-
-
-class DonationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Donation
         fields = "__all__"
 
 

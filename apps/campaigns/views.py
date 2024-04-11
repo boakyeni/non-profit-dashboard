@@ -9,11 +9,10 @@ from rest_framework.decorators import (
     parser_classes,
 )
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from .models import MonetaryCampaign, Patient, Donation, Cause
+from .models import MonetaryCampaign, Patient, Cause
 from .serializers import (
     MonetaryCampaignSerializer,
     PatientSerializer,
-    DonationSerializer,
     CauseSerializer,
 )
 from django.db import transaction
