@@ -77,9 +77,7 @@ class CSVUploadView(APIView):
                             number=phone_number
                         )
 
-                        account_instance.phone_number = phone_number
-                        account_instance.save()
-                        account_instance.phone_number.add(phone_number)
+                        phone_number, created=(PhoneNumber.objects.get_or_create(number=phone_number, profile=account_instance.id))
 
                         organization = "organization"
                         company = row.get(organization)
