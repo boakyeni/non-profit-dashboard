@@ -5,6 +5,7 @@ import { LuClipboardList } from "react-icons/lu"
 import { useSelector, useDispatch } from "react-redux"
 import Link from "next/link"
 import { toggleTasksDropdown } from "../lib/features/dropdown/dropdownSlice"
+import { toggleSelectedTab } from "../lib/features/profile/profileSlice"
 
 
 
@@ -12,9 +13,13 @@ const SidebarAccordian = ({ title, subtitles, icons }) => {
     // const [open, setOpen] = useState(false)
 
     const { tasksOpen } = useSelector((state) => state.dropdowns)
+    const { selectedTab } = useSelector((state) => state.profile)
     const dispatch = useDispatch()
 
-
+    const handleAppointmentClick = () => {
+        dispatch(toggleSelectedTab(0))
+        localStorage.setItem('selectedTab', 0);
+    }
 
 
     return (
@@ -30,7 +35,7 @@ const SidebarAccordian = ({ title, subtitles, icons }) => {
                 <ul>
                     {subtitles.map((item, index) => (
                         <li key={index} className=" px-6 py-3 hover:bg-black hover:bg-opacity-25">
-                            <Link href={`/dashboard/${item.toLowerCase()}`}>
+                            <Link href={item.toLowerCase() === 'kanban' ? `/dashboard/${item.toLowerCase()}` : '/dashboard/profile'} onClick={handleAppointmentClick}>
                                 <div className="cursor-pointer flex flex-row place-items-center pl-3 ">
                                     {icons[index]}
                                     <p className="pl-3">{item}</p>

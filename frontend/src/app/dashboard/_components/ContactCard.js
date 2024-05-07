@@ -1,7 +1,7 @@
 'use client'
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { toggleContactCard, toggleContactCardMore, toggleEditUser, toggleDeleteModal } from '../../lib/features/contacts/contactSlice'
+import { toggleContactCard, toggleContactCardMore, toggleEditUser, toggleDeleteModal, setSelectedContact, toggleTrackFundsModal } from '../../lib/features/contacts/contactSlice'
 import { useDispatch } from 'react-redux'
 import { LuX, LuMinimize2, LuMoreHorizontal } from 'react-icons/lu'
 
@@ -11,9 +11,11 @@ import { LuUser2 } from "react-icons/lu"
 const ContactCard = () => {
     const dispatch = useDispatch()
     const { selectedContact, contactCardOpen, contactCardMoreOpen, editUserOpen } = useSelector((state) => state.contact)
+    const [imageError, setImageError] = useState(false);
     const handleContactClose = () => {
 
         dispatch(toggleContactCard())
+        dispatch(setSelectedContact(null))
 
     }
 
@@ -76,14 +78,22 @@ const ContactCard = () => {
                     </div>
 
                     <div className="flex flex-col items-center pb-10 w-full">
-                        <div className='w-16 h-16 mx-auto flex items-center justify-around'>
-                            <LuUser2 className="scale-[4.0] rounded-full bg-slate-200 stroke-1" />
+                        <div className='w-16 h-16 mx-auto flex items-center justify-around rounded-full'>
+                            {!imageError && selectedContact?.profile_photo
+                                ? <img
+                                    src={selectedContact.profile_photo}
+                                    alt="Profile"
+                                    onError={() => setImageError(true)}
+                                />
+                                : <LuUser2 className="scale-[4.0] rounded-full bg-slate-200 stroke-1" />
+                            }
                         </div>
-                        <h5 className="mb-1 text-xl font-medium text-gray-900 ">Neil Smotherson</h5>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">neil.sims@flowbite.com</span>
+                        <h5 className="mb-1 text-xl font-medium text-gray-900 ">{selectedContact?.name}</h5>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">{selectedContact?.email}</span>
                         <div className="flex mt-4 md:mt-6">
 
                             <a href="#" className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700 ms-3">Message</a>
+                            <a href="#" className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700 ms-3" onClick={() => dispatch(toggleTrackFundsModal())}>Report Cash Flow</a>
                         </div>
                     </div>
 

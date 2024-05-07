@@ -10,6 +10,7 @@ import EditAppointmentModal from "./components/EditAppointmentModal";
 import { toggleSettingsButton, toggleSelectedTab } from "../../lib/features/profile/profileSlice";
 import { useEffect } from "react";
 import EditProfileForm from "./components/EditProfileForm";
+import SettingsComponent from "./components/SettingsComponent";
 
 
 const ProfilePage = () => {
@@ -50,8 +51,8 @@ const ProfilePage = () => {
                 <section className={`${selectedTab == 1 ? '' : 'hidden'} `}>
                     Goodbye
                 </section>
-                <section className={`${selectedTab == 2 ? '' : 'hidden'} `}>
-                    A doo
+                <section className={`${selectedTab == 2 ? '' : 'hidden'} flex w-full`}>
+                    <SettingsComponent />
                 </section>
                 <section className={`${selectedTab == 3 ? '' : 'hidden'} flex w-full`}>
                     <EditProfileForm />

@@ -4,6 +4,7 @@ import { LuX } from "react-icons/lu"
 import { toggleCreateEventModal, setEndDate, setStartDate, addEvent, getEvents } from "../../../lib/features/events/eventSlice"
 import DateComponent from "../../_components/DateComponent"
 import { useState, useEffect } from "react"
+import moment from "moment"
 
 const CreateEventModal = () => {
     const dispatch = useDispatch()
@@ -26,10 +27,12 @@ const CreateEventModal = () => {
         setLocalTitle(e.target.value)
     }
     const handleStartDateChange = (date) => {
-        setLocalStartDate(date.toISOString())
+        const local_time = moment(date).format('YYYY-MM-DDTHH:mm:ss')
+        setLocalStartDate(local_time)
     }
     const handleEndDateChange = (date) => {
-        setLocalEndDate(date.toISOString())
+        const local_time = moment(date).format('YYYY-MM-DDTHH:mm:ss')
+        setLocalEndDate(local_time)
     }
     const handleDescriptionChange = (e) => {
         setLocalDescription(e.target.value)
@@ -41,6 +44,7 @@ const CreateEventModal = () => {
     const handleAddNewEvent = () => {
         const newEvent = {
             ...selectedEvent,
+            cal_id: localStorage.getItem('current_calendar'),
             title: localTitle,
             start: localStartDate,
             end: localEndDate,

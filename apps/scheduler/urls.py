@@ -7,4 +7,7 @@ urlpatterns = [
     path(
         "edit-event/", views.PersistedOccurrenceCreateView.as_view(), name="edit_event"
     ),
+    path("my-calendars/", views.get_calendars),
+    path("create-calendar/", views.create_calendar_view),
+    path("invite/", views.invite_to_calendar_view),
 ]

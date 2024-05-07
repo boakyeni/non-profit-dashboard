@@ -10,6 +10,7 @@ import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-pro
 import 'react-circular-progressbar/dist/styles.css';
 import RevenueBlock from "./RevenueBlock";
 import ContactBlock from "./ContactBlock";
+import ProgressProvider from "../../utils/ProgressProvider";
 
 const Charts = () => {
 
@@ -37,61 +38,74 @@ const Charts = () => {
             </section>
 
             <section className="flex my-4 px-4 gap-8 max-md:grid max-md:grid-cols-1 mx-auto">
-                <div className=" md:w-1/3 h-[250px] bg-white drop-shadow-xl rounded-2xl">
+                <div className=" md:w-1/3 bg-white drop-shadow-xl rounded-2xl">
                     <ActivePieChart />
                 </div>
-                <Link href={`/dashboard/campaigns/1`} className=" md:w-1/3 h-[250px] bg-white drop-shadow-xl rounded-2xl flex place-items-center">
-                    <div className="w-1/2 mx-auto my-2 text-sm">
-                        <CircularProgressbarWithChildren
-                            value={67} styles={{
-                                root: {
-                                    transformOrigin: 'center center',
-                                },
-                                path: {
-                                    // Path color
-                                    stroke: `rgba(136, 132, 216, ${67 / 100})`,
-                                    // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
-                                    strokeLinecap: 'butt',
-                                    // Customize transition animation
-                                    transition: 'stroke-dashoffset 0.5s ease 0s',
-                                    // Rotate the path
-                                    transformOrigin: 'center center',
-                                },
-                            }}
-                        >
-                            <p className="text-2xl font-bold">₵ 10,234</p>
-                            <p className="text-xl">Campaign 1</p>
-                            <br></br>
+                <Link href={`/dashboard/campaigns/1`} className=" md:w-1/3 bg-white drop-shadow-xl rounded-2xl flex flex-col place-items-center py-3">
+                    <div className="w-1/2 mx-auto my-2">
+                        <div className="flex flex-row space-x-2 justify-around mb-2">
+                            <p className="">Campaign 1</p>
                             <p>67% to goal</p>
-                        </CircularProgressbarWithChildren>
+                        </div>
+                        <ProgressProvider valueStart={0} valueEnd={67}>
+                            {value => (
+                                <CircularProgressbarWithChildren
+                                    value={value} text={`₵ 10,234`} styles={{
+                                        root: {
+                                            transformOrigin: 'center center',
+                                        },
+                                        path: {
+                                            // Path color
+                                            stroke: `rgba(70, 130, 180, ${67 / 100})`,
+                                            // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
+                                            strokeLinecap: 'butt',
+                                            // Customize transition animation
+                                            transition: 'stroke-dashoffset 0.5s ease 0s',
+                                            // Rotate the path
+                                            transformOrigin: 'center center',
+                                        },
+                                    }}
+                                >
+                                    {/* <div className="text-center">
+                                        <p className="text-[28px] font-bold">₵ 10,234</p>
+                                    </div> */}
+                                </CircularProgressbarWithChildren>)}
+                        </ProgressProvider>
 
                     </div>
 
+
                 </Link>
-                <Link href={`/dashboard/campaigns/2`} className=" md:w-1/3 h-[250px] bg-white drop-shadow-xl rounded-2xl flex place-items-center">
-                    <div className="w-1/2 mx-auto my-2 ">
-                        <CircularProgressbarWithChildren
-                            value={32} styles={{
-                                root: {
-                                    transformOrigin: 'center center',
-                                },
-                                path: {
-                                    // Path color
-                                    stroke: `rgba(202, 232, 213, ${32 / 100})`,
-                                    // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
-                                    strokeLinecap: 'butt',
-                                    // Customize transition animation
-                                    transition: 'stroke-dashoffset 0.5s ease 0s',
-                                    // Rotate the path
-                                    transformOrigin: 'center center',
-                                },
-                            }}
-                        >
-                            <p className="text-2xl font-bold">₵ 4,321</p>
-                            <p>Campaign 2</p>
-                            <br></br>
+                <Link href={`/dashboard/campaigns/2`} className=" md:w-1/3  bg-white drop-shadow-xl rounded-2xl flex flex-col place-items-center py-3">
+                    <div className="w-1/2 mx-auto my-2">
+                        <div className="flex flex-row space-x-2 justify-around mb-2">
+                            <p className="text-md">Campaign 2</p>
                             <p>32% to goal</p>
-                        </CircularProgressbarWithChildren>
+                        </div>
+                        <ProgressProvider valueStart={0} valueEnd={32} >
+                            {value => (
+                                <CircularProgressbarWithChildren
+                                    value={value} text={`₵ 4,321`} styles={{
+                                        root: {
+                                            transformOrigin: 'center center',
+                                        },
+                                        path: {
+                                            // Path color
+                                            stroke: `rgba(70, 130, 180, ${32 / 100})`,
+                                            // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
+                                            strokeLinecap: 'butt',
+                                            // Customize transition animation
+                                            transition: 'stroke-dashoffset 0.5s ease 0s',
+                                            // Rotate the path
+                                            transformOrigin: 'center center',
+                                        },
+                                    }}
+                                >
+                                    {/* <p className="text-[28px] font-bold">₵ 4,321</p> */}
+
+                                </CircularProgressbarWithChildren>)}
+                        </ProgressProvider>
+
                     </div>
 
                 </Link>

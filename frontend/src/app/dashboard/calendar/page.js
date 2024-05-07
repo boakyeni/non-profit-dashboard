@@ -5,11 +5,12 @@ import { useEffect, useState, useRef } from "react";
 import moment from 'moment';
 import { momentLocalizer } from 'react-big-calendar'
 import { useDispatch, useSelector } from "react-redux";
-import { getEvents, setCalendar, getCalendars, toggleCreateEventModal, setEndDate, setStartDate, toggleCalendarAction, setCurrentCalendarId } from "../../lib/features/events/eventSlice";
+import { getEvents, setCalendar, getCalendars, toggleCreateEventModal, toggleCreateCalendarModal, setEndDate, setStartDate, toggleCalendarAction, setCurrentCalendarId, toggleInviteModal } from "../../lib/features/events/eventSlice";
 import CreateEventModal from "./_components/CreateEventModal";
 import EditAppointmentModal from "../profile/components/EditAppointmentModal";
 import EditEventModal from "./_components/EditEventModal";
-
+import CreateCalendarModal from "./_components/CreateCalendarModal";
+import InviteCollaboratorsModal from "./_components/InviteCollaboratorsModal";
 
 
 const CalendarPage = () => {
@@ -23,19 +24,20 @@ const CalendarPage = () => {
 
     // Grab state from db, this updates the events variable above
     useEffect(() => {
-        dispatch(getEvents())
-        // dispatch(getCalendars())
+        // dispatch(getEvents())
+        dispatch(getCalendars())
         if (typeof window !== 'undefined') {
             const calendar_id = localStorage.getItem('current_calendar')
             dispatch(setCurrentCalendarId(calendar_id));
             // Check if `calendars` is truthy and has at least one item before proceeding
         }
 
-    }, [dispatch, calendars])
+    }, [dispatch])
 
     useEffect(() => {
         if (calendars && calendars.length > 0) {
-            const foundCalendar = calendars.find(it => it.id === currentCalendarId) || calendars[0];
+            const foundCalendar = calendars.find(it => String(it.id) === String(currentCalendarId));
+
             dispatch(setCalendar(foundCalendar))
         }
     }, [currentCalendarId, calendars, dispatch]);
@@ -81,17 +83,16 @@ const CalendarPage = () => {
                         {/* Dropdown */}
                         <div id="calendarDropdown" className={`${calendarActionOpen ? '' : 'hidden'} absolute right-0 p-2 top-full z-10 bg-white divide-y divide-gray-100 rounded-lg max-sm:rounded-r-none shadow w-44 text-gray-700 `}>
                             <ul className="py-1 text-sm overflow-y-scroll max-sm:max-h-[30vh] max-h-[50vh]" aria-labelledby="calendarDropdownButton">
-                                <li>
-                                    <button onClick={() => handleCalendarSelection(1)} className="block px-4 py-2 w-full text-left hover:bg-gray-100 rounded-lg  ">Personal Calendar</button>
-                                </li>
-                                <li>
-                                    <button onClick={() => handleCalendarSelection(2)} className="block px-4 py-2 hover:bg-gray-100 w-full rounded-lg text-left " >Collaborative Calendar</button>
-                                </li>
+                                {calendars.map((cal) => (
+                                    <li key={cal.id}>
+                                        <button onClick={() => handleCalendarSelection(cal.id)} className="block px-4 py-2 w-full text-left hover:bg-gray-100 rounded-lg  ">{cal?.name}</button>
+                                    </li>
+                                ))}
 
                             </ul>
                             <div className="py-1">
-                                <button className="text-sm p-2 px-4 rounded-lg hover:bg-gray-100 w-full text-left">Create New</button>
-                                <button className="text-sm p-2 px-4 rounded-lg hover:bg-gray-100 w-full text-left">Invite</button>
+                                <button className="text-sm p-2 px-4 rounded-lg hover:bg-gray-100 w-full text-left" onClick={() => dispatch(toggleCreateCalendarModal())}>Create New</button>
+                                <button className="text-sm p-2 px-4 rounded-lg hover:bg-gray-100 w-full text-left" onClick={() => dispatch(toggleInviteModal())}>Invite</button>
                             </div>
 
 
@@ -102,6 +103,8 @@ const CalendarPage = () => {
             </div>
             <CreateEventModal />
             <EditEventModal />
+            <CreateCalendarModal />
+            <InviteCollaboratorsModal />
         </div>
     )
 }
