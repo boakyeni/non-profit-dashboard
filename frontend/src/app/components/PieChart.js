@@ -80,7 +80,7 @@ const ActivePieChart = () => {
                         cy="50%"
                         innerRadius={60}
                         outerRadius={80}
-                        fill="#8884d8"
+                        fill="#4682B4"
                         dataKey="value"
                         onMouseEnter={onPieEnter}
                         onTouchStart={onPieEnter}

@@ -1,12 +1,23 @@
 'use client'
 import { useDispatch, useSelector } from "react-redux"
 import { LuX } from "react-icons/lu"
-import { toggleAddPatientModal } from "../../../lib/features/campaigns/campaignSlice"
+import { toggleAddPatientModal, setSelectedPatient } from "../../../lib/features/campaigns/campaignSlice"
+import AddPatientsTable from "./AddPatientsTable"
+import { useState, useEffect } from "react"
 
 const AddPatientsModal = () => {
     const dispatch = useDispatch()
-    const { addPatientModalOpen } = useSelector((state) => state.campaigns)
+    const { addPatientModalOpen, selectedPatient } = useSelector((state) => state.campaigns)
+    const [localName, setLocalName] = useState('')
 
+    useEffect(() => {
+        setLocalName('')
+
+    }, [selectedPatient])
+
+    const handleNameChange = (e) => {
+        setLocalName(e.target.value)
+    }
     return (
         <>
             <div className={`${addPatientModalOpen ? 'fixed inset-0 bg-black bg-opacity-50 z-40' : 'hidden'}`} onClick={() => dispatch(toggleAddPatientModal())}></div>
@@ -29,7 +40,7 @@ const AddPatientsModal = () => {
                                 <div className="lg:w-1/2 2xl:w-3/4 space-y-6">
                                     <div className="col-span-6 sm:col-span-4">
                                         <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 ">Name</label>
-                                        <input type="text" name="title" id="title" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Bonnie" required="" />
+                                        <input type="text" name="title" value={localName} id="title" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Bonnie" required="" onChange={handleNameChange} />
                                     </div>
 
                                     <div className="col-span-6 sm:col-span-4">
@@ -57,15 +68,15 @@ const AddPatientsModal = () => {
 
                                 </div>
                                 <div className="lg:w-1/2 2xl:w-1/4">
-                                    <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 ">Add Contacts</label>
-                                    <input type="text" name="first-name" id="first-name" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Add Email" required="" />
+                                    <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 ">Add Current Patient</label>
+                                    <AddPatientsTable itemsPerPage={5} />
 
                                 </div>
                             </div>
                         </div>
                         {/* // Modal Footer */}
                         <div className="flex items-center p-6 space-x-3 rtl:space-x-reverse border-t border-gray-200 rounded-b ">
-                            <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ">Add New Event</button>
+                            <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center ">Add Patient(s)</button>
                         </div>
                     </div>
                 </div>

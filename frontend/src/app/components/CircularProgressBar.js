@@ -20,6 +20,7 @@ const CircularProgressBar = ({ progress }) => {
                     // Rotate the path
                     transformOrigin: 'center center',
                 },
+
             }}
         >
             <p className="text-2xl font-bold">₵ 4,321</p>

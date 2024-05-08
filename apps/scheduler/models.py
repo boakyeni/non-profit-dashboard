@@ -1,6 +1,7 @@
 from django.db import models
 from schedule.models import Event, Calendar
 from django.contrib.auth import get_user_model
+import uuid
 
 # Create your models here.
 User = get_user_model()
@@ -28,3 +29,28 @@ class AdditionalCalendarInfo(models.Model):
     )
     private = models.BooleanField(default=False)
     users = models.ManyToManyField(User, blank=True, related_name="calendars")
+
+
+class Board(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    boardName = models.CharField(max_length=255)
+
+
+class Card(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=255)
+    board = models.ForeignKey(Board, related_name="cards", on_delete=models.CASCADE)
+
+
+class Task(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    task = models.CharField(max_length=255)
+    completed = models.BooleanField(default=False)
+    card = models.ForeignKey(Card, related_name="tasks", on_delete=models.CASCADE)
+
+
+class Tag(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    tagName = models.CharField(max_length=255)
+    color = models.CharField(max_length=7)
+    card = models.ForeignKey(Card, related_name="tags", on_delete=models.CASCADE)

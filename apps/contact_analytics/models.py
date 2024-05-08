@@ -13,11 +13,54 @@ class Role(models.TextChoices):
     INSTITUTION = "INSTITUTION", _("Institution")
 
 
+# class Contact(models.Model):
+#     Donor = models.ForeignKey(Donor, on_delete=models.CASCADE, default=None)
+#     nameOfDonor = models.CharField(max_length=50, verbose_name="Name of Donor")
+#     meetingStatus = models.CharField(max_length=50, verbose_name="Meeting Status")
+#     phone = PhoneNumberField(blank=True, max_length=128, verbose_name="Phone")
+#     email = models.EmailField(max_length=50, verbose_name="Email")
+
+#     def __str__(self):
+#         return self.nameOfDonor
+
+
 class Company(models.Model):
     name = models.CharField(max_length=100, verbose_name="Name of Company")
-    address = models.CharField(max_length=100, verbose_name="Company Address")
-    district = models.CharField(max_length=100, verbose_name="Company District")
-    region = models.CharField(max_length=100, verbose_name="Company Region")
+    address = models.CharField(
+        max_length=100, verbose_name="Company Address", blank=True, null=True
+    )
+    district = models.CharField(
+        max_length=100, verbose_name="Company District", blank=True, null=True
+    )
+    region = models.CharField(
+        max_length=100, verbose_name="Company Region", blank=True, null=True
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class AccountProfile(models.Model):
+    name = models.CharField(max_length=250, blank=True)
+    given_name = models.CharField(max_length=100, blank=True, null=True)
+    last_name = models.CharField(max_length=100, blank=True, null=True)
+    email = models.EmailField(max_length=100, blank=True, null=True)
+    role = models.CharField(
+        max_length=20,
+        choices=Role,
+        blank=True,
+        null=True,
+    )
+    address = models.CharField(max_length=100, blank=True, null=True)
+    # change to django countries
+    country = models.CharField(max_length=100, blank=True, null=True)
+    region = models.CharField(max_length=100, blank=True, null=True)
+    company = models.ForeignKey(
+        Company, on_delete=models.CASCADE, default=None, blank=True, null=True
+    )
+    profile_photo = models.FileField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    is_patient = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -45,22 +88,11 @@ class AccountProfile(models.Model):
 
 
 class PhoneNumber(models.Model):
-    name = models.CharField(max_length=100, verbose_name="Name of Donor")
-    number = PhoneNumberField(
-        blank=True,
-        max_length=128,
-    )
+    number = PhoneNumberField(blank=True, max_length=128)
     notes = models.TimeField(auto_now=True, blank=True)
     profile = models.ForeignKey(
-        AccountProfile,
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        related_name="phone_number"
-    )
-    company = models.ForeignKey(
-        Company, on_delete=models.CASCADE, default=None, null=True, blank=True
+        AccountProfile, on_delete=models.CASCADE, related_name="phone_number"
     )
 
     def __str__(self):
-        return self.name
+        return str(self.number) if self.number else None

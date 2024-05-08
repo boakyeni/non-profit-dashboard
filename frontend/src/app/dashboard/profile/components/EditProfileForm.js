@@ -6,6 +6,7 @@ const EditProfileForm = () => {
 
     const dispatch = useDispatch()
     const { editProfileFormEditable } = useSelector((state) => state.profile)
+    const { user } = useSelector((state) => state.auth)
 
 
     const resetState = () => {
@@ -43,10 +44,7 @@ const EditProfileForm = () => {
                                         <label htmlFor="select-date" className="block mb-2 text-sm font-medium text-gray-900 ">Email</label>
                                         <input type="text" name="select-date" id="select-date" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5" placeholder="esi.green@email.com" required="" readOnly />
                                     </div>
-                                    <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900 ">Description</label>
-                                        <textarea name="description" id="description" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Write a description here" required="" readOnly={!editProfileFormEditable} />
-                                    </div>
+
                                     <div className="max-w-lg">
                                         <label className="block text-sm font-medium text-gray-900" htmlFor="user_avatar">Upload Image</label>
                                         <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 p-2.5" aria-describedby="user_avatar_help" id="user_avatar" type="file" />

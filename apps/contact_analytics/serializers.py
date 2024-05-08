@@ -1,13 +1,6 @@
 from rest_framework import serializers
-from .models import AccountProfile, Company, PhoneNumber, Role
-
-
-class CompanySerializer(serializers.ModelSerializer):
-    organization = serializers.CharField(source="name")
-
-    class Meta:
-        model = Company
-        fields = "__all__"
+from .models import AccountProfile, Company, PhoneNumber
+from django.core.exceptions import ObjectDoesNotExist
 
 
 class AccountProfileSerializer(serializers.ModelSerializer):
@@ -15,6 +8,96 @@ class AccountProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AccountProfile
+        fields = "__all__"
+
+
+class AccountProfileReturnSerializer(serializers.ModelSerializer):
+    phone_number = serializers.SerializerMethodField()
+    contact_type = serializers.SerializerMethodField()
+    causes = serializers.SerializerMethodField()
+    notes = serializers.SerializerMethodField()
+    company = serializers.SerializerMethodField()
+    donor_type = serializers.SerializerMethodField()
+    amount_donated = serializers.SerializerMethodField()
+    hospital = serializers.SerializerMethodField()
+
+    class Meta:
+        model = AccountProfile
+        fields = "__all__"
+
+    def get_phone_number(self, obj):
+        return [str(phone_number.number) for phone_number in obj.phone_number.all()]
+
+    def get_contact_type(self, obj):
+        try:
+            if obj.donor_profile and not obj.is_patient:
+                return "donor"
+        except ObjectDoesNotExist:
+            pass
+        try:
+            if obj.patient_profile and obj.is_patient:
+                return "patient"
+        except ObjectDoesNotExist:
+            pass
+
+        return "unknown"
+
+    def get_causes(self, obj):
+        try:
+            if obj.is_patient and obj.patient_profile:
+                return [cause.title for cause in obj.patient_profile.causes.all()]
+        except ObjectDoesNotExist:
+            return []
+
+    def get_notes(self, obj):
+        try:
+            if not obj.is_patient and obj.donor_profile:
+                return obj.donor_profile.notes
+        except ObjectDoesNotExist:
+            # Catching the exception if donor_profile does not exist
+            pass
+
+        try:
+            if obj.is_patient and obj.patient_profile:
+                return obj.patient_profile.notes
+        except ObjectDoesNotExist:
+            # Catching the exception if patient_profile does not exist
+            pass
+
+        # Return an empty string if neither profile exists
+        return ""
+
+    def get_company(self, obj):
+        # Since the foreign key is defined in AccountProfile i.e. obj is on the many side, this works
+        return str(obj.company.name) if obj.company else None
+
+    def get_hospital(self, obj):
+        # Check if the patient_profile exists before trying to access its attributes
+        if hasattr(obj, "patient_profile") and obj.is_patient:
+            return obj.patient_profile.hospital
+        else:
+            return None
+
+    def get_donor_type(self, obj):
+        return (
+            obj.donor_profile.donor_type.lead_type
+            if hasattr(obj, "donor_profile")
+            and obj.donor_profile.donor_type
+            and not obj.is_patient
+            else None
+        )
+
+    def get_amount_donated(self, obj):
+        return (
+            obj.donor_profile.amount_donated
+            if hasattr(obj, "donor_profile") and not obj.is_patient
+            else None
+        )
+
+
+class CompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
         fields = "__all__"
 
 

@@ -1,6 +1,6 @@
 'use client'
 import Link from "next/link"
-import { RxTriangleUp } from 'react-icons/rx'
+import { RxTriangleDown, RxTriangleUp } from 'react-icons/rx'
 
 const AnalyticsBlock = ({ title, value, icon, number, rate, message, submessage }) => {
     return (
@@ -14,10 +14,16 @@ const AnalyticsBlock = ({ title, value, icon, number, rate, message, submessage 
                         <p className="font-bold text-slate-900 text-4xl sm:text-5xl md:text-6xl break-words" >
                             {value}
                         </p>
-                        <div className="flex flex-row text-lime-500 items-center">
-                            <RxTriangleUp />
-                            <p>30%</p>
-                        </div>
+                        {rate < 0 ?
+                            <div className="flex flex-row text-red-500 items-center">
+                                <RxTriangleDown />
+                                <p>{rate}</p>
+                            </div>
+                            :
+                            <div className="flex flex-row text-lime-500 items-center">
+                                <RxTriangleUp />
+                                <p>{rate}</p>
+                            </div>}
                     </div>
                     <div className="absolute bottom-12 w-full text-center text-sm">vs previous 30 days</div>
                 </div>

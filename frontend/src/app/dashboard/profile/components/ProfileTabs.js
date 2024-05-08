@@ -25,15 +25,13 @@ const ProfileTabs = () => {
                     <li >
                         <button className={`${selectedTab === 0 ? 'bg-white shadow text-indigo-900 hover:bg-opacity-100' : 'hover:bg-opacity-50'} w-full flex justify-center py-4  hover:bg-slate-50 rounded-full `} onClick={() => handleTabSelection(0)}>Appointments</button>
                     </li>
-                    <li >
-                        <button className={`${selectedTab === 1 ? 'bg-white shadow text-indigo-900 hover:bg-opacity-100' : ''} flex justify-center py-4 hover:bg-opacity-50 hover:bg-slate-50 rounded-full w-full `} onClick={() => handleTabSelection(1)}>Activity</button>
-                    </li>
+
 
                     <li >
-                        <button className={`${selectedTab === 2 ? 'bg-white shadow text-indigo-900 hover:bg-opacity-100' : ''} flex justify-center py-4 hover:bg-opacity-50 hover:bg-slate-50 rounded-full w-full `} onClick={() => handleTabSelection(2)}>Server Browser</button>
+                        <button className={`${selectedTab === 2 ? 'bg-white shadow text-indigo-900 hover:bg-opacity-100' : ''} flex justify-center py-4 hover:bg-opacity-50 hover:bg-slate-50 rounded-full w-full `} onClick={() => handleTabSelection(2)}>Settings</button>
                     </li>
                     <li >
-                        <button className={`${selectedTab === 3 ? 'bg-white shadow text-indigo-900 hover:bg-opacity-100' : ''} flex justify-center py-4 hover:bg-opacity-50 hover:bg-slate-50 rounded-full w-full `} onClick={() => handleTabSelection(3)}>Settings</button>
+                        <button className={`${selectedTab === 3 ? 'bg-white shadow text-indigo-900 hover:bg-opacity-100' : ''} flex justify-center py-4 hover:bg-opacity-50 hover:bg-slate-50 rounded-full w-full `} onClick={() => handleTabSelection(3)}>Profile</button>
                     </li>
 
                 </ul>
@@ -52,14 +50,12 @@ const ProfileTabs = () => {
                             <li>
                                 <button className="w-full block px-4 py-3  text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white" onClick={() => handleTabSelectionMobile(0)}>Appointments</button>
                             </li>
+
                             <li>
-                                <button className="w-full block px-4 py-3  text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white" onClick={() => handleTabSelectionMobile(1)}>Activity</button>
+                                <button className="w-full block px-4 py-3  text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white" onClick={() => handleTabSelectionMobile(2)}>Settings</button>
                             </li>
                             <li>
-                                <button className="w-full block px-4 py-3  text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white" onClick={() => handleTabSelectionMobile(2)}>Earnings</button>
-                            </li>
-                            <li>
-                                <button className="w-full block px-4 py-3 text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white" onClick={() => handleTabSelectionMobile(3)}>Settings</button>
+                                <button className="w-full block px-4 py-3 text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white" onClick={() => handleTabSelectionMobile(3)}>Profile</button>
                             </li>
                         </ul>
                     </div>

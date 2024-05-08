@@ -26,7 +26,7 @@ const Masthead = () => {
 
 
     return (
-        <div ref={refContainer} className=' min-h-screen flex flex-col  justify-between sticky top-10 -z-10'
+        <div ref={refContainer} className=' min-h-screen flex flex-col  justify-between sticky top-10 -z-10 bg-white'
             style={{
                 transform: `translateY(-${progress * 20}vh)`
             }

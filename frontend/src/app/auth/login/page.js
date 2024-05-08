@@ -1,8 +1,51 @@
 'use client'
 import Image from "next/image"
 import Link from "next/link"
+import { useState, useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { login, reset } from "../../lib/features/auth/authSlice"
+import { toast } from 'react-toastify'
+
 const LoginPage = () => {
 
+    const [email, setLocalEmail] = useState('')
+    const [password, setLocalPassword] = useState('')
+    const dispatch = useDispatch()
+    const { user, isLoading, isError, isSuccess, message } = useSelector((state) => state.auth)
+
+    // redirect if logged in already, or after login
+    useEffect(() => {
+        if (isError) {
+            toast.error('Either email or password is incorrect')
+        }
+        if (isSuccess || user) {
+            setTimeout(() => window.location.href = "/dashboard", 1000)
+        }
+        /*Here so that welcome shows, since welcome is based on isSuccess
+         Other option is to have a showWelcome state be set in the isSuccess if statement
+         theoretically other option is better, but next.js moves fast and the intentional overhead 
+         gives django and http time to catch i.e. better overvall UX
+        */
+        setTimeout(() => dispatch(reset()), 1500)
+    }, [isError, isSuccess, message, user, dispatch])
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        if (!email) {
+            toast.error("An email must be provided")
+            return
+        }
+
+        if (!password) {
+            toast.error("A password must be provided")
+            return
+        }
+        const userData = {
+            email, password,
+        }
+
+        dispatch(login(userData))
+    }
     return (
         <div className="h-screen flex place-items-center bg-slate-100">
 
@@ -13,7 +56,8 @@ const LoginPage = () => {
                     <p>Login as you would with any Bsystems Account</p>
                 </div>
 
-                <div className="w-full px-6 py-8 md:px-8 lg:w-1/2">
+                <form className="w-full px-6 py-8 md:px-8 lg:w-1/2">
+
                     <div className="flex justify-center mx-auto">
                         <Image width={50} height={50} className="w-auto h-7 sm:h-8" src="/assets/bsystems_logo.png" alt="" />
                     </div>
@@ -35,25 +79,25 @@ const LoginPage = () => {
 
                     <div className="mt-4">
                         <label className="block mb-2 text-sm font-medium text-gray-600" htmlFor="LoggingEmailAddress">Email Address</label>
-                        <input id="LoggingEmailAddress" className="block w-full px-4 py-2 text-gray-700 bg-white border rounded-lg focus:border-blue-400 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-300" type="email" />
+                        <input id="LoggingEmailAddress" value={email} className="block w-full px-4 py-2 text-gray-700 bg-white border rounded-lg focus:border-blue-400 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-300" type="email" onChange={(e) => setLocalEmail(e.target.value)} />
                     </div>
 
                     <div className="mt-4">
                         <div className="flex justify-between">
                             <label className="block mb-2 text-sm font-medium text-gray-600" htmlFor="loggingPassword">Password</label>
-                            <a href="#" className="text-xs text-gray-500 dark:text-gray-300 hover:underline">Forgot Password?</a>
+                            <a href="/auth/password" className="text-xs text-gray-500 dark:text-gray-300 hover:underline">Forgot Password?</a>
                         </div>
 
-                        <input id="loggingPassword" className="block w-full px-4 py-2 text-gray-700 bg-white border rounded-lg focus:border-blue-400 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-300" type="password" />
+                        <input id="loggingPassword" value={password} className="block w-full px-4 py-2 text-gray-700 bg-white border rounded-lg focus:border-blue-400 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring focus:ring-blue-300" type="password" onChange={(e) => setLocalPassword(e.target.value)} />
                     </div>
 
                     <div className="mt-6">
-                        <Link href={'/dashboard'}>
-                            {/* Remove link, this needs toast and checks and then redirect*/}
-                            <button className="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-slate-700 rounded-lg hover:bg-[#fe0304] focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50">
-                                Sign In
-                            </button>
-                        </Link>
+
+                        {/* Remove link, this needs toast and checks and then redirect*/}
+                        <button type="submit" onClick={handleSubmit} className="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-slate-700 rounded-lg hover:bg-[#fe0304] focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50">
+                            {isSuccess ? 'Welcome' : 'Sign In'}
+                        </button>
+
                     </div>
 
                     <div className="flex items-center justify-between mt-4">
@@ -63,7 +107,7 @@ const LoginPage = () => {
 
                         <span className="w-1/5 border-b dark:border-gray-600 md:w-1/4"></span>
                     </div>
-                </div>
+                </form>
             </div>
         </div >
     )
