@@ -205,18 +205,18 @@ DJOSER = {
 
 PHONENUMBER_DEFAULT_REGION = "GH"
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = env("EMAIL_HOST")
-EMAIL_USE_TLS = env("EMAIL_USE_TLS")
-EMAIL_PORT = env("EMAIL_PORT")
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
-DEFAULT_FROM_EMAIL = "TradePayAfrica <info@tradepayafrica.com>"
-SITE_NAME = "TradePayAfrica"
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_HOST = env("EMAIL_HOST")
+# EMAIL_USE_TLS = env("EMAIL_USE_TLS")
+# EMAIL_PORT = env("EMAIL_PORT")
+# EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+# EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+# DEFAULT_FROM_EMAIL = "TradePayAfrica <info@tradepayafrica.com>"
+# SITE_NAME = "TradePayAfrica"
 
-CELERY_BROKER_URL = env("CELERY_BROKER")
+# CELERY_BROKER_URL = env("CELERY_BROKER")
 
-CELERY_RESULT_BACKEND = env("CELERY_BACKEND")
+# CELERY_RESULT_BACKEND = env("CELERY_BACKEND")
 
 CELERY_TIMEZONE = "Africa/Accra"
 
