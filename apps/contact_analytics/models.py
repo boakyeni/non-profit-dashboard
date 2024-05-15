@@ -9,6 +9,28 @@ from schedule.models import Event
 class Role(models.TextChoices):
     PATIENT = "PATIENT", _("Patient")
     INSTITUTION = "INSTITUTION", _("Institution")
+    EDUCATIONAL_INSTITUTION = "EDUCATIONAL_INSTITUTION", _("Educational Institution")
+    HEALTHCARE_INSTITUTION = "HEALTHCARE_INSTITUTION", _("Healthcare Institution")
+    HEALTHCARE_PATIENT = "HEALTHCARE_PATIENT", _("Healthcare Patient")
+    ANIMALS = "ANIMALS", _("Animals")
+    SOCIAL_WELFARE_PROGRAMS = "SOCIAL_WELFARE_PROGRAMS", _("Social Welfare Programs")
+    EMERGENCY_RELIEF = "EMERGENCY_RELIEF", _("Emergency Relief")
+    ENVIRONMENTAL_PROTECTION = "ENVIRONMENTAL_PROTECTION", _("Environmental Protection/Conversation")
+    COMMUNITY_DEVELOPMENT = "COMMUNITY_DEVELOPMENT", _("Community Development")
+    DISABILITY_SUPPORT = "DISABILITY_SUPPORT", _("Disability Support")
+
+"""
+* educational institution 
+* healthcare institution
+* healthcare patient
+* animals
+* social welfare programs
+* emergency relief
+* environmental conservation/protection
+* community development
+* disability support
+
+"""
 
 
 # class Contact(models.Model):
@@ -44,7 +66,7 @@ class AccountProfile(models.Model):
     last_name = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(max_length=100, blank=True, null=True)
     role = models.CharField(
-        max_length=20,
+        max_length=250,
         choices=Role,
         blank=True,
         null=True,
