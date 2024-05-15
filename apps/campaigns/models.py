@@ -4,6 +4,18 @@ from datetime import date
 
 # from .cause import Cause
 
+BENEFICAIRY = (
+    ("educational_institutions", "Educational Institutions"),
+    ("healthcare_institutions", "Healthcare Institutions"),
+    ("healthcare_patient", "Healthcare Patient"),
+    ("animals", "Animals"),
+    ("social_welfarer_programs", "Social Welfarer Programs"),
+    ("emergency_relief", "Emergency Relief"),
+    ("environmental_protection", "Environmental Protection/Conversation"),
+    ("community_development", "Community Development"),
+    ("disability_support", "Disability Support"),
+)
+
 
 class MonetaryCampaign(models.Model):
     name = models.CharField(max_length=100)
