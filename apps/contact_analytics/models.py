@@ -6,7 +6,7 @@ from schedule.models import Event
 # Create your models here.
 
 
-class Role(models.TextChoices):
+class Benficiary(models.TextChoices):
     PATIENT = "PATIENT", _("Patient")
     INSTITUTION = "INSTITUTION", _("Institution")
     EDUCATIONAL_INSTITUTION = "EDUCATIONAL_INSTITUTION", _("Educational Institution")
@@ -65,9 +65,9 @@ class AccountProfile(models.Model):
     given_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(max_length=100, blank=True, null=True)
-    role = models.CharField(
+    benficiary = models.CharField(
         max_length=250,
-        choices=Role,
+        choices=Benficiary.choices,
         blank=True,
         null=True,
     )

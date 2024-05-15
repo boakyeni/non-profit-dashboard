@@ -35,7 +35,7 @@ class MonetaryCampaign(models.Model):
 
 
 class Cause(models.Model):
-    title = models.CharField(max_length=500, blank=True, null=True, unique=True)
+    title = models.CharField(max_length=250, blank=True, null=True, unique=True)
     description = models.TextField(blank=True, null=True)
 
     def __str__(self):
