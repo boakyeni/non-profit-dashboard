@@ -31,7 +31,7 @@ class Cause(models.Model):
         return self.title if self.title else "Cause"
 
 
-class Patient(models.Model):
+class Beneficairies(models.Model):
     profile = models.OneToOneField(
         AccountProfile,
         on_delete=models.CASCADE,

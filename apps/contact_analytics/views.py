@@ -14,7 +14,7 @@ from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
 from .models import AccountProfile, PhoneNumber, Company
 from apps.donor_management.models import Donor, LeadType
 from apps.donor_management.serializers import DonorSerializer, LeadTypeSerializer
-from apps.campaigns.models import Cause, Patient
+from apps.campaigns.models import Cause, Beneficairies
 from apps.campaigns.serializers import PatientSerializer
 from .serializers import (
     AccountProfileSerializer,
@@ -303,7 +303,7 @@ class editContact(APIView):
                 account_instance.save()
             elif data["contact_type"].lower() == "patient":
                 try:
-                    patient = Patient.objects.get(profile=account_instance)
+                    patient = Beneficairies.objects.get(profile=account_instance)
                     type_data = {
                         "notes": data.get("notes"),
                         "hospital": data.get("hospital"),
@@ -313,7 +313,7 @@ class editContact(APIView):
                     )
                     patient_serializer.is_valid(raise_exception=True)
                     patient_instance = patient_serializer.save()
-                except Patient.DoesNotExist:
+                except Beneficairies.DoesNotExist:
                     type_data = {
                         "profile": account_instance.id,
                         "notes": data.get("notes"),

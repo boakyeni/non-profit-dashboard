@@ -6,18 +6,21 @@ from schedule.models import Event
 # Create your models here.
 
 
-class Benficiary(models.TextChoices):
-    PATIENT = "PATIENT", _("Patient")
-    INSTITUTION = "INSTITUTION", _("Institution")
+class Beneficiary(models.TextChoices):
+    # PATIENT = "PATIENT", _("Patient")
+    # INSTITUTION = "INSTITUTION", _("Institution")
     EDUCATIONAL_INSTITUTION = "EDUCATIONAL_INSTITUTION", _("Educational Institution")
     HEALTHCARE_INSTITUTION = "HEALTHCARE_INSTITUTION", _("Healthcare Institution")
     HEALTHCARE_PATIENT = "HEALTHCARE_PATIENT", _("Healthcare Patient")
     ANIMALS = "ANIMALS", _("Animals")
     SOCIAL_WELFARE_PROGRAMS = "SOCIAL_WELFARE_PROGRAMS", _("Social Welfare Programs")
     EMERGENCY_RELIEF = "EMERGENCY_RELIEF", _("Emergency Relief")
-    ENVIRONMENTAL_PROTECTION = "ENVIRONMENTAL_PROTECTION", _("Environmental Protection/Conversation")
+    ENVIRONMENTAL_PROTECTION = "ENVIRONMENTAL_PROTECTION", _(
+        "Environmental Protection/Conversation"
+    )
     COMMUNITY_DEVELOPMENT = "COMMUNITY_DEVELOPMENT", _("Community Development")
     DISABILITY_SUPPORT = "DISABILITY_SUPPORT", _("Disability Support")
+
 
 """
 * educational institution 
@@ -67,7 +70,7 @@ class AccountProfile(models.Model):
     email = models.EmailField(max_length=100, blank=True, null=True)
     benficiary = models.CharField(
         max_length=250,
-        choices=Benficiary.choices,
+        choices=Beneficiary.choices,
         blank=True,
         null=True,
     )

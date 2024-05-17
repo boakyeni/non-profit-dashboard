@@ -9,7 +9,7 @@ from rest_framework.decorators import (
     parser_classes,
 )
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from .models import MonetaryCampaign, Patient, Cause
+from .models import MonetaryCampaign, Beneficairies, Cause
 from .serializers import (
     MonetaryCampaignSerializer,
     PatientSerializer,
@@ -26,7 +26,7 @@ class CampaignViewSet(viewsets.ModelViewSet):
 
 
 class PatientViewSet(viewsets.ModelViewSet):
-    queryset = Patient.objects.all()
+    queryset = Beneficairies.objects.all()
     serializer_class = PatientSerializer
 
     def list(self, request):

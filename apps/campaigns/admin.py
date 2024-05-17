@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import Patient, MonetaryCampaign, Cause
+from .models import Beneficairies, MonetaryCampaign, Cause
 
 # Register your models here.
 admin.site.register(MonetaryCampaign)
-admin.site.register(Patient)
+admin.site.register(Beneficairies)
 admin.site.register(Cause)
