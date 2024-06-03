@@ -8,7 +8,6 @@ from schedule.models import Event
 
 class Beneficiary(models.TextChoices):
     # PATIENT = "PATIENT", _("Patient")
-    # INSTITUTION = "INSTITUTION", _("Institution")
     EDUCATIONAL_INSTITUTION = "EDUCATIONAL_INSTITUTION", _("Educational Institution")
     HEALTHCARE_INSTITUTION = "HEALTHCARE_INSTITUTION", _("Healthcare Institution")
     HEALTHCARE_PATIENT = "HEALTHCARE_PATIENT", _("Healthcare Patient")
