@@ -16,7 +16,7 @@ from rest_framework.decorators import (
     authentication_classes,
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework import status, generics
+from rest_framework import status, generics, permissions
 import requests
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
@@ -36,8 +36,9 @@ from apps.scheduler.serializers import (
     CalendarSerializer,
     AdditionalCalendarInfoSerializer,
 )
+from django.contrib.auth.models import Permission
 from django.utils.text import slugify
-
+from .custom_permissions import CustomUserPermission
 CENTRAL_AUTH_URL = settings.CENTRAL_AUTH_URL
 User = get_user_model()
 
@@ -126,6 +127,8 @@ def signup_view(request):
         "email": request.data.get("email"),
         "password": request.data.get("password"),
         "phone_number": request.data.get("phone_number"),
+        "is_bsystems_admin": request.data.get("is_bsystems_admin", False),
+        "is_instituition_admin": request.data.get("is_instituition_admin", False),
         # Add other fields as needed
     }
 
@@ -153,6 +156,8 @@ def signup_view(request):
     info_cal_instance.users.add(user)
     info_cal_instance.save()
 
+    # assign_permissions(user)
+
     # Send user data to centralized service for account creation
 
     if user:
@@ -172,6 +177,19 @@ def signup_view(request):
     return Response(
         {"detail": "Account creation failed"}, status=status.HTTP_400_BAD_REQUEST
     )
+
+# @permission_classes([permissions.IsAuthenticated])
+# def assign_permissions(user):
+#     if user.is_superuser and user.is_bsystems_user and user.is_institution_admin:
+#         try:
+#             bsystems_permission = Permission.objects.get(name="Bsystems Admin")
+#             institution_permission = Permission.objects.get(name="Institution Admin")
+
+#             user.user_permissions.add(bsystems_permission)
+#             user.user_permissions.add(institution_permission)
+
+#         except Permission.DoesNotExist:
+#             pass
 
 
 @api_view(["GET"])

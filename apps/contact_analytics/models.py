@@ -20,19 +20,8 @@ class Beneficiary(models.TextChoices):
     COMMUNITY_DEVELOPMENT = "COMMUNITY_DEVELOPMENT", _("Community Development")
     DISABILITY_SUPPORT = "DISABILITY_SUPPORT", _("Disability Support")
 
-
-"""
-* educational institution 
-* healthcare institution
-* healthcare patient
-* animals
-* social welfare programs
-* emergency relief
-* environmental conservation/protection
-* community development
-* disability support
-
-"""
+    def __str__(self):
+        return self.value
 
 
 # class Contact(models.Model):

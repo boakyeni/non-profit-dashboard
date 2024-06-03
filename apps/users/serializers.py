@@ -19,7 +19,23 @@ class CreateUserSerializer(UserCreateSerializer):
             "phone_number",
             "reference",
             "password",
+            "is_bsystems_user",
+            "is_instituition_admin",
         ]
+        extra_kwargs = {"password": {"write_only": True}}
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            first_name=validated_data["first_name"],
+            last_name=validated_data["last_name"],
+            email=validated_data["email"],
+            phone_number=validated_data["phone_number"],
+            reference=validated_data["reference"],
+            password=validated_data["password"],
+            is_bsystems_user=validated_data.get("is_bsystems_user", False),
+            is_instituition_admin=validated_data.get("is_instituition_admin", False),
+        )
+        return User.objects.create_user(**validated_data)
 
 
 class UserSerializer(serializers.ModelSerializer):
