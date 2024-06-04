@@ -41,9 +41,6 @@ class User(AbstractUser):
     is_institution_admin = models.BooleanField(
         verbose_name=_("Is Institution Admin"), default=False
     )
-    is_instituition_user = models.BooleanField(
-        verbose_name=_("Is Institution User"), default=False
-    )
     reference = models.CharField(
         verbose_name=_("Account Reference"), max_length=250, blank=True, null=True
     )
@@ -52,26 +49,6 @@ class User(AbstractUser):
         "first_name",
         "last_name",
     ]
-
-    # class Meta:
-    #     permissions = [
-    #         ("approve_institution", "Can approve institution"),
-    #         ("change_institution_status", "Can change institution status"),
-    #         ("approve_campaign", "Can approve campaign"),
-    #         ("change_campaign_status", "Can change campaign status"),
-    #         ("create_other_users", "Can create other users"),
-    #         ("create_campaigns", "Can create campaigns"),
-    #         ("approve_other_campaigns", "Can approve other campaigns"),
-    #         ("create_tasks", "Can create tasks"),
-    #         ("create_events", "Can create events"),
-    #         (
-    #             "view_all_tasks_campaigns_events",
-    #             "Can view all tasks, campaigns, and events",
-    #         ),
-    #         ("change_user_status", "Can change user status"),
-    #         ("change_own_password", "Can change own password"),
-    #         ("change_other_passwords", "Can change other users' passwords"),
-    #     ]
 
     objects = CustomUserManager()
 

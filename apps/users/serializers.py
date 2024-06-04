@@ -24,23 +24,12 @@ class CreateUserSerializer(UserCreateSerializer):
         ]
         extra_kwargs = {"password": {"write_only": True}}
 
-    def create(self, validated_data):
-        user = User.objects.create_user(
-            first_name=validated_data["first_name"],
-            last_name=validated_data["last_name"],
-            email=validated_data["email"],
-            phone_number=validated_data["phone_number"],
-            reference=validated_data["reference"],
-            password=validated_data["password"],
-            is_bsystems_user=validated_data.get("is_bsystems_user", False),
-            is_instituition_admin=validated_data.get("is_instituition_admin", False),
-        )
-        return User.objects.create_user(**validated_data)
-
 
 class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField(source="get_full_name")
     phone_number = PhoneNumberField()
+    is_bsystems_user = serializers.BooleanField()
+    is_institution_admin = serializers.BooleanField()
 
     class Meta:
         model = User
@@ -59,6 +48,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super(UserSerializer, self).to_representation(instance)
+        # Add custom field
+        representation["bsystems_admin"] = instance.is_bsystems_admin
+        representation["institution_admin"] = instance.is_institution_admin
         if instance.is_superuser:
             representation["admin"] = True
         return representation

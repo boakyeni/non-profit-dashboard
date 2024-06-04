@@ -13,3 +13,15 @@ is a bsystems admin or an institution admin.
 
 Extending serializers to include these fields.
 Extending signup_view to check whether a user is a bsystems admin or institution admin.
+
+# Current issues
+1. Can't seem to figure out how to let the system diffrentiate between a bsystems admin and an institution admin.
+ - Now there are 2 types of users, super user and user, super user can grant permissions to other users, and have access to all available 
+   features or permissions.
+- What i tried
+  - Boolean fields for either bsystems admin or instituion admin
+  - created a permissions decorator 
+
+# what i have to do
+1. Fields for beneficiaries
+2. Integrating widget

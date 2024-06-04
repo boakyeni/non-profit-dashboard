@@ -38,7 +38,7 @@ from apps.scheduler.serializers import (
 )
 from django.contrib.auth.models import Permission
 from django.utils.text import slugify
-from .custom_permissions import CustomUserPermission
+from .custom_permissions import IsAdminUser
 CENTRAL_AUTH_URL = settings.CENTRAL_AUTH_URL
 User = get_user_model()
 
@@ -156,7 +156,6 @@ def signup_view(request):
     info_cal_instance.users.add(user)
     info_cal_instance.save()
 
-    # assign_permissions(user)
 
     # Send user data to centralized service for account creation
 
@@ -177,19 +176,6 @@ def signup_view(request):
     return Response(
         {"detail": "Account creation failed"}, status=status.HTTP_400_BAD_REQUEST
     )
-
-# @permission_classes([permissions.IsAuthenticated])
-# def assign_permissions(user):
-#     if user.is_superuser and user.is_bsystems_user and user.is_institution_admin:
-#         try:
-#             bsystems_permission = Permission.objects.get(name="Bsystems Admin")
-#             institution_permission = Permission.objects.get(name="Institution Admin")
-
-#             user.user_permissions.add(bsystems_permission)
-#             user.user_permissions.add(institution_permission)
-
-#         except Permission.DoesNotExist:
-#             pass
 
 
 @api_view(["GET"])

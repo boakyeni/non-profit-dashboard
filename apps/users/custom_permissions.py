@@ -1,16 +1,12 @@
 from rest_framework import permissions
-from django.contrib.auth.models import Permission
 
+"""
+Custom permissions to check if user is instituition admin or bsystems admin
+"""
 
-class CustomUserPermission(permissions.BasePermission):
-    """
-    Custom permission to assign permissions based on user attributes.
-    """
-
-    def has_permission(self, request, view):
-        user = request.user
-        if not user.is_authenticated:
-            return False
-
-        self.Users(user)
-        return True
+class IsAdminUser(permissions.BasePermission):
+  def has_permission(self, request, view):
+    user = request.user
+    if not user:
+      return False
+    return getattr(user, "is_bsystems_admin", False) or getattr(user, "is_institution_admin", False)
