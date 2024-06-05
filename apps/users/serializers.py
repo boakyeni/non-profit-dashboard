@@ -19,17 +19,17 @@ class CreateUserSerializer(UserCreateSerializer):
             "phone_number",
             "reference",
             "password",
-            "is_bsystems_user",
-            "is_instituition_admin",
+            "bsystems_user",
+            "institution_admin",
         ]
-        extra_kwargs = {"password": {"write_only": True}}
+        # extra_kwargs = {"password": {"write_only": True}}
 
 
 class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField(source="get_full_name")
     phone_number = PhoneNumberField()
-    is_bsystems_user = serializers.BooleanField()
-    is_institution_admin = serializers.BooleanField()
+    bsystems_user = serializers.BooleanField()
+    institution_admin = serializers.BooleanField()
 
     class Meta:
         model = User
@@ -41,6 +41,8 @@ class UserSerializer(serializers.ModelSerializer):
             "full_name",
             "phone_number",
             "reference",
+            "bsystems_user",
+            "institution_admin",
         ]
 
     def get_full_name(self, obj):
@@ -48,9 +50,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super(UserSerializer, self).to_representation(instance)
-        # Add custom field
-        representation["bsystems_admin"] = instance.is_bsystems_admin
-        representation["institution_admin"] = instance.is_institution_admin
         if instance.is_superuser:
             representation["admin"] = True
         return representation

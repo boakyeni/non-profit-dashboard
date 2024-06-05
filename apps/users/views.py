@@ -39,6 +39,7 @@ from apps.scheduler.serializers import (
 from django.contrib.auth.models import Permission
 from django.utils.text import slugify
 from .custom_permissions import IsAdminUser
+
 CENTRAL_AUTH_URL = settings.CENTRAL_AUTH_URL
 User = get_user_model()
 
@@ -71,8 +72,16 @@ def login_view(request):
     """Login view for local authentication"""
     email = request.data.get("email")
     password = request.data.get("password")
+    bsystems_user = request.data.get("bsystems_user")
+    institution_admin = request.data.get("institution_admin")
 
-    user = authenticate(request, email=email, password=password)
+    user = authenticate(
+        request,
+        email=email,
+        password=password,
+        bsystems_user=bsystems_user,
+        institution_admin=institution_admin,
+    )
 
     if user and user.is_active:
         # If valid, issue JWT token
@@ -127,8 +136,8 @@ def signup_view(request):
         "email": request.data.get("email"),
         "password": request.data.get("password"),
         "phone_number": request.data.get("phone_number"),
-        "is_bsystems_admin": request.data.get("is_bsystems_admin", False),
-        "is_instituition_admin": request.data.get("is_instituition_admin", False),
+        "bsystems_admin": request.data.get("bsystems_admin"),
+        "institution_admin": request.data.get("institution_admin"),
         # Add other fields as needed
     }
 
@@ -155,7 +164,6 @@ def signup_view(request):
 
     info_cal_instance.users.add(user)
     info_cal_instance.save()
-
 
     # Send user data to centralized service for account creation
 
