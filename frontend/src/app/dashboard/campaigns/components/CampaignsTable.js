@@ -41,6 +41,7 @@ const CampaignsTable = ({ itemsPerPage }) => {
     useEffect(() => {
 
         const active = isEqual(filter, initialFilterState) ? campaigns : searchResults
+        console.log(active)
         setActiveCampaigns(active)
         const endOffset = itemOffset + itemsPerPage;
         console.log(`Loading items from ${itemOffset} to ${endOffset}`);

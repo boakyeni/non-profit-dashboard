@@ -77,7 +77,7 @@ class Transaction(models.Model):
 
 class Donation(models.Model):
     donor = models.ForeignKey(
-        Donor, on_delete=models.CASCADE, default=None, related_name="donations"
+        Donor, on_delete=models.CASCADE, blank=True, null=True, related_name="donations"
     )
     transaction = models.OneToOneField(
         Transaction, on_delete=models.CASCADE, related_name="donation"
