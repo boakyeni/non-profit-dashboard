@@ -74,8 +74,12 @@ class AccountProfile(models.Model):
     is_active = models.BooleanField(default=True)
     is_beneficiary = models.BooleanField(default=False)
     # This holds an institutions Donors and Beneficiaries, all listed as contacts
-    associated_institutions = models.ManyToManyField(
-        Institution, blank=True, related_name="contacts"
+    associated_institution = models.ForeignKey(
+        Institution,
+        related_name="contacts",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
     )
 
     def __str__(self):
