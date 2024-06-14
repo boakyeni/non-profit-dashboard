@@ -2,6 +2,7 @@ from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.translation import gettext_lazy as _
 from schedule.models import Event
+from apps.users.models import Institution
 
 # Create your models here.
 
@@ -71,7 +72,11 @@ class AccountProfile(models.Model):
     )
     profile_photo = models.FileField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
-    is_patient = models.BooleanField(default=False)
+    is_beneficiary = models.BooleanField(default=False)
+    # This holds an institutions Donors and Beneficiaries, all listed as contacts
+    associated_institutions = models.ManyToManyField(
+        Institution, blank=True, related_name="contacts"
+    )
 
     def __str__(self):
         return self.name

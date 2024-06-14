@@ -88,6 +88,7 @@ class Donation(models.Model):
         return f"Donation by {self.donor.name} - {self.transaction.amount}"
 
 
+# change patient to account profile
 class Expense(models.Model):
     patient = models.ForeignKey(
         Beneficairies,

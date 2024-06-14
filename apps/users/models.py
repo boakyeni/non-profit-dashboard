@@ -1,5 +1,4 @@
 from django.db import models
-from django.db import models
 from django.contrib.auth.models import AbstractUser, Group
 from django.utils.translation import gettext_lazy as _
 from .managers import CustomUserManager
@@ -19,6 +18,10 @@ from schedule.models import Calendar
 
 #     def __str__(self):
 #         return self.name
+
+
+class Institution(models.Model):
+    name = models.CharField(max_length=255, verbose_name="Institution Name")
 
 
 class User(AbstractUser):
@@ -45,11 +48,19 @@ class User(AbstractUser):
     reference = models.CharField(
         verbose_name=_("Account Reference"), max_length=250, blank=True, null=True
     )
+    institution = models.ForeignKey(
+        Institution,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="users",
+    )
+
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = [
         "first_name",
         "last_name",
-        "bsytems_admin",
+        "bsystems_admin",
     ]
 
     objects = CustomUserManager()
