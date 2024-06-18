@@ -1,5 +1,4 @@
 from django.db import models
-from django.db import models
 from django.contrib.auth.models import AbstractUser, Group
 from django.utils.translation import gettext_lazy as _
 from .managers import CustomUserManager
@@ -9,6 +8,25 @@ from schedule.models import Calendar
 # Create your models here.
 
 
+<<<<<<< HEAD
+=======
+# class InstitutionAdmin(models.Model):
+#     name = models.CharField(max_length=100, verbose_name="Institution Name")
+#     email = models.EmailField(verbose_name="Email Address")
+#     address = models.CharField(max_length=200, verbose_name="Institution Address")
+#     bussiness_cert = models.CharField(
+#         max_length=100, verbose_name="Business Certificate"
+#     )
+
+#     def __str__(self):
+#         return self.name
+
+
+class Institution(models.Model):
+    name = models.CharField(max_length=255, verbose_name="Institution Name")
+
+
+>>>>>>> c1ba90ff6a0aa6d7532b88907959f3305f24e236
 class User(AbstractUser):
     """
     Use <user>.tasks.all() to get tasks assigned to this user
@@ -33,10 +51,22 @@ class User(AbstractUser):
     reference = models.CharField(
         verbose_name=_("Account Reference"), max_length=250, blank=True, null=True
     )
+    institution = models.ForeignKey(
+        Institution,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="users",
+    )
+
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = [
         "first_name",
         "last_name",
+<<<<<<< HEAD
+=======
+        "bsystems_admin",
+>>>>>>> c1ba90ff6a0aa6d7532b88907959f3305f24e236
     ]
 
     objects = CustomUserManager()

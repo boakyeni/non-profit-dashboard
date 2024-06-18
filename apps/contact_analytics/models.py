@@ -2,6 +2,7 @@ from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.translation import gettext_lazy as _
 from schedule.models import Event
+from apps.users.models import Institution
 # Create your models here.
 
 
@@ -51,6 +52,10 @@ class Company(models.Model):
 
 
 class AccountProfile(models.Model):
+    """
+    Holds common fields to beneficiaries
+    """
+
     name = models.CharField(max_length=250, blank=True)
     given_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
@@ -70,14 +75,26 @@ class AccountProfile(models.Model):
     )
     profile_photo = models.FileField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
-    is_patient = models.BooleanField(default=False)
+    is_beneficiary = models.BooleanField(default=False)
+    website = models.URLField(blank=True, null=True)
+    # This holds an institutions Donors and Beneficiaries, all listed as contacts
+    associated_institution = models.ForeignKey(
+        Institution,
+        related_name="contacts",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+    )
 
     def __str__(self):
         return self.name
 
 
 class PhoneNumber(models.Model):
+    name = models.CharField(max_length=255, blank=True, null=True)
+    # if no name for number is given just use name from profile
     number = PhoneNumberField(blank=True, max_length=128)
+    primary_contact = models.BooleanField(default=False)
     notes = models.TimeField(auto_now=True, blank=True)
     profile = models.ForeignKey(
         AccountProfile, on_delete=models.CASCADE, related_name="phone_number"
