@@ -232,26 +232,34 @@ def add_or_edit_phone_number(profile, number, phone_id=None):
 
 
 """
-Create or Edit factory, chatgpt blessed us with this gem after I wrote the stuff above
+Create or Edit factory, blessed us with this gem after I wrote the stuff above.
+Probably want to incorporate those above into the below code if i have the time.
+This allows beneficiary types to change or even become a donor.
+Since each beneficiary has its own model, there is no clean up when beneficiary type changes.
+Good for data analytics/ big data, but could also bloat the db, really depends on if we want to hold previous type for a contact.
+I believe that there will be cases where we do want that, like if a welfare campaign becomes a community dev, with the same contact, no data is overwritten.
+Flow: Edit AccountProfile which has SocialWelfare Ben to Com Dev > Com Dev does not exist > Com Dev gets created
+> accountProfile now points to both SocialWelfare row and Com Dev row
 """
 
 
 def create_or_edit_instance(model_class, serializer_class, data, instance_id=None):
     try:
-        if instance_id:
-            instance = model_class.objects.get(pk=instance_id)
-            serializer = serializer_class(instance=instance, data=data, partial=True)
-        else:
-            serializer = serializer_class(data=data)
-
-        serializer.is_valid(raise_exception=True)
-        return Response({"instance": serializer.save()}, status=status.HTTP_200_OK)
+        instance = model_class.objects.get(pk=instance_id)
     except ObjectDoesNotExist:
-        raise
+        # create new
+        serializer = serializer_class(data=data)
+        serializer.is_valid(raise_exception=True)
+        return serializer.save()
     except ValidationError:
         raise
     except Exception:
         raise
+    else:
+        # edit
+        serializer = serializer_class(instance=instance, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        return serializer.save()
 
 
 def create_or_edit_educational_institution(data, instance_id=None):
