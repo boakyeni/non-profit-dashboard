@@ -30,10 +30,6 @@ redis = "^5.0.3"
 django-celery-email = "^3.0.0"
 watchdog = "^4.0.0"
 mysqlclient = "^2.2.4"
-<<<<<<< HEAD
-libmagic = "^1.0"
-=======
->>>>>>> c1ba90ff6a0aa6d7532b88907959f3305f24e236
 
 
 [build-system]

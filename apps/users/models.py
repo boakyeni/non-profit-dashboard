@@ -48,10 +48,7 @@ class User(AbstractUser):
     REQUIRED_FIELDS = [
         "first_name",
         "last_name",
-<<<<<<< HEAD
-=======
         "bsystems_admin",
->>>>>>> c1ba90ff6a0aa6d7532b88907959f3305f24e236
     ]
 
     objects = CustomUserManager()
