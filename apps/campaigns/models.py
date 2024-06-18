@@ -60,7 +60,7 @@ class EducationalInstitution(models.Model):
     accreditation_details = models.TextField(blank=True, null=True)
 
 
-class HealthCareInstitution(models.Model):
+class HealthcareInstitution(models.Model):
     INSTITUTION_TYPE_CHOICES = [
         ("Hospital", "Hospital"),
         ("Clinic", "Clinic"),
