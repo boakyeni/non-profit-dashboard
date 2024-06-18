@@ -2,7 +2,6 @@ from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.translation import gettext_lazy as _
 from schedule.models import Event
-
 # Create your models here.
 
 
@@ -22,8 +21,8 @@ class Beneficiary(models.TextChoices):
 
     def __str__(self):
         return self.value
-
-
+    
+    
 # class Contact(models.Model):
 #     Donor = models.ForeignKey(Donor, on_delete=models.CASCADE, default=None)
 #     nameOfDonor = models.CharField(max_length=50, verbose_name="Name of Donor")

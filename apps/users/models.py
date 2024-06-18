@@ -9,18 +9,6 @@ from schedule.models import Calendar
 # Create your models here.
 
 
-# class InstitutionAdmin(models.Model):
-#     name = models.CharField(max_length=100, verbose_name="Institution Name")
-#     email = models.EmailField(verbose_name="Email Address")
-#     address = models.CharField(max_length=200, verbose_name="Institution Address")
-#     bussiness_cert = models.CharField(
-#         max_length=100, verbose_name="Business Certificate"
-#     )
-
-#     def __str__(self):
-#         return self.name
-
-
 class User(AbstractUser):
     """
     Use <user>.tasks.all() to get tasks assigned to this user
@@ -49,7 +37,6 @@ class User(AbstractUser):
     REQUIRED_FIELDS = [
         "first_name",
         "last_name",
-        "bsytems_admin",
     ]
 
     objects = CustomUserManager()
