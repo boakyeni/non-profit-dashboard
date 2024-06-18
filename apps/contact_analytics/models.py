@@ -53,6 +53,10 @@ class Company(models.Model):
 
 
 class AccountProfile(models.Model):
+    """
+    Holds common fields to beneficiaries
+    """
+
     name = models.CharField(max_length=250, blank=True)
     given_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
@@ -73,6 +77,7 @@ class AccountProfile(models.Model):
     profile_photo = models.FileField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_beneficiary = models.BooleanField(default=False)
+    website = models.URLField(blank=True, null=True)
     # This holds an institutions Donors and Beneficiaries, all listed as contacts
     associated_institution = models.ForeignKey(
         Institution,
@@ -87,7 +92,10 @@ class AccountProfile(models.Model):
 
 
 class PhoneNumber(models.Model):
+    name = models.CharField(max_length=255, blank=True, null=True)
+    # if no name for number is given just use name from profile
     number = PhoneNumberField(blank=True, max_length=128)
+    primary_contact = models.BooleanField(default=False)
     notes = models.TimeField(auto_now=True, blank=True)
     profile = models.ForeignKey(
         AccountProfile, on_delete=models.CASCADE, related_name="phone_number"
