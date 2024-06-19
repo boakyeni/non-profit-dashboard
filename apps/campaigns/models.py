@@ -1,7 +1,11 @@
 from django.db import models
 from apps.contact_analytics.models import AccountProfile
-from datetime import date
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth import get_user_model
+from utils.hash_photo import calculate_file_hash
+
+User = get_user_model()
 
 
 # from .cause import Cause
@@ -20,21 +24,48 @@ class MonetaryCampaign(models.Model):
     )
     goal = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True)
     description = models.TextField(max_length=250, blank=True, null=True)
-    start_date = models.DateTimeField(default=date.today)
+    start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField(blank=True, null=True)
     subscribers = models.ManyToManyField(
         AccountProfile, blank=True, related_name="subscribed_campaigns"
     )
-    photo = models.FileField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
     beneficiaries = models.ManyToManyField(
         AccountProfile, blank=True, related_name="campaigns"
     )
     causes = models.ManyToManyField(Cause, blank=True, related_name="campaigns")
     # i have this as many to many cause you might have a fund that supports multiple patients or something
+    created_by = models.ForeignKey(
+        User, blank=True, null=True, on_delete=models.PROTECT, related_name="campaigns"
+    )
+    last_edited = models.DateTimeField(auto_now=True)
+    last_edited_by = models.ForeignKey(
+        User,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="edited_campaigns",
+    )
 
     def __str__(self):
         return self.name
+
+
+def user_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/institution_<id>/campaign_photos/<filename>
+    return "institution_{0}/campaign_photos/{1}".format(instance.institution, filename)
+
+
+class Photo(models.Model):
+    file = models.FileField(upload_to=user_directory_path)
+    hash_key = models.CharField(max_length=64, blank=True, null=True)
+    campaigns = models.ManyToManyField(
+        MonetaryCampaign, blank=True, related_name="photos"
+    )
+    institution = models.UUIDField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ("hash_key", "institution")
 
 
 class HealthcarePatient(models.Model):

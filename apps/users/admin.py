@@ -48,6 +48,7 @@ class UserAdmin(BaseUserAdmin):
                     "first_name",
                     "last_name",
                     "phone_number",
+                    "timezone",
                 )
             },
         ),

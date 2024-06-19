@@ -51,6 +51,7 @@ class User(AbstractUser):
         on_delete=models.PROTECT,
         related_name="users",
     )
+    timezone = models.CharField(max_length=50, default="UTC")
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = [

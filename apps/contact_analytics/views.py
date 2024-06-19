@@ -277,6 +277,7 @@ def create_or_update_account(data, files=None):
         data["name"] = f"{data.get('given_name', '')} {data.get('last_name', '')}"
     profile_photo = files.get("profile_photo")
     if profile_photo:
+        print(profile_photo)
         validate_file_type(profile_photo)
     else:
         data.pop("profile_photo")

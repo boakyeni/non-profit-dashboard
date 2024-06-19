@@ -11,6 +11,7 @@ from .models import (
     EnvironmentalProtection,
     CommunityDevelopment,
     DisabilitySupport,
+    Photo,
 )
 
 
@@ -23,6 +24,12 @@ class CauseSerializer(serializers.ModelSerializer):
 class MonetaryCampaignSerializer(serializers.ModelSerializer):
     class Meta:
         model = MonetaryCampaign
+        fields = "__all__"
+
+
+class PhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Photo
         fields = "__all__"
 
 

@@ -11,6 +11,7 @@ from .models import (
     SocialWelfareProgram,
     EmergencyRelief,
     EnvironmentalProtection,
+    Photo,
 )
 
 # Register your models here.
@@ -25,3 +26,4 @@ admin.site.register(EducationalInstitution)
 admin.site.register(SocialWelfareProgram)
 admin.site.register(EmergencyRelief)
 admin.site.register(EnvironmentalProtection)
+admin.site.register(Photo)

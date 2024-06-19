@@ -1,5 +1,6 @@
 from rest_framework import viewsets, status, permissions, generics
 from utils.photo_validation import validate_file_type
+from utils.hash_photo import calculate_file_hash
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.decorators import (
@@ -9,11 +10,12 @@ from rest_framework.decorators import (
     parser_classes,
 )
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from .models import MonetaryCampaign, Cause, HealthcarePatient
+from .models import MonetaryCampaign, Cause, HealthcarePatient, Photo
 from .serializers import (
     MonetaryCampaignSerializer,
     PatientSerializer,
     CauseSerializer,
+    PhotoSerializer,
 )
 from django.db import transaction
 from apps.contact_analytics.models import AccountProfile
@@ -24,6 +26,7 @@ from apps.contact_analytics.views import (
     handle_phone_numbers,
 )
 from decimal import Decimal
+from utils.beneficiary_registry import create_or_edit_instance
 
 
 class CampaignViewSet(viewsets.ModelViewSet):
@@ -102,6 +105,30 @@ class GetCampaigns(generics.ListAPIView):
         return MonetaryCampaign.objects.all()
 
 
+def handle_photo_upload(photo, campaign, institution_id):
+    try:
+        file_hash = calculate_file_hash(photo)
+        existing_photo = Photo.objects.get(
+            hash_key=file_hash, institution=institution_id
+        )
+        if existing_photo:
+            existing_photo.campaigns.add(campaign)
+            return
+    except Photo.DoesNotExist:
+        validate_file_type(photo)
+        create_or_edit_instance(
+            Photo,
+            PhotoSerializer,
+            data={
+                "file": photo,
+                "hash_key": file_hash,
+                "campaigns": [campaign.id],
+                "institution": institution_id,
+            },
+        )
+        return
+
+
 @api_view(["POST"])
 @parser_classes([MultiPartParser, FormParser])
 @permission_classes([permissions.IsAuthenticated])
@@ -111,18 +138,17 @@ def create_campaign(request):
     """I apologize for the nested json in form_data. In hind sight file upload should be separated, so that we can do simple json. But the application is already in too deep with form data"""
     data = request.data.dict()
     print(data)
-    photo = request.FILES.get("photo")
-    if photo:
-        # Handle the file upload. For example, saving the file to a model associated with the contact.
-        validate_file_type(photo)
-    else:
-        data.pop("photo")
-
+    photos = request.FILES.getlist("photos")
+    data["created_by"] = request.user.id
     serializer = MonetaryCampaignSerializer(data=data)
     serializer.is_valid(raise_exception=True)
     campaign_instance = serializer.save()
+    if photos:
+        for photo in photos:
 
-    for uid in data.get("subscribers"):
+            handle_photo_upload(photo, campaign_instance, request.user.institution.id)
+
+    for uid in data.get("subscribers", []):
         try:
             account = AccountProfile.objects.get(id=uid)
             campaign_instance.subscribers.add(account)
