@@ -20,4 +20,5 @@ urlpatterns = [
     path("edit-cause/", views.edit_cause),
     path("get-causes/", views.GetCauses.as_view()),
     path("create-campaign/", views.create_campaign),
+    path("add-beneficiary/", views.add_beneficiaries_to_campaign),
 ]

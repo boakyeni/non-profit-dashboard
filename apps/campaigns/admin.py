@@ -14,11 +14,21 @@ from .models import (
     Photo,
 )
 
+
+class HealthcareInstitutionAdmin(admin.ModelAdmin):
+    list_display = [
+        "id",
+    ]
+
+    class Meta:
+        model = HealthcareInstitution
+
+
 # Register your models here.
 admin.site.register(MonetaryCampaign)
 admin.site.register(HealthcarePatient)
 admin.site.register(Cause)
-admin.site.register(HealthcareInstitution)
+admin.site.register(HealthcareInstitution, HealthcareInstitutionAdmin)
 admin.site.register(CommunityDevelopment)
 admin.site.register(DisabilitySupport)
 admin.site.register(Animal)

@@ -221,66 +221,14 @@ Flow: Edit AccountProfile which has SocialWelfare Ben to Com Dev > Com Dev does 
 """
 
 
-"""
-Below no longer needed with the get_model and get_serializer functions
-"""
-
-# def create_or_edit_educational_institution(data, instance_id=None):
-#     return create_or_edit_instance(
-#         EducationalInstitution, EducationalInstitutionSerializer, data, instance_id
-#     )
-
-
-# def create_or_edit_healthcare_institution(data, instance_id=None):
-#     return create_or_edit_instance(
-#         HealthcareInstitution, HealthcareInstitutionSerializer, data, instance_id
-#     )
-
-
-# def create_or_edit_animal(data, instance_id=None):
-#     return create_or_edit_instance(Animal, AnimalSerializer, data, instance_id)
-
-
-# def create_or_edit_social_welfare_program(data, instance_id=None):
-#     return create_or_edit_instance(
-#         SocialWelfareProgram, SocialWelfareProgramSerializer, data, instance_id
-#     )
-
-
-# def create_or_edit_emergency_relief(data, instance_id=None):
-#     return create_or_edit_instance(
-#         EmergencyRelief, EmergencyReliefSerializer, data, instance_id
-#     )
-
-
-# def create_or_edit_environmental_protection(data, instance_id=None):
-#     return create_or_edit_instance(
-#         EnvironmentalProtection, EnvironmentalProtectionSerializer, data, instance_id
-#     )
-
-
-# def create_or_edit_community_development(data, instance_id=None):
-#     return create_or_edit_instance(
-#         CommunityDevelopment, CommunityDevelopmentSerializer, data, instance_id
-#     )
-
-
-# def create_or_edit_disability_support(data, instance_id=None):
-#     return create_or_edit_instance(
-#         DisabilitySupport, DisabilitySupportSerializer, data, instance_id
-#     )
-
-
 def create_or_update_account(data, files=None):
     """add ability for partial update if id is given"""
-    if not data.get("name"):
-        data["name"] = f"{data.get('given_name', '')} {data.get('last_name', '')}"
+
     profile_photo = files.get("profile_photo")
     if profile_photo:
-        print(profile_photo)
         validate_file_type(profile_photo)
     else:
-        data.pop("profile_photo")
+        data.pop("profile_photo", None)
 
     if "company" in data:
         company_instance = get_or_create_company(data.pop("company"))
@@ -290,19 +238,34 @@ def create_or_update_account(data, files=None):
         lead_type_instance = get_or_create_lead_type(data.pop("donor_type"))
         data["donor_type"] = lead_type_instance.id
 
-    data["is_active"] = True
-    account_serializer = AccountProfileSerializer(data=data)
+    instance_id = data.pop("id", None)
+    if instance_id:
+        # Attempt to fetch the existing instance
+        try:
+            instance = AccountProfile.objects.get(id=int(instance_id))
+        except AccountProfile.DoesNotExist:
+            raise ValueError("Account with provided ID does not exist.")
+        # Perform a partial update
+        account_serializer = AccountProfileSerializer(instance, data=data, partial=True)
+    else:
+        if not data.get("name"):
+            data["name"] = f"{data.get('given_name', '')} {data.get('last_name', '')}"
+        data["is_active"] = True
+        # Create a new instance
+        account_serializer = AccountProfileSerializer(data=data)
     account_serializer.is_valid(raise_exception=True)
     return account_serializer.save()
 
 
-def handle_beneficiary_creation(account_instance, beneficiary_type, beneficiary_data):
+def handle_beneficiary_creation(
+    account_instance, beneficiary_type, beneficiary_data, instance_id=None
+):
     if beneficiary_type:
         beneficiary_model = get_model(beneficiary_type)
         beneficiary_serializer = get_serializer(beneficiary_type)
         beneficiary_data["profile"] = account_instance.id
         create_or_edit_instance(
-            beneficiary_model, beneficiary_serializer, beneficiary_data
+            beneficiary_model, beneficiary_serializer, beneficiary_data, instance_id
         )
 
 
@@ -317,11 +280,13 @@ def handle_contact_type(account_instance, contact_type, data):
         )
 
 
-def handle_phone_numbers(account_instance, phone_data_json):
+def handle_phone_numbers(account_instance, phone_data_json, instance_id=None):
     if phone_data_json:
         phone_data = json.loads(phone_data_json)
         phone_data["profile"] = account_instance.id
-        create_or_edit_instance(PhoneNumber, PhoneNumberSerializer, phone_data)
+        create_or_edit_instance(
+            PhoneNumber, PhoneNumberSerializer, phone_data, instance_id
+        )
 
 
 class addContact(APIView):
@@ -340,7 +305,6 @@ class addContact(APIView):
         data = request.data.dict()
         data["associated_institution"] = request.user.institution.id
         # Form Data so data object is immutable
-        print(data)
         account_instance = create_or_update_account(data, request.FILES)
 
         # comes after AccountProfileSerializer so that we know a valid beneficiary was selected
@@ -365,33 +329,16 @@ class editContact(APIView):
 
     @transaction.atomic
     def patch(self, request):
-        data = request.data.copy()
-
-        name = data.get("given_name") + " " + data.get("last_name")
-        data["name"] = name
-
-        profile_photo = request.FILES.get("profile_photo")
-
-        if profile_photo:
-            # Handle the file upload. For example, saving the file to a model associated with the contact.
-            validate_file_type(profile_photo)
-        else:
-            data.pop("profile_photo", None)
-
-        if "company" in data:
-            company_instance = get_or_create_company(data.pop("company"))
-            data["company"] = company_instance.id
-
-        if "donor_type" in data:
-            lead_type_instance = get_or_create_lead_type(data.pop("donor_type"))
-            data["donor_type"] = lead_type_instance.id
-
-        account_instance = AccountProfile.objects.get(id=data["id"])
-        account_serializer = AccountProfileSerializer(
-            instance=account_instance, data=data, partial=True
-        )
-        account_serializer.is_valid(raise_exception=True)
-        account_instance = account_serializer.save()
+        data = request.data.dict()
+        print(data)
+        account_instance = create_or_update_account(data, request.FILES)
+        if "beneficiary_id" in data:
+            handle_beneficiary_creation(
+                account_instance,
+                data.get("beneficiary_type"),
+                json.loads(data.get("beneficiary_data", "{}")),
+                int(data.get("beneficiary_id")),
+            )
         if data.get("contact_type") == "donor":
             create_or_edit_donor(
                 account_instance, data.get("donor_type"), data.get("notes")
@@ -400,13 +347,14 @@ class editContact(APIView):
             create_or_edit_patient(
                 account_instance, data.get("notes"), data.get("hospital")
             )
-            # if "cause" in data:
-            #     add_cause_to_patient(patient_instance, data["cause"])
-
-        # if "phone_number" in data:
-        #     add_or_edit_phone_number(
-        #         account_instance, data["phone_number"], data.get("phone_id")
-        #     )
+        if "phone_number" in data:
+            for phone_number in json.loads(data.get("phone_number")):
+                if phone_number.id:
+                    handle_phone_numbers(
+                        account_instance, data.get("phone_number"), phone_number.id
+                    )
+                else:
+                    handle_phone_numbers(account_instance, data.get("phone_number"))
 
         return Response(
             AccountProfileReturnSerializer(instance=account_instance).data,

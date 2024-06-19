@@ -27,6 +27,7 @@ from apps.contact_analytics.views import (
 )
 from decimal import Decimal
 from utils.beneficiary_registry import create_or_edit_instance
+import json
 
 
 class CampaignViewSet(viewsets.ModelViewSet):
@@ -193,3 +194,48 @@ def delete_campaign(request):
     except MonetaryCampaign.DoesNotExist:
         pass
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(["PATCH"])
+@parser_classes([MultiPartParser, FormParser])
+@permission_classes([permissions.IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+@transaction.atomic
+def add_beneficiaries_to_campaign(request):
+    data = request.data.dict()
+    try:
+        campaign_instance = MonetaryCampaign.objects.get(
+            id=int(data.get("campaign_id"))
+        )  # form data so no ints
+    except MonetaryCampaign.DoesNotExist:
+        raise
+    if "beneficiary_list" in data:
+        serializer = MonetaryCampaignSerializer(
+            instance=campaign_instance,
+            data={"beneficiaries": data.get("beneficiary_list")},
+            partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+        """Duplicated from add contact, should wrap into one and use in both"""
+        data["associated_institution"] = request.user.institution.id
+        # Form Data so data object is immutable
+        account_instance = create_or_update_account(data, request.FILES)
+
+        # comes after AccountProfileSerializer so that we know a valid beneficiary was selected
+        handle_beneficiary_creation(
+            account_instance,
+            data.get("beneficiary_type"),
+            json.loads(data.get("beneficiary_data", "{}")),
+        )
+        handle_contact_type(account_instance, data.get("contact_type"), data)
+        handle_phone_numbers(account_instance, data.get("phone_number"))
+
+        campaign_instance.beneficiaries.add(account_instance)
+        campaign_instance.save()
+        return Response(
+            MonetaryCampaignSerializer(instance=campaign_instance).data,
+            status=status.HTTP_201_CREATED,
+        )
