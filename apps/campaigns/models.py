@@ -1,6 +1,7 @@
 from django.db import models
 from apps.contact_analytics.models import AccountProfile
 from datetime import date
+from django.utils.translation import gettext_lazy as _
 
 # from .cause import Cause
 

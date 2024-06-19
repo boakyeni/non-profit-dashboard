@@ -9,18 +9,6 @@ import uuid
 # Create your models here.
 
 
-# class InstitutionAdmin(models.Model):
-#     name = models.CharField(max_length=100, verbose_name="Institution Name")
-#     email = models.EmailField(verbose_name="Email Address")
-#     address = models.CharField(max_length=200, verbose_name="Institution Address")
-#     bussiness_cert = models.CharField(
-#         max_length=100, verbose_name="Business Certificate"
-#     )
-
-#     def __str__(self):
-#         return self.name
-
-
 class Institution(models.Model):
     id = models.UUIDField(
         primary_key=True, unique=True, default=uuid.uuid4, editable=False
