@@ -14,9 +14,15 @@ class MonetaryCampaign(models.Model):
     description = models.TextField(max_length=250, blank=True, null=True)
     start_date = models.DateTimeField(default=date.today)
     end_date = models.DateTimeField(blank=True, null=True)
-    subscribers = models.ManyToManyField(AccountProfile, blank=True)
+    subscribers = models.ManyToManyField(
+        AccountProfile, blank=True, related_name="subscribed_campaigns"
+    )
     photo = models.FileField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
+    beneficiaries = models.ManyToManyField(
+        AccountProfile, blank=True, related_name="campaigns"
+    )
+    # i have this as many to many cause you might have a fund that supports multiple patients or something
 
     def __str__(self):
         return self.name
@@ -30,7 +36,7 @@ class Cause(models.Model):
         return self.title if self.title else "Cause"
 
 
-class Beneficairies(models.Model):
+class HealthcarePatient(models.Model):
     profile = models.OneToOneField(
         AccountProfile,
         on_delete=models.CASCADE,
@@ -48,10 +54,10 @@ class Beneficairies(models.Model):
 
 class EducationalInstitution(models.Model):
     INSTITUTION_TYPE_CHOICES = [
-        ("Primary", "Primary"),
-        ("Secondary", "Secondary"),
-        ("University", "University"),
-        ("Orphanage", "Orphanage"),
+        ("PRIMARY", "Primary"),
+        ("SECONDARY", "Secondary"),
+        ("UNIVERSITY", "University"),
+        ("ORPHANAGE", "Orphanage"),
     ]
     profile = models.OneToOneField(AccountProfile, on_delete=models.CASCADE)
     institution_type = models.CharField(max_length=50, choices=INSTITUTION_TYPE_CHOICES)
@@ -62,10 +68,10 @@ class EducationalInstitution(models.Model):
 
 class HealthcareInstitution(models.Model):
     INSTITUTION_TYPE_CHOICES = [
-        ("Hospital", "Hospital"),
-        ("Clinic", "Clinic"),
-        ("Health Center", "Health Center"),
-        ("Senior Homes", "Senior Homes"),
+        ("HOSPITAL", "Hospital"),
+        ("CLINIC", "Clinic"),
+        ("HEALTH CENTER", "Health Center"),
+        ("SENIOR HOMES", "Senior Homes"),
     ]
     profile = models.OneToOneField(AccountProfile, on_delete=models.CASCADE)
     institution_type = models.CharField(max_length=50, choices=INSTITUTION_TYPE_CHOICES)
@@ -85,9 +91,9 @@ class Animal(models.Model):
 
 class SocialWelfareProgram(models.Model):
     PROGRAM_TYPE_CHOICES = [
-        ("Food Aid", "Food Aid"),
-        ("Shelter", "Shelter"),
-        ("Education", "Education"),
+        ("FOOD AID", "Food Aid"),
+        ("SHELTER", "Shelter"),
+        ("EDUCATION", "Education"),
     ]
     profile = models.OneToOneField(AccountProfile, on_delete=models.CASCADE)
     program_name = models.CharField(max_length=255)
@@ -100,9 +106,9 @@ class SocialWelfareProgram(models.Model):
 
 class EmergencyRelief(models.Model):
     RELIEF_TYPE_CHOICES = [
-        ("Natural Disaster", "Natural Disaster"),
-        ("Conflict", "Conflict"),
-        ("Pandemic", "Pandemic"),
+        ("NATURAL DISASTER", "Natural Disaster"),
+        ("CONFLICT", "Conflict"),
+        ("PANDEMIC", "Pandemic"),
     ]
     profile = models.OneToOneField(AccountProfile, on_delete=models.CASCADE)
     relief_type = models.CharField(max_length=50, choices=RELIEF_TYPE_CHOICES)
@@ -114,8 +120,8 @@ class EmergencyRelief(models.Model):
 
 class EnvironmentalProtection(models.Model):
     CONSERVATION_TYPE_CHOICES = [
-        ("Reforestation", "Reforestation"),
-        ("Wildlife Protection", "Wildlife Protection"),
+        ("REFORESTATION", "Reforestation"),
+        ("WEILDLIFE PROTECTION", "Wildlife Protection"),
     ]
     profile = models.OneToOneField(AccountProfile, on_delete=models.CASCADE)
     organization_name = models.CharField(max_length=255)
@@ -140,9 +146,9 @@ class CommunityDevelopment(models.Model):
 
 class DisabilitySupport(models.Model):
     SUPPORT_TYPE_CHOICES = [
-        ("Financial Aid", "Financial Aid"),
-        ("Equipment", "Equipment"),
-        ("Training", "Training"),
+        ("FINANCIAL AID", "Financial Aid"),
+        ("EQUIPMENT", "Equipment"),
+        ("TRAINING", "Training"),
     ]
     profile = models.OneToOneField(AccountProfile, on_delete=models.CASCADE)
     support_type = models.CharField(max_length=50, choices=SUPPORT_TYPE_CHOICES)

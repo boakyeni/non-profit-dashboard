@@ -3,7 +3,7 @@ from django.db.models import fields, Count
 from datetime import date, datetime, timedelta
 from schedule.models import Event
 from apps.contact_analytics.models import AccountProfile
-from apps.campaigns.models import MonetaryCampaign, Beneficairies
+from apps.campaigns.models import MonetaryCampaign
 from django.utils.translation import gettext_lazy as _
 
 
@@ -91,7 +91,7 @@ class Donation(models.Model):
 # change patient to account profile
 class Expense(models.Model):
     patient = models.ForeignKey(
-        Beneficairies,
+        AccountProfile,
         on_delete=models.CASCADE,
         blank=True,
         null=True,

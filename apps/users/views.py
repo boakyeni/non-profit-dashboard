@@ -21,7 +21,7 @@ import requests
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from .serializers import UserSerializer, CreateUserSerializer
+from .serializers import UserSerializer, CreateUserSerializer, InstitutionSerializer
 from djoser.serializers import PasswordSerializer, CurrentPasswordSerializer
 from djoser.compat import get_user_email
 from .serializers import TokenRefreshSerializer
@@ -138,6 +138,7 @@ def signup_view(request):
         "phone_number": request.data.get("phone_number"),
         "bsystems_admin": request.data.get("bsystems_admin"),
         "institution_admin": request.data.get("institution_admin"),
+        "institution_name": request.data.get("institution_name"),
         # Add other fields as needed
     }
 
@@ -145,6 +146,13 @@ def signup_view(request):
     serializer = CreateUserSerializer(data=user_data)
     serializer.is_valid(raise_exception=True)
     user = serializer.save()
+
+    if user_data.get("institution_admin"):
+        institution_serializer = InstitutionSerializer(
+            data={"name": user_data.get("institution_name")}
+        )
+        institution_serializer.is_valid(raise_exception=True)
+        institution_serializer.save()
 
     # Each user gets a private personal calendar
     calendar_serializer = CalendarSerializer(

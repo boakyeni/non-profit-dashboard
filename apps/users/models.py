@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from .managers import CustomUserManager
 from phonenumber_field.modelfields import PhoneNumberField
 from schedule.models import Calendar
+import uuid
 
 # Create your models here.
 
@@ -21,6 +22,10 @@ from schedule.models import Calendar
 
 
 class Institution(models.Model):
+    id = models.UUIDField(
+        primary_key=True, unique=True, default=uuid.uuid4, editable=False
+    )
+    # institution id should not be guessable
     name = models.CharField(max_length=255, verbose_name="Institution Name")
 
 

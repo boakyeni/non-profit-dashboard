@@ -1,5 +1,11 @@
 import csv
+import json
 from utils.photo_validation import validate_file_type
+from utils.beneficiary_registry import (
+    get_model,
+    get_serializer,
+    create_or_edit_instance,
+)
 from rest_framework import viewsets, status, generics, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -10,26 +16,16 @@ from rest_framework.decorators import (
 )
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db import transaction
-from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.serializers import ValidationError
 from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
 from .models import AccountProfile, PhoneNumber, Company
 from apps.donor_management.models import Donor, LeadType
 from apps.donor_management.serializers import DonorSerializer, LeadTypeSerializer
 from apps.campaigns.models import (
-    Animal,
     Cause,
-    Beneficairies,
-    EducationalInstitution,
-    HealthcareInstitution,
-    SocialWelfareProgram,
+    HealthcarePatient,
 )
 from apps.campaigns.serializers import (
-    AnimalSerializer,
-    EducationalInstitutionSerializer,
-    HealthcareInstitutionSerializer,
     PatientSerializer,
-    SocialWelfareProgramSerializer,
 )
 from .serializers import (
     AccountProfileSerializer,
@@ -184,8 +180,8 @@ def create_or_edit_donor(account_instance, donor_type, notes):
 
 def create_or_edit_patient(account_instance, notes, hospital):
     try:
-        patient_instance = Beneficairies.objects.get(profile=account_instance)
-    except Beneficairies.DoesNotExist:
+        patient_instance = HealthcarePatient.objects.get(profile=account_instance)
+    except HealthcarePatient.DoesNotExist:
         patient_serializer = PatientSerializer(
             data={"profile": account_instance.id, "notes": notes, "hospital": hospital}
         )
@@ -211,94 +207,86 @@ def add_cause_to_patient(patient_instance, cause_title):
         raise
 
 
-def add_or_edit_phone_number(profile, number, phone_id=None):
-    if phone_id:
-        try:
-            phone_instance = PhoneNumber.objects.get(id=phone_id, profile=profile)
-            phone_serializer = PhoneNumberSerializer(
-                instance=phone_instance, data={"number": number}, partial=True
-            )
-        except PhoneNumber.DoesNotExist:
-            # If the ID is provided but does not exist, you can raise an error or simply create a new phone number.
-            raise
-    else:
-        # If no ID is provided, attempt to update or create based on the number and profile
-        phone_serializer = PhoneNumberSerializer(
-            data={"number": number, "profile": profile},
-        )
-
-    phone_serializer.is_valid(raise_exception=True)
-    return phone_serializer.save()
-
-
 """
+To better understand this comment, the function create_or_edit_instance used to be below it
 Create or Edit factory, blessed us with this gem after I wrote the stuff above.
-Probably want to incorporate those above into the below code if i have the time.
+Probably want to incorporate some of those above. The difference is that the once below, should be selectable on the frontend, thus changable by id and not by other fields
 This allows beneficiary types to change or even become a donor.
 Since each beneficiary has its own model, there is no clean up when beneficiary type changes.
 Good for data analytics/ big data, but could also bloat the db, really depends on if we want to hold previous type for a contact.
 I believe that there will be cases where we do want that, like if a welfare campaign becomes a community dev, with the same contact, no data is overwritten.
 Flow: Edit AccountProfile which has SocialWelfare Ben to Com Dev > Com Dev does not exist > Com Dev gets created
 > accountProfile now points to both SocialWelfare row and Com Dev row
+
 """
 
 
-def create_or_edit_instance(model_class, serializer_class, data, instance_id=None):
-    try:
-        instance = model_class.objects.get(pk=instance_id)
-    except ObjectDoesNotExist:
-        # create new
-        serializer = serializer_class(data=data)
-        serializer.is_valid(raise_exception=True)
-        return serializer.save()
-    except ValidationError:
-        raise
-    except Exception:
-        raise
-    else:
-        # edit
-        serializer = serializer_class(instance=instance, data=data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        return serializer.save()
+"""
+Below no longer needed with the get_model and get_serializer functions
+"""
+
+# def create_or_edit_educational_institution(data, instance_id=None):
+#     return create_or_edit_instance(
+#         EducationalInstitution, EducationalInstitutionSerializer, data, instance_id
+#     )
 
 
-def create_or_edit_educational_institution(data, instance_id=None):
-    return create_or_edit_instance(
-        EducationalInstitution, EducationalInstitutionSerializer, data, instance_id
-    )
+# def create_or_edit_healthcare_institution(data, instance_id=None):
+#     return create_or_edit_instance(
+#         HealthcareInstitution, HealthcareInstitutionSerializer, data, instance_id
+#     )
 
 
-def create_or_edit_healthcare_institution(data, instance_id=None):
-    return create_or_edit_instance(
-        HealthcareInstitution, HealthcareInstitutionSerializer, data, instance_id
-    )
+# def create_or_edit_animal(data, instance_id=None):
+#     return create_or_edit_instance(Animal, AnimalSerializer, data, instance_id)
 
 
-def create_or_edit_animal(data, instance_id=None):
-    return create_or_edit_instance(Animal, AnimalSerializer, data, instance_id)
+# def create_or_edit_social_welfare_program(data, instance_id=None):
+#     return create_or_edit_instance(
+#         SocialWelfareProgram, SocialWelfareProgramSerializer, data, instance_id
+#     )
 
 
-def create_or_edit_social_welfare_program(data, instance_id=None):
-    return create_or_edit_instance(
-        SocialWelfareProgram, SocialWelfareProgramSerializer, data, instance_id
-    )
+# def create_or_edit_emergency_relief(data, instance_id=None):
+#     return create_or_edit_instance(
+#         EmergencyRelief, EmergencyReliefSerializer, data, instance_id
+#     )
 
 
-# Add similar functions for other models...
+# def create_or_edit_environmental_protection(data, instance_id=None):
+#     return create_or_edit_instance(
+#         EnvironmentalProtection, EnvironmentalProtectionSerializer, data, instance_id
+#     )
+
+
+# def create_or_edit_community_development(data, instance_id=None):
+#     return create_or_edit_instance(
+#         CommunityDevelopment, CommunityDevelopmentSerializer, data, instance_id
+#     )
+
+
+# def create_or_edit_disability_support(data, instance_id=None):
+#     return create_or_edit_instance(
+#         DisabilitySupport, DisabilitySupportSerializer, data, instance_id
+#     )
 
 
 class addContact(APIView):
     """
     Custom View since adding contact requires the creation of multiple models
+    This endpoint uses MultiParser or formurlencoded, so absence of values in data
+    are treated as false. This behavior does not happen with JSON endpoints
     """
 
     parser_classes = (MultiPartParser, FormParser)
 
     @transaction.atomic
     def post(self, request):
-        data = request.data.copy()
+        data = request.data.dict()
         # Form Data so data object is immutable
-        data["name"] = f"{data.get('given_name', '')} {data.get('last_name', '')}"
+        print(data)
+        if not data.get("name"):
+            data["name"] = f"{data.get('given_name', '')} {data.get('last_name', '')}"
 
         profile_photo = request.FILES.get("profile_photo")
         if profile_photo:
@@ -313,14 +301,24 @@ class addContact(APIView):
             data["donor_type"] = lead_type_instance.id
 
         data["is_active"] = True
-        """
-        This line is required because this endpoint uses MultiParser or formurlencoded, so absence of values in data
-        are treated as false. This behavior does not happen with JSON endpoints
-        """
+        # Kept here incase of missing value in payload
 
         account_serializer = AccountProfileSerializer(data=data)
         account_serializer.is_valid(raise_exception=True)
         account_instance = account_serializer.save()
+
+        # comes after AccountProfileSerializer so that we know a valid beneficiary was selected
+        beneficiary = data.get("beneficiary")
+        beneficiary_data = json.loads(data.get("beneficiary_data"))
+        beneficiary_data["profile"] = account_instance.id
+        # form_data only carries primitives, so frontend stringifies dict and backend parses, hence json.loads
+        if beneficiary:
+
+            create_or_edit_instance(
+                get_model(beneficiary),
+                get_serializer(beneficiary),
+                data=beneficiary_data,
+            )
 
         if data.get("contact_type") == "donor":
             create_or_edit_donor(
@@ -334,7 +332,11 @@ class addContact(APIView):
                 add_cause_to_patient(patient_instance, data["cause"])
 
         if "phone_number" in data:
-            add_or_edit_phone_number(account_instance, data["phone_number"])
+            contact_data = json.loads(data["phone_number"])
+            contact_data["profile"] = account_instance.id
+            create_or_edit_instance(
+                PhoneNumber, PhoneNumberSerializer, data=contact_data
+            )
         return Response(
             AccountProfileReturnSerializer(instance=account_instance).data,
             status=status.HTTP_201_CREATED,

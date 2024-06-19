@@ -12,11 +12,11 @@ class Beneficiary(models.TextChoices):
     EDUCATIONAL_INSTITUTION = "EDUCATIONAL_INSTITUTION", _("Educational Institution")
     HEALTHCARE_INSTITUTION = "HEALTHCARE_INSTITUTION", _("Healthcare Institution")
     HEALTHCARE_PATIENT = "HEALTHCARE_PATIENT", _("Healthcare Patient")
-    ANIMALS = "ANIMALS", _("Animals")
-    SOCIAL_WELFARE_PROGRAMS = "SOCIAL_WELFARE_PROGRAMS", _("Social Welfare Programs")
+    ANIMAL = "ANIMAL", _("Animal")
+    SOCIAL_WELFARE_PROGRAM = "SOCIAL_WELFARE_PROGRAM", _("Social Welfare Program")
     EMERGENCY_RELIEF = "EMERGENCY_RELIEF", _("Emergency Relief")
     ENVIRONMENTAL_PROTECTION = "ENVIRONMENTAL_PROTECTION", _(
-        "Environmental Protection/Conversation"
+        "Environmental Protection/Conservation"
     )
     COMMUNITY_DEVELOPMENT = "COMMUNITY_DEVELOPMENT", _("Community Development")
     DISABILITY_SUPPORT = "DISABILITY_SUPPORT", _("Disability Support")
@@ -61,7 +61,7 @@ class AccountProfile(models.Model):
     given_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(max_length=100, blank=True, null=True)
-    benficiary = models.CharField(
+    beneficiary = models.CharField(
         max_length=250,
         choices=Beneficiary.choices,
         blank=True,
@@ -76,7 +76,6 @@ class AccountProfile(models.Model):
     )
     profile_photo = models.FileField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
-    is_beneficiary = models.BooleanField(default=False)
     website = models.URLField(blank=True, null=True)
     # This holds an institutions Donors and Beneficiaries, all listed as contacts
     associated_institution = models.ForeignKey(
