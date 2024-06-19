@@ -3,6 +3,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.translation import gettext_lazy as _
 from schedule.models import Event
 from apps.users.models import Institution
+
 # Create your models here.
 
 
@@ -22,8 +23,8 @@ class Beneficiary(models.TextChoices):
 
     def __str__(self):
         return self.value
-    
-    
+
+
 # class Contact(models.Model):
 #     Donor = models.ForeignKey(Donor, on_delete=models.CASCADE, default=None)
 #     nameOfDonor = models.CharField(max_length=50, verbose_name="Name of Donor")
@@ -60,7 +61,7 @@ class AccountProfile(models.Model):
     given_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(max_length=100, blank=True, null=True)
-    beneficiary = models.CharField(
+    beneficiary_type = models.CharField(
         max_length=250,
         choices=Beneficiary.choices,
         blank=True,
@@ -94,7 +95,8 @@ class PhoneNumber(models.Model):
     # if no name for number is given just use name from profile
     number = PhoneNumberField(blank=True, max_length=128)
     primary_contact = models.BooleanField(default=False)
-    notes = models.TimeField(auto_now=True, blank=True)
+    notes = models.TextField(blank=True)
+    relation = models.CharField(max_length=255, blank=True, null=True)
     profile = models.ForeignKey(
         AccountProfile, on_delete=models.CASCADE, related_name="phone_number"
     )

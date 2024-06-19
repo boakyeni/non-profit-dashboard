@@ -20,6 +20,7 @@ class UserAdmin(BaseUserAdmin):
         "first_name",
         "last_name",
         "is_active",
+        "institution",
     ]
     list_display_links = ["id", "email"]
     list_filter = [
@@ -59,6 +60,7 @@ class UserAdmin(BaseUserAdmin):
                     "is_superuser",
                     "groups",
                     "user_permissions",
+                    "institution",
                 )
             },
         ),

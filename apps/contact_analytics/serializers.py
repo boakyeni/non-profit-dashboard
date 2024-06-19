@@ -28,7 +28,7 @@ class AccountProfileReturnSerializer(serializers.ModelSerializer):
 
     def get_contact_type(self, obj):
         try:
-            if obj.donor_profile and not obj.is_patient:
+            if obj.donor_profile and not obj.beneficiary_type:
                 return "donor"
         except ObjectDoesNotExist:
             pass
@@ -41,22 +41,23 @@ class AccountProfileReturnSerializer(serializers.ModelSerializer):
         return "unknown"
 
     def get_causes(self, obj):
-        try:
-            if obj.beneficiary and obj.patient_profile:
-                return [cause.title for cause in obj.patient_profile.causes.all()]
-        except ObjectDoesNotExist:
-            return []
+        # try:
+        #     if obj.beneficiary_type and obj.patient_profile:
+        #         return [cause.title for cause in obj.patient_profile.causes.all()]
+        # except ObjectDoesNotExist:
+        #     return []
+        return
 
     def get_notes(self, obj):
         try:
-            if not obj.beneficiary and obj.donor_profile:
+            if not obj.beneficiary_type and obj.donor_profile:
                 return obj.donor_profile.notes
         except ObjectDoesNotExist:
             # Catching the exception if donor_profile does not exist
             pass
 
         try:
-            if obj.beneficiary and obj.patient_profile:
+            if obj.beneficiary_type and obj.patient_profile:
                 return obj.patient_profile.notes
         except ObjectDoesNotExist:
             # Catching the exception if patient_profile does not exist
@@ -71,7 +72,7 @@ class AccountProfileReturnSerializer(serializers.ModelSerializer):
 
     def get_hospital(self, obj):
         # Check if the patient_profile exists before trying to access its attributes
-        if hasattr(obj, "patient_profile") and obj.is_patient:
+        if hasattr(obj, "patient_profile") and obj.beneficiary_type:
             return obj.patient_profile.hospital
         else:
             return None
@@ -81,14 +82,14 @@ class AccountProfileReturnSerializer(serializers.ModelSerializer):
             obj.donor_profile.donor_type.lead_type
             if hasattr(obj, "donor_profile")
             and obj.donor_profile.donor_type
-            and not obj.beneficiary
+            and not obj.beneficiary_type
             else None
         )
 
     def get_amount_donated(self, obj):
         return (
             obj.donor_profile.amount_donated
-            if hasattr(obj, "donor_profile") and not obj.beneficiary
+            if hasattr(obj, "donor_profile") and not obj.beneficiary_type
             else None
         )
 

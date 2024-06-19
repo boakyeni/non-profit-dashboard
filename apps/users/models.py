@@ -16,6 +16,9 @@ class Institution(models.Model):
     # institution id should not be guessable
     name = models.CharField(max_length=255, verbose_name="Institution Name")
 
+    def __str__(self):
+        return self.name
+
 
 class User(AbstractUser):
     """
@@ -53,7 +56,7 @@ class User(AbstractUser):
     REQUIRED_FIELDS = [
         "first_name",
         "last_name",
-        "bsystems_admin",
+        "bsystems_user",
     ]
 
     objects = CustomUserManager()

@@ -3,7 +3,14 @@ from apps.contact_analytics.models import AccountProfile
 from datetime import date
 from django.utils.translation import gettext_lazy as _
 
+
 # from .cause import Cause
+class Cause(models.Model):
+    title = models.CharField(max_length=250, blank=True, null=True, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.title if self.title else "Cause"
 
 
 class MonetaryCampaign(models.Model):
@@ -23,18 +30,11 @@ class MonetaryCampaign(models.Model):
     beneficiaries = models.ManyToManyField(
         AccountProfile, blank=True, related_name="campaigns"
     )
+    causes = models.ManyToManyField(Cause, blank=True, related_name="campaigns")
     # i have this as many to many cause you might have a fund that supports multiple patients or something
 
     def __str__(self):
         return self.name
-
-
-class Cause(models.Model):
-    title = models.CharField(max_length=250, blank=True, null=True, unique=True)
-    description = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return self.title if self.title else "Cause"
 
 
 class HealthcarePatient(models.Model):
@@ -47,7 +47,6 @@ class HealthcarePatient(models.Model):
     hospital = models.CharField(max_length=100, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     illness = models.CharField(max_length=100, blank=True, null=True)
-    causes = models.ManyToManyField(Cause, blank=True, related_name="patients")
 
     def __str__(self):
         return self.profile.name

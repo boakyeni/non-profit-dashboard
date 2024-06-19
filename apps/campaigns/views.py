@@ -17,6 +17,12 @@ from .serializers import (
 )
 from django.db import transaction
 from apps.contact_analytics.models import AccountProfile
+from apps.contact_analytics.views import (
+    handle_beneficiary_creation,
+    create_or_update_account,
+    handle_contact_type,
+    handle_phone_numbers,
+)
 from decimal import Decimal
 
 
@@ -102,12 +108,16 @@ class GetCampaigns(generics.ListAPIView):
 @authentication_classes([JWTAuthentication])
 @transaction.atomic
 def create_campaign(request):
-    data = request.data.copy()
+    """I apologize for the nested json in form_data. In hind sight file upload should be separated, so that we can do simple json. But the application is already in too deep with form data"""
+    data = request.data.dict()
     print(data)
     photo = request.FILES.get("photo")
     if photo:
         # Handle the file upload. For example, saving the file to a model associated with the contact.
         validate_file_type(photo)
+    else:
+        data.pop("photo")
+
     serializer = MonetaryCampaignSerializer(data=data)
     serializer.is_valid(raise_exception=True)
     campaign_instance = serializer.save()

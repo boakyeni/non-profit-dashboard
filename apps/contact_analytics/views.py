@@ -271,6 +271,58 @@ Below no longer needed with the get_model and get_serializer functions
 #     )
 
 
+def create_or_update_account(data, files=None):
+    """add ability for partial update if id is given"""
+    if not data.get("name"):
+        data["name"] = f"{data.get('given_name', '')} {data.get('last_name', '')}"
+    profile_photo = files.get("profile_photo")
+    if profile_photo:
+        validate_file_type(profile_photo)
+    else:
+        data.pop("profile_photo")
+
+    if "company" in data:
+        company_instance = get_or_create_company(data.pop("company"))
+        data["company"] = company_instance.id
+
+    if "donor_type" in data:
+        lead_type_instance = get_or_create_lead_type(data.pop("donor_type"))
+        data["donor_type"] = lead_type_instance.id
+
+    data["is_active"] = True
+    account_serializer = AccountProfileSerializer(data=data)
+    account_serializer.is_valid(raise_exception=True)
+    return account_serializer.save()
+
+
+def handle_beneficiary_creation(account_instance, beneficiary_type, beneficiary_data):
+    if beneficiary_type:
+        beneficiary_model = get_model(beneficiary_type)
+        beneficiary_serializer = get_serializer(beneficiary_type)
+        beneficiary_data["profile"] = account_instance.id
+        create_or_edit_instance(
+            beneficiary_model, beneficiary_serializer, beneficiary_data
+        )
+
+
+def handle_contact_type(account_instance, contact_type, data):
+    if contact_type == "donor":
+        create_or_edit_donor(
+            account_instance, data.get("donor_type"), data.get("notes")
+        )
+    elif contact_type == "patient":
+        create_or_edit_patient(
+            account_instance, data.get("notes"), data.get("hospital")
+        )
+
+
+def handle_phone_numbers(account_instance, phone_data_json):
+    if phone_data_json:
+        phone_data = json.loads(phone_data_json)
+        phone_data["profile"] = account_instance.id
+        create_or_edit_instance(PhoneNumber, PhoneNumberSerializer, phone_data)
+
+
 class addContact(APIView):
     """
     Custom View since adding contact requires the creation of multiple models
@@ -279,64 +331,26 @@ class addContact(APIView):
     """
 
     parser_classes = (MultiPartParser, FormParser)
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (JWTAuthentication,)
 
     @transaction.atomic
     def post(self, request):
         data = request.data.dict()
+        data["associated_institution"] = request.user.institution.id
         # Form Data so data object is immutable
         print(data)
-        if not data.get("name"):
-            data["name"] = f"{data.get('given_name', '')} {data.get('last_name', '')}"
-
-        profile_photo = request.FILES.get("profile_photo")
-        if profile_photo:
-            validate_file_type(profile_photo)
-
-        if "company" in data:
-            company_instance = get_or_create_company(data.pop("company"))
-            data["company"] = company_instance.id
-
-        if "donor_type" in data:
-            lead_type_instance = get_or_create_lead_type(data.pop("donor_type"))
-            data["donor_type"] = lead_type_instance.id
-
-        data["is_active"] = True
-        # Kept here incase of missing value in payload
-
-        account_serializer = AccountProfileSerializer(data=data)
-        account_serializer.is_valid(raise_exception=True)
-        account_instance = account_serializer.save()
+        account_instance = create_or_update_account(data, request.FILES)
 
         # comes after AccountProfileSerializer so that we know a valid beneficiary was selected
-        beneficiary = data.get("beneficiary")
-        beneficiary_data = json.loads(data.get("beneficiary_data"))
-        beneficiary_data["profile"] = account_instance.id
-        # form_data only carries primitives, so frontend stringifies dict and backend parses, hence json.loads
-        if beneficiary:
+        handle_beneficiary_creation(
+            account_instance,
+            data.get("beneficiary_type"),
+            json.loads(data.get("beneficiary_data", "{}")),
+        )
+        handle_contact_type(account_instance, data.get("contact_type"), data)
+        handle_phone_numbers(account_instance, data.get("phone_number"))
 
-            create_or_edit_instance(
-                get_model(beneficiary),
-                get_serializer(beneficiary),
-                data=beneficiary_data,
-            )
-
-        if data.get("contact_type") == "donor":
-            create_or_edit_donor(
-                account_instance, data.get("donor_type"), data.get("notes")
-            )
-        elif data.get("contact_type") == "patient":
-            patient_instance = create_or_edit_patient(
-                account_instance, data.get("notes"), data.get("hospital")
-            )
-            if "cause" in data:
-                add_cause_to_patient(patient_instance, data["cause"])
-
-        if "phone_number" in data:
-            contact_data = json.loads(data["phone_number"])
-            contact_data["profile"] = account_instance.id
-            create_or_edit_instance(
-                PhoneNumber, PhoneNumberSerializer, data=contact_data
-            )
         return Response(
             AccountProfileReturnSerializer(instance=account_instance).data,
             status=status.HTTP_201_CREATED,
@@ -344,6 +358,8 @@ class addContact(APIView):
 
 
 class editContact(APIView):
+    """use the same format as add contact"""
+
     parser_classes = (MultiPartParser, FormParser)
 
     @transaction.atomic
@@ -380,16 +396,16 @@ class editContact(APIView):
                 account_instance, data.get("donor_type"), data.get("notes")
             )
         elif data.get("contact_type") == "patient":
-            patient_instance = create_or_edit_patient(
+            create_or_edit_patient(
                 account_instance, data.get("notes"), data.get("hospital")
             )
-            if "cause" in data:
-                add_cause_to_patient(patient_instance, data["cause"])
+            # if "cause" in data:
+            #     add_cause_to_patient(patient_instance, data["cause"])
 
-        if "phone_number" in data:
-            add_or_edit_phone_number(
-                account_instance, data["phone_number"], data.get("phone_id")
-            )
+        # if "phone_number" in data:
+        #     add_or_edit_phone_number(
+        #         account_instance, data["phone_number"], data.get("phone_id")
+        #     )
 
         return Response(
             AccountProfileReturnSerializer(instance=account_instance).data,
