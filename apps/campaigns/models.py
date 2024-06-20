@@ -4,6 +4,8 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
 from utils.hash_photo import calculate_file_hash
+from apps.users.models import Institution
+
 
 User = get_user_model()
 
@@ -43,10 +45,14 @@ class MonetaryCampaign(models.Model):
         on_delete=models.PROTECT,
         related_name="edited_campaigns",
     )
+    institution = models.ForeignKey(
+        Institution, blank=True, null=True, on_delete=models.CASCADE
+    )
 
     @property
     def beneficiaries(self):
         all_beneficiaries = []
+
         for key in [
             "EDUCATIONAL_INSTITUTION",
             "HEALTHCARE_INSTITUTION",
@@ -60,7 +66,9 @@ class MonetaryCampaign(models.Model):
         ]:
             beneficiary_relation = getattr(self, key, None)
             if beneficiary_relation is not None:
-                all_beneficiaries.extend(beneficiary_relation.all())
+                all_beneficiaries.extend(
+                    [(key, instance) for instance in beneficiary_relation.all()]
+                )
         return all_beneficiaries
 
     def __str__(self):

@@ -140,6 +140,7 @@ def create_campaign(request):
     data = request.data.dict()
     photos = request.FILES.getlist("photos")
     data["created_by"] = request.user.id
+    data["institution"] = request.user.institution.id
     subscribers = []
     for x in request.data.getlist("subscribers"):
         account_instance = AccountProfile.objects.filter(id=int(x)).first()
@@ -171,6 +172,7 @@ def edit_campaign(request):
         if account_instance:
             subscribers.append(account_instance.id)
     data["subscribers"] = subscribers
+    data["last_edited_by"] = request.user.id
 
     serializer = MonetaryCampaignSerializer(
         instance=campaign_instance, data=data, partial=True

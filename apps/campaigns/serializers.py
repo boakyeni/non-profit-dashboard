@@ -21,12 +21,6 @@ class CauseSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class MonetaryCampaignSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MonetaryCampaign
-        fields = "__all__"
-
-
 class PhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo
@@ -85,3 +79,34 @@ class DisabilitySupportSerializer(serializers.ModelSerializer):
     class Meta:
         model = DisabilitySupport
         fields = "__all__"
+
+
+model_mapping = {
+    "EDUCATIONAL_INSTITUTION": (
+        EducationalInstitution,
+        EducationalInstitutionSerializer,
+    ),
+    "HEALTHCARE_INSTITUTION": (HealthcareInstitution, HealthcareInstitutionSerializer),
+    "HEALTHCARE_PATIENT": (HealthcarePatient, PatientSerializer),
+    "ANIMAL": (Animal, AnimalSerializer),
+    "SOCIAL_WELFARE_PROGRAM": (SocialWelfareProgram, SocialWelfareProgramSerializer),
+    "EMERGENCY_RELIEF": (EmergencyRelief, EmergencyRelief),
+    "ENVIRONMENTAL_PROTECTION": (EnvironmentalProtection, EnvironmentalProtection),
+    "COMMUNITY_DEVELOPMENT": (CommunityDevelopment, CommunityDevelopment),
+    "DISABILITY_SUPPORT": (DisabilitySupport, DisabilitySupportSerializer),
+}
+
+
+class MonetaryCampaignSerializer(serializers.ModelSerializer):
+    beneficiaries = serializers.SerializerMethodField(required=False)
+
+    class Meta:
+        model = MonetaryCampaign
+        fields = "__all__"
+
+    def get_beneficiaries(self, obj):
+        ben_list = []
+        for key, ben in obj.beneficiaries:
+            serializer = model_mapping[key][1](instance=ben)
+            ben_list.append(serializer.data)
+        return ben_list
