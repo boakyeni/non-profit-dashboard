@@ -264,7 +264,7 @@ def handle_beneficiary_creation(
         beneficiary_model = get_model(beneficiary_type)
         beneficiary_serializer = get_serializer(beneficiary_type)
         beneficiary_data["profile"] = account_instance.id
-        create_or_edit_instance(
+        return create_or_edit_instance(
             beneficiary_model, beneficiary_serializer, beneficiary_data, instance_id
         )
 

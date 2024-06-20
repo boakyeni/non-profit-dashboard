@@ -138,9 +138,14 @@ def handle_photo_upload(photo, campaign, institution_id):
 def create_campaign(request):
     """I apologize for the nested json in form_data. In hind sight file upload should be separated, so that we can do simple json. But the application is already in too deep with form data"""
     data = request.data.dict()
-    print(data)
     photos = request.FILES.getlist("photos")
     data["created_by"] = request.user.id
+    subscribers = []
+    for x in request.data.getlist("subscribers"):
+        account_instance = AccountProfile.objects.filter(id=int(x)).first()
+        if account_instance:
+            subscribers.append(account_instance.id)
+    data["subscribers"] = subscribers
     serializer = MonetaryCampaignSerializer(data=data)
     serializer.is_valid(raise_exception=True)
     campaign_instance = serializer.save()
@@ -148,14 +153,6 @@ def create_campaign(request):
         for photo in photos:
 
             handle_photo_upload(photo, campaign_instance, request.user.institution.id)
-
-    for uid in data.get("subscribers", []):
-        try:
-            account = AccountProfile.objects.get(id=uid)
-            campaign_instance.subscribers.add(account)
-        except AccountProfile.DoesNotExist:
-            pass
-    campaign_instance.save()
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -165,14 +162,34 @@ def create_campaign(request):
 @authentication_classes([JWTAuthentication])
 @transaction.atomic
 def edit_campaign(request):
-    data = request.data.copy()
-    photo = request.FILES.get("photo")
+    data = request.data.dict()
+    photos = request.FILES.getlist("photos")
+    campaign_instance = MonetaryCampaign.objects.get(id=int(data.get("id")))
+    subscribers = []
+    for x in request.data.getlist("subscribers"):
+        account_instance = AccountProfile.objects.filter(id=int(x)).first()
+        if account_instance:
+            subscribers.append(account_instance.id)
+    data["subscribers"] = subscribers
 
-    if photo:
-        # Handle the file upload. For example, saving the file to a model associated with the contact.
-        validate_file_type(photo)
-    else:
-        data.pop("photo", None)
+    serializer = MonetaryCampaignSerializer(
+        instance=campaign_instance, data=data, partial=True
+    )
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+
+    for photo in photos:
+        handle_photo_upload(photo, campaign_instance, request.user.institution.id)
+    for photo_id in data.get("remove_photo", []):
+        photo_instance = Photo.objects.filter(id=int(photo_id)).first()
+        campaign_instance.photos.remove(photo_instance)
+
+    for x in request.data.getlist("remove_subscribers"):
+        account_instance = AccountProfile.objects.filter(id=int(x)).first()
+        if account_instance:
+            campaign_instance.subscribers.remove(account_instance)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(["PATCH"])
@@ -225,7 +242,7 @@ def add_beneficiaries_to_campaign(request):
         account_instance = create_or_update_account(data, request.FILES)
 
         # comes after AccountProfileSerializer so that we know a valid beneficiary was selected
-        handle_beneficiary_creation(
+        beneficiary_instance = handle_beneficiary_creation(
             account_instance,
             data.get("beneficiary_type"),
             json.loads(data.get("beneficiary_data", "{}")),
@@ -233,8 +250,9 @@ def add_beneficiaries_to_campaign(request):
         handle_contact_type(account_instance, data.get("contact_type"), data)
         handle_phone_numbers(account_instance, data.get("phone_number"))
 
-        campaign_instance.beneficiaries.add(account_instance)
-        campaign_instance.save()
+        beneficiary_instance.campaigns.add(campaign_instance)
+        beneficiary_instance.save()
+
         return Response(
             MonetaryCampaignSerializer(instance=campaign_instance).data,
             status=status.HTTP_201_CREATED,

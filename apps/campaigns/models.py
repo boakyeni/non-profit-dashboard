@@ -30,9 +30,6 @@ class MonetaryCampaign(models.Model):
         AccountProfile, blank=True, related_name="subscribed_campaigns"
     )
     is_active = models.BooleanField(default=True)
-    beneficiaries = models.ManyToManyField(
-        AccountProfile, blank=True, related_name="campaigns"
-    )
     causes = models.ManyToManyField(Cause, blank=True, related_name="campaigns")
     # i have this as many to many cause you might have a fund that supports multiple patients or something
     created_by = models.ForeignKey(
@@ -46,6 +43,25 @@ class MonetaryCampaign(models.Model):
         on_delete=models.PROTECT,
         related_name="edited_campaigns",
     )
+
+    @property
+    def beneficiaries(self):
+        all_beneficiaries = []
+        for key in [
+            "EDUCATIONAL_INSTITUTION",
+            "HEALTHCARE_INSTITUTION",
+            "HEALTHCARE_PATIENT",
+            "ANIMAL",
+            "SOCIAL_WELFARE_PROGRAM",
+            "EMERGENCY_RELIEF",
+            "ENVIRONMENTAL_PROTECTION",
+            "COMMUNITY_DEVELOPMENT",
+            "DISABILITY_SUPPORT",
+        ]:
+            beneficiary_relation = getattr(self, key, None)
+            if beneficiary_relation is not None:
+                all_beneficiaries.extend(beneficiary_relation.all())
+        return all_beneficiaries
 
     def __str__(self):
         return self.name
@@ -78,6 +94,9 @@ class HealthcarePatient(models.Model):
     hospital = models.CharField(max_length=100, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
     illness = models.CharField(max_length=100, blank=True, null=True)
+    campaigns = models.ManyToManyField(
+        MonetaryCampaign, blank=True, related_name="HEALTHCARE_PATIENT"
+    )
 
     def __str__(self):
         return self.profile.name
@@ -95,6 +114,9 @@ class EducationalInstitution(models.Model):
     number_of_students = models.IntegerField(default=0)
     programs_offered = models.TextField(blank=True, null=True)
     accreditation_details = models.TextField(blank=True, null=True)
+    campaigns = models.ManyToManyField(
+        MonetaryCampaign, blank=True, related_name="EDUCATIONAL_INSTITUTION"
+    )
 
 
 class HealthcareInstitution(models.Model):
@@ -109,6 +131,9 @@ class HealthcareInstitution(models.Model):
     number_of_beds = models.IntegerField(default=0)
     specializations = models.TextField(blank=True, null=True)
     operating_hours = models.TextField(blank=True, null=True)
+    campaigns = models.ManyToManyField(
+        MonetaryCampaign, blank=True, related_name="HEALTHCARE_INSTITUTION"
+    )
 
 
 class Animal(models.Model):
@@ -118,6 +143,9 @@ class Animal(models.Model):
     health_status = models.TextField(blank=True, null=True)
     location = models.TextField(blank=True, null=True)
     special_needs = models.TextField(blank=True, null=True)
+    campaigns = models.ManyToManyField(
+        MonetaryCampaign, blank=True, related_name="ANIMAL"
+    )
 
 
 class SocialWelfareProgram(models.Model):
@@ -133,6 +161,9 @@ class SocialWelfareProgram(models.Model):
     funding_sources = models.TextField(blank=True, null=True)
     key_activities = models.TextField(blank=True, null=True)
     impact_metrics = models.TextField(blank=True, null=True)
+    campaigns = models.ManyToManyField(
+        MonetaryCampaign, blank=True, related_name="SOCIAL_WELFARE_PROGRAM"
+    )
 
 
 class EmergencyRelief(models.Model):
@@ -147,6 +178,9 @@ class EmergencyRelief(models.Model):
     contact_organization = models.TextField(blank=True, null=True)
     number_of_beneficiaries = models.IntegerField(default=0)
     key_services_provided = models.TextField(blank=True, null=True)
+    campaigns = models.ManyToManyField(
+        MonetaryCampaign, blank=True, related_name="EMERGENCY_RELIEF"
+    )
 
 
 class EnvironmentalProtection(models.Model):
@@ -163,6 +197,9 @@ class EnvironmentalProtection(models.Model):
     )
     impact_metrics = models.TextField(blank=True, null=True)
     funding_sources = models.TextField(blank=True, null=True)
+    campaigns = models.ManyToManyField(
+        MonetaryCampaign, blank=True, related_name="ENVIRONMENTAL_PROTECTION"
+    )
 
 
 class CommunityDevelopment(models.Model):
@@ -173,6 +210,9 @@ class CommunityDevelopment(models.Model):
     key_objectives = models.TextField(blank=True, null=True)
     impact_metrics = models.TextField(blank=True, null=True)
     funding_sources = models.TextField(blank=True, null=True)
+    campaigns = models.ManyToManyField(
+        MonetaryCampaign, blank=True, related_name="COMMUNITY_DEVELOPMENT"
+    )
 
 
 class DisabilitySupport(models.Model):
@@ -187,3 +227,6 @@ class DisabilitySupport(models.Model):
     number_of_beneficiaries = models.IntegerField(default=0)
     key_services_provided = models.TextField(blank=True, null=True)
     funding_sources = models.TextField(blank=True, null=True)
+    campaigns = models.ManyToManyField(
+        MonetaryCampaign, blank=True, related_name="DISABILITY_SUPPORT"
+    )
