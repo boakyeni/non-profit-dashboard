@@ -3,7 +3,7 @@ import { Calendar } from 'react-big-calendar'
 import { useState, useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleEditEventModal, setSelectedEvent, getEvents, setStartTimeRange, setEndTimeRange } from '../../../lib/features/events/eventSlice';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 const AppointmentsWidget = ({ localizer }) => {
     const { events, startTimeRange, endTimeRange } = useSelector((state) => state.events)

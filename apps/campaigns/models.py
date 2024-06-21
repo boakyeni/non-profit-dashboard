@@ -31,7 +31,7 @@ class MonetaryCampaign(models.Model):
     subscribers = models.ManyToManyField(
         AccountProfile, blank=True, related_name="subscribed_campaigns"
     )
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     causes = models.ManyToManyField(Cause, blank=True, related_name="campaigns")
     # i have this as many to many cause you might have a fund that supports multiple patients or something
     created_by = models.ForeignKey(

@@ -34,12 +34,8 @@ class User(AbstractUser):
     phone_number = PhoneNumberField(
         verbose_name=_("Phone Number"), max_length=30, blank=True, null=True
     )
-
-    bsystems_user = models.BooleanField(
-        verbose_name=_("Is Bsystems User"), default=False
-    )
     institution_admin = models.BooleanField(
-        verbose_name=_("Is Institution Admin"), default=False
+        verbose_name=_("Is Institution Admin"), db_default=False, blank=True, null=True
     )
     reference = models.CharField(
         verbose_name=_("Account Reference"), max_length=250, blank=True, null=True
@@ -57,7 +53,6 @@ class User(AbstractUser):
     REQUIRED_FIELDS = [
         "first_name",
         "last_name",
-        "bsystems_user",
     ]
 
     objects = CustomUserManager()

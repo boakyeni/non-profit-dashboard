@@ -103,6 +103,17 @@ class MonetaryCampaignSerializer(serializers.ModelSerializer):
     class Meta:
         model = MonetaryCampaign
         fields = "__all__"
+        extra_kwargs = {
+            "is_active": {"read_only": True},
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(MonetaryCampaignSerializer, self).__init__(*args, **kwargs)
+        if (
+            self.context["request"].user.institution_admin
+            or self.context["request"].user.is_superuser
+        ):
+            self.fields["is_active"].read_only = False
 
     def get_beneficiaries(self, obj):
         ben_list = []

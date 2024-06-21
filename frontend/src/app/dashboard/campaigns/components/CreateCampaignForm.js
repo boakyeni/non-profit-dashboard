@@ -6,7 +6,7 @@ import DateComponent from "../../_components/DateComponent"
 import { useState, useEffect, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { createCampaign } from "../../../lib/features/campaigns/campaignSlice"
-import moment from "moment"
+import moment from 'moment-timezone';
 import CurrencyInput from 'react-currency-input-field';
 
 const CreateCampaignForm = () => {
@@ -22,7 +22,7 @@ const CreateCampaignForm = () => {
     const { selectedContacts } = useSelector((state) => state.contact)
 
     const handleStartDateChange = (date) => {
-        const local_time = moment(date).format('YYYY-MM-DDTHH:mm:ss')
+        const local_time = moment(date).format('YYYY-MM-DDTHH:mm:ssZ')
         setLocalStartDate(local_time)
         console.log(local_time)
     }

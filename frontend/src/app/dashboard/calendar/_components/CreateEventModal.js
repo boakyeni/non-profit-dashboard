@@ -4,11 +4,12 @@ import { LuX } from "react-icons/lu"
 import { toggleCreateEventModal, setEndDate, setStartDate, addEvent, getEvents } from "../../../lib/features/events/eventSlice"
 import DateComponent from "../../_components/DateComponent"
 import { useState, useEffect } from "react"
-import moment from "moment"
+import moment from 'moment-timezone';
 
 const CreateEventModal = () => {
     const dispatch = useDispatch()
     const { createEventModalOpen, selectedEvent, startTimeRange, endTimeRange } = useSelector((state) => state.events)
+    const { timezone } = useSelector((state) => state.profile)
     const [localTitle, setLocalTitle] = useState('');
     const [localStartDate, setLocalStartDate] = useState(selectedEvent.start);
     const [localEndDate, setLocalEndDate] = useState(selectedEvent.end);
@@ -27,11 +28,11 @@ const CreateEventModal = () => {
         setLocalTitle(e.target.value)
     }
     const handleStartDateChange = (date) => {
-        const local_time = moment(date).format('YYYY-MM-DDTHH:mm:ss')
+        const local_time = moment(date).tz(timezone).format('YYYY-MM-DDTHH:mm:ssZ')
         setLocalStartDate(local_time)
     }
     const handleEndDateChange = (date) => {
-        const local_time = moment(date).format('YYYY-MM-DDTHH:mm:ss')
+        const local_time = moment(date).tz(timezone).format('YYYY-MM-DDTHH:mm:ssZ')
         setLocalEndDate(local_time)
     }
     const handleDescriptionChange = (e) => {

@@ -1,4 +1,5 @@
 from rest_framework import viewsets, status, permissions, generics
+from rest_framework.exceptions import PermissionDenied
 from utils.photo_validation import validate_file_type
 from utils.hash_photo import calculate_file_hash
 from rest_framework.response import Response
@@ -27,6 +28,7 @@ from apps.contact_analytics.views import (
 )
 from decimal import Decimal
 from utils.beneficiary_registry import create_or_edit_instance
+from utils.various_permissions import check_matching_institution_for_campaigns
 import json
 
 
@@ -98,12 +100,19 @@ def edit_cause(request):
 
 
 class GetCampaigns(generics.ListAPIView):
+    """Get all of an institutions campaigns, unless user is bsystems_admin, then get all campaigns"""
+
     serializer_class = MonetaryCampaignSerializer
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
     def get_queryset(self):
-        return MonetaryCampaign.objects.all()
+        if self.request.user.is_superuser:
+            return MonetaryCampaign.objects.all()
+        else:
+            return MonetaryCampaign.objects.filter(
+                institution=self.request.user.institution
+            )
 
 
 def handle_photo_upload(photo, campaign, institution_id):
@@ -147,7 +156,10 @@ def create_campaign(request):
         if account_instance:
             subscribers.append(account_instance.id)
     data["subscribers"] = subscribers
-    serializer = MonetaryCampaignSerializer(data=data)
+    data["is_active"] = (
+        True if request.user.institution_admin or request.user.is_superuser else False
+    )
+    serializer = MonetaryCampaignSerializer(data=data, context={"request": request})
     serializer.is_valid(raise_exception=True)
     campaign_instance = serializer.save()
     if photos:
@@ -165,7 +177,15 @@ def create_campaign(request):
 def edit_campaign(request):
     data = request.data.dict()
     photos = request.FILES.getlist("photos")
+    if not data.get("id"):
+        return Response(
+            {"message": "Campaign ID is required"}, status=status.HTTP_400_BAD_REQUEST
+        )
     campaign_instance = MonetaryCampaign.objects.get(id=int(data.get("id")))
+    try:
+        check_matching_institution_for_campaigns(request.user, campaign_instance)
+    except PermissionDenied:
+        raise
     subscribers = []
     for x in request.data.getlist("subscribers"):
         account_instance = AccountProfile.objects.filter(id=int(x)).first()
@@ -175,7 +195,10 @@ def edit_campaign(request):
     data["last_edited_by"] = request.user.id
 
     serializer = MonetaryCampaignSerializer(
-        instance=campaign_instance, data=data, partial=True
+        instance=campaign_instance,
+        data=data,
+        partial=True,
+        context={"request": request},
     )
     serializer.is_valid(raise_exception=True)
     serializer.save()
@@ -203,15 +226,23 @@ def delete_campaign(request):
     """
     Soft Delete
     """
-    data = request.data
+    campaign_id = request.query_params.get("id")
+
     try:
-        campaign_instance = MonetaryCampaign.objects.get(id=data.get("id"))
+        campaign_instance = MonetaryCampaign.objects.get(id=campaign_id)
+        check_matching_institution_for_campaigns(request.user, campaign_instance)
         serializer = MonetaryCampaignSerializer(
-            instance=campaign_instance, data={"is_active": False}
+            instance=campaign_instance,
+            data={"is_active": False},
+            partial=True,
+            context={"request": request},
         )
         serializer.is_valid(raise_exception=True)
+        serializer.save()
     except MonetaryCampaign.DoesNotExist:
-        pass
+        raise
+    except PermissionDenied:
+        raise
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -226,13 +257,17 @@ def add_beneficiaries_to_campaign(request):
         campaign_instance = MonetaryCampaign.objects.get(
             id=int(data.get("campaign_id"))
         )  # form data so no ints
+        check_matching_institution_for_campaigns(request.user, campaign_instance)
     except MonetaryCampaign.DoesNotExist:
+        raise
+    except PermissionDenied as err:
         raise
     if "beneficiary_list" in data:
         serializer = MonetaryCampaignSerializer(
             instance=campaign_instance,
             data={"beneficiaries": data.get("beneficiary_list")},
             partial=True,
+            context={"request": request},
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -256,6 +291,8 @@ def add_beneficiaries_to_campaign(request):
         beneficiary_instance.save()
 
         return Response(
-            MonetaryCampaignSerializer(instance=campaign_instance).data,
+            MonetaryCampaignSerializer(
+                instance=campaign_instance, context={"request": request}
+            ).data,
             status=status.HTTP_201_CREATED,
         )

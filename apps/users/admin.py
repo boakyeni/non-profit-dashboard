@@ -62,6 +62,7 @@ class UserAdmin(BaseUserAdmin):
                     "groups",
                     "user_permissions",
                     "institution",
+                    "institution_admin",
                 )
             },
         ),

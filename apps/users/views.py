@@ -72,15 +72,11 @@ def login_view(request):
     """Login view for local authentication"""
     email = request.data.get("email")
     password = request.data.get("password")
-    bsystems_user = request.data.get("bsystems_user")
-    institution_admin = request.data.get("institution_admin")
 
     user = authenticate(
         request,
         email=email,
         password=password,
-        bsystems_user=bsystems_user,
-        institution_admin=institution_admin,
     )
 
     if user and user.is_active:
@@ -142,17 +138,19 @@ def signup_view(request):
         # Add other fields as needed
     }
 
-    # Post to app db
-    serializer = CreateUserSerializer(data=user_data)
-    serializer.is_valid(raise_exception=True)
-    user = serializer.save()
-
     if user_data.get("institution_admin"):
         institution_serializer = InstitutionSerializer(
             data={"name": user_data.get("institution_name")}
         )
         institution_serializer.is_valid(raise_exception=True)
-        institution_serializer.save()
+        instituation_instance = institution_serializer.save()
+
+        user_data["institution"] = instituation_instance.id
+
+    # Post to app db
+    serializer = CreateUserSerializer(data=user_data)
+    serializer.is_valid(raise_exception=True)
+    user = serializer.save()
 
     # Each user gets a private personal calendar
     calendar_serializer = CalendarSerializer(

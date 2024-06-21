@@ -151,12 +151,12 @@ AUTH_USER_MODEL = "users.User"
 
 from datetime import timedelta
 
-REST_FRAMEWORK = {
-    # "DEFAULT_AUTHENTICATION_CLASSES": (
-    #     "rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication",
-    # ),
-    # "EXCEPTION_HANDLER": "utils.exceptions.custom_exception_handler",
-}
+# REST_FRAMEWORK = {
+#     # "DEFAULT_AUTHENTICATION_CLASSES": (
+#     #     "rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication",
+#     # ),
+#     "EXCEPTION_HANDLER": "utils.exception_handler.custom_exception_handler",
+# }
 
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": (
