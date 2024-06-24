@@ -248,9 +248,9 @@ const ContactsTable = ({ itemsPerPage }) => {
                                         <div className={`h-2.5 w-2.5 rounded-full me-2 ${leadTypeColorMapping[contact.donor_type] || (contact?.contact_type === 'patient' ? 'bg-purple-500' : 'bg-gray-500')}`}></div> {contactTypeMapping[contact.donor_type] || (contact?.contact_type === 'patient' ? 'Patient' : 'unknown')}
                                     </div>
                                 </td>
-                                <td className="px-6 py-4">
-                                    {/* // Modal Toggle */}
-                                    <a href="#" onClick={() => handleMoreInfoClick(contact)} type="button" className="font-medium text-blue-600  hover:underline">More Info</a>
+                                <td className="px-6 py-4" onClick={() => handleMoreInfoClick(contact)}>
+
+                                    <button onClick={() => handleMoreInfoClick(contact)} type="button" className="font-medium text-blue-600  hover:underline">More Info</button>
                                 </td>
                             </tr>
                         ))}

@@ -7,6 +7,7 @@ from utils.beneficiary_registry import (
     create_or_edit_instance,
 )
 from rest_framework import viewsets, status, generics, permissions
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import (
@@ -314,7 +315,8 @@ class addContact(APIView):
             json.loads(data.get("beneficiary_data", "{}")),
         )
         handle_contact_type(account_instance, data.get("contact_type"), data)
-        handle_phone_numbers(account_instance, data.get("phone_number"))
+        for phone_number in request.data.getlist("phone_number"):
+            handle_phone_numbers(account_instance, phone_number)
 
         return Response(
             AccountProfileReturnSerializer(instance=account_instance).data,
@@ -330,8 +332,14 @@ class editContact(APIView):
     @transaction.atomic
     def patch(self, request):
         data = request.data.dict()
-        print(data)
+
         account_instance = create_or_update_account(data, request.FILES)
+        if (
+            not request.user.is_superuser
+            or request.user.institution.id != account_instance.associated_institution.id
+        ):
+            raise PermissionDenied(detail="You cannot edit this contact")
+
         if "beneficiary_id" in data:
             handle_beneficiary_creation(
                 account_instance,
@@ -373,8 +381,15 @@ def delete_contact(request):
     data = request.data
     try:
         account_instance = AccountProfile.objects.get(id=data.get("id"))
+        if (
+            not request.user.is_superuser
+            or request.user.institution.id != account_instance.associated_institution.id
+        ):
+            raise PermissionDenied(detail="You cannot edit this contact")
     except AccountProfile.DoesNotExist:
         return Response(status=status.HTTP_400_BAD_REQUEST)
+    except PermissionDenied:
+        raise
     serializer = AccountProfileSerializer(
         instance=account_instance, partial=True, data={"is_active": False}
     )
@@ -389,4 +404,8 @@ class GetContacts(generics.ListAPIView):
     serializer_class = AccountProfileReturnSerializer
 
     def get_queryset(self):
+        if not self.request.user.is_superuser:
+            return AccountProfile.objects.filter(
+                associated_institution=self.request.user.institution
+            )
         return AccountProfile.objects.all()

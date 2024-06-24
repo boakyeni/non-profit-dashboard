@@ -53,8 +53,8 @@ const LoginPage = () => {
             <div className="flex w-full max-w-sm mx-auto overflow-hidden bg-white rounded-2xl shadow-2xl lg:max-w-4xl">
 
                 <div className="hidden bg-cover lg:block lg:w-1/2 text-2xl my-auto pl-10" >
-                    <h2 className="font-bold">No need for another account</h2>
-                    <p>Login as you would with any Bsystems Account</p>
+                    <h2 className="font-bold">Bsystems<sup className="text-xs">®</sup> NGO Donation App </h2>
+                    <p>Login in and start making a change</p>
                 </div>
 
                 <form className="w-full px-6 py-8 md:px-8 lg:w-1/2">

@@ -32,11 +32,6 @@ class AccountProfileReturnSerializer(serializers.ModelSerializer):
                 return "donor"
         except ObjectDoesNotExist:
             pass
-        try:
-            if obj.patient_profile and obj.beneficiary:
-                return "patient"
-        except ObjectDoesNotExist:
-            pass
 
         return "unknown"
 

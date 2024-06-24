@@ -102,4 +102,4 @@ class PhoneNumber(models.Model):
     )
 
     def __str__(self):
-        return str(self.number) if self.number else None
+        return str(self.number) if self.number else "unknown number"

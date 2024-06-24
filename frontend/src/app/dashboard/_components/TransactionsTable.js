@@ -4,6 +4,7 @@ import { fetchContacts, setSelectedContact, toggleContactCard, toggleContactTabl
 import { isEqual } from "../../../utils/equalCheck"
 import { useEffect, useState, useRef } from "react"
 import ReactPaginate from 'react-paginate'
+import { toggleAddPatientModal } from "../../lib/features/campaigns/campaignSlice"
 
 
 
@@ -52,7 +53,7 @@ const PatientTransactionsTable = ({ itemsPerPage }) => {
 
     const handleAddUserClick = () => {
         dispatch(setSelectedContact(null))
-        dispatch(toggleEditUser())
+        dispatch(toggleAddPatientModal())
         dispatch(toggleContactTableAction());
         if (contactCardOpen) {
             dispatch(toggleContactCard())
@@ -174,7 +175,7 @@ const PatientTransactionsTable = ({ itemsPerPage }) => {
                     <div id="dropdownAction" className={`${contactTableActionOpen ? '' : 'hidden'} fixed z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 `}>
                         <ul className="py-1 text-sm text-gray-700 " aria-labelledby="dropdownActionButton">
                             <li>
-                                <button className="w-full text-left block px-4 py-2 hover:bg-gray-100  " onClick={handleAddUserClick}>Add Patient</button>
+                                <button className="w-full text-left block px-4 py-2 hover:bg-gray-100  " onClick={handleAddUserClick}>Add Beneficiaries</button>
                             </li>
                             <li>
                                 <button onClick={handleAddCauseClick} className="w-full text-left block px-4 py-2 hover:bg-gray-100  " >Add Cause</button>

@@ -99,9 +99,9 @@ class HealthcarePatient(models.Model):
         default=None,
         related_name="patient_profile",
     )
-    hospital = models.CharField(max_length=100, blank=True, null=True)
+    hospital = models.CharField(max_length=255, blank=True, null=True)
     notes = models.TextField(blank=True, null=True)
-    illness = models.CharField(max_length=100, blank=True, null=True)
+    illness = models.CharField(max_length=255, blank=True, null=True)
     campaigns = models.ManyToManyField(
         MonetaryCampaign, blank=True, related_name="HEALTHCARE_PATIENT"
     )
@@ -163,7 +163,7 @@ class SocialWelfareProgram(models.Model):
         ("EDUCATION", "Education"),
     ]
     profile = models.OneToOneField(AccountProfile, on_delete=models.CASCADE)
-    program_name = models.CharField(max_length=255)
+    program_name = models.CharField(max_length=255)  # possible remove
     program_type = models.CharField(max_length=50, choices=PROGRAM_TYPE_CHOICES)
     target_population = models.TextField(blank=True, null=True)
     funding_sources = models.TextField(blank=True, null=True)
@@ -183,7 +183,7 @@ class EmergencyRelief(models.Model):
     profile = models.OneToOneField(AccountProfile, on_delete=models.CASCADE)
     relief_type = models.CharField(max_length=50, choices=RELIEF_TYPE_CHOICES)
     area_covered = models.TextField(blank=True, null=True)
-    contact_organization = models.TextField(blank=True, null=True)
+    contact_organization = models.TextField(blank=True, null=True)  # possible remove
     number_of_beneficiaries = models.IntegerField(default=0)
     key_services_provided = models.TextField(blank=True, null=True)
     campaigns = models.ManyToManyField(
@@ -197,8 +197,8 @@ class EnvironmentalProtection(models.Model):
         ("WEILDLIFE PROTECTION", "Wildlife Protection"),
     ]
     profile = models.OneToOneField(AccountProfile, on_delete=models.CASCADE)
-    organization_name = models.CharField(max_length=255)
-    project_name = models.CharField(max_length=255)
+    organization_name = models.CharField(max_length=255)  # possible remove
+    project_name = models.CharField(max_length=255)  # possible remove
     location = models.TextField(blank=True, null=True)
     conservation_type = models.CharField(
         max_length=50, choices=CONSERVATION_TYPE_CHOICES
@@ -212,7 +212,7 @@ class EnvironmentalProtection(models.Model):
 
 class CommunityDevelopment(models.Model):
     profile = models.OneToOneField(AccountProfile, on_delete=models.CASCADE)
-    project_name = models.CharField(max_length=255)
+    project_name = models.CharField(max_length=255)  # possible remove
     community_name = models.CharField(max_length=255)
     location = models.TextField(blank=True, null=True)
     key_objectives = models.TextField(blank=True, null=True)
@@ -231,7 +231,7 @@ class DisabilitySupport(models.Model):
     ]
     profile = models.OneToOneField(AccountProfile, on_delete=models.CASCADE)
     support_type = models.CharField(max_length=50, choices=SUPPORT_TYPE_CHOICES)
-    organization_name = models.CharField(max_length=255)
+    organization_name = models.CharField(max_length=255)  # possible remove
     number_of_beneficiaries = models.IntegerField(default=0)
     key_services_provided = models.TextField(blank=True, null=True)
     funding_sources = models.TextField(blank=True, null=True)

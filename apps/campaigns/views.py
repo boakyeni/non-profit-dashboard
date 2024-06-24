@@ -17,9 +17,11 @@ from .serializers import (
     PatientSerializer,
     CauseSerializer,
     PhotoSerializer,
+    model_mapping,
 )
 from django.db import transaction
 from apps.contact_analytics.models import AccountProfile
+from apps.contact_analytics.serializers import AccountProfileReturnSerializer
 from apps.contact_analytics.views import (
     handle_beneficiary_creation,
     create_or_update_account,
@@ -113,6 +115,10 @@ class GetCampaigns(generics.ListAPIView):
             return MonetaryCampaign.objects.filter(
                 institution=self.request.user.institution
             )
+
+
+def approve_campaign(request):
+    pass
 
 
 def handle_photo_upload(photo, campaign, institution_id):
@@ -246,6 +252,11 @@ def delete_campaign(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+def add_or_remove_beneficiary_by_id(remove=False):
+    """takes a dict of types with values as an array of ids to add"""
+    pass
+
+
 @api_view(["PATCH"])
 @parser_classes([MultiPartParser, FormParser])
 @permission_classes([permissions.IsAuthenticated])
@@ -254,6 +265,7 @@ def delete_campaign(request):
 def add_beneficiaries_to_campaign(request):
     data = request.data.dict()
     try:
+        # ids start from 1 so the 0 is just incase campaign_id is not passed
         campaign_instance = MonetaryCampaign.objects.get(
             id=int(data.get("campaign_id"))
         )  # form data so no ints
@@ -262,37 +274,35 @@ def add_beneficiaries_to_campaign(request):
         raise
     except PermissionDenied as err:
         raise
-    if "beneficiary_list" in data:
-        serializer = MonetaryCampaignSerializer(
-            instance=campaign_instance,
-            data={"beneficiaries": data.get("beneficiary_list")},
-            partial=True,
-            context={"request": request},
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    else:
-        """Duplicated from add contact, should wrap into one and use in both"""
-        data["associated_institution"] = request.user.institution.id
-        # Form Data so data object is immutable
-        account_instance = create_or_update_account(data, request.FILES)
 
-        # comes after AccountProfileSerializer so that we know a valid beneficiary was selected
+    if "beneficiary_list" in data:
+        add_or_remove_beneficiary_by_id()
+
+    """Duplicated from add contact, should wrap into one and use in both"""
+    data["associated_institution"] = request.user.institution.id
+    # Form Data so data object is immutable
+    account_instance = create_or_update_account(data, request.FILES)
+
+    # comes after AccountProfileSerializer so that we know a valid beneficiary was selected
+    if data.get("beneficiary_type"):
         beneficiary_instance = handle_beneficiary_creation(
             account_instance,
             data.get("beneficiary_type"),
             json.loads(data.get("beneficiary_data", "{}")),
         )
-        handle_contact_type(account_instance, data.get("contact_type"), data)
-        handle_phone_numbers(account_instance, data.get("phone_number"))
-
         beneficiary_instance.campaigns.add(campaign_instance)
         beneficiary_instance.save()
+    handle_contact_type(account_instance, data.get("contact_type"), data)
+    for phone_number in request.data.getlist("phone_number"):
+        handle_phone_numbers(account_instance, phone_number)
 
-        return Response(
-            MonetaryCampaignSerializer(
-                instance=campaign_instance, context={"request": request}
-            ).data,
-            status=status.HTTP_201_CREATED,
-        )
+    return Response(
+        AccountProfileReturnSerializer(instance=account_instance).data,
+        status=status.HTTP_201_CREATED,
+    )
+
+
+def remove_beneficiaries_from_campaign(request):
+    """Needs campaign id, beneficiary id and type"""
+    model_mapping
+    pass
