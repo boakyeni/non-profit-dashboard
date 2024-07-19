@@ -275,10 +275,6 @@ def handle_contact_type(account_instance, contact_type, data):
         create_or_edit_donor(
             account_instance, data.get("donor_type"), data.get("notes")
         )
-    elif contact_type == "patient":
-        create_or_edit_patient(
-            account_instance, data.get("notes"), data.get("hospital")
-        )
 
 
 def handle_phone_numbers(account_instance, phone_data_json, instance_id=None):
