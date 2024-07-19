@@ -9,6 +9,12 @@ class AccountProfileSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class PhoneNumberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PhoneNumber
+        fields = "__all__"
+
+
 class AccountProfileReturnSerializer(serializers.ModelSerializer):
     phone_number = serializers.SerializerMethodField()
     contact_type = serializers.SerializerMethodField()
@@ -24,16 +30,16 @@ class AccountProfileReturnSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def get_phone_number(self, obj):
-        return [str(phone_number.number) for phone_number in obj.phone_number.all()]
+        return [
+            PhoneNumberSerializer(instance=phone_number).data
+            for phone_number in obj.phone_number.all()
+        ]
 
     def get_contact_type(self, obj):
-        try:
-            if obj.donor_profile and not obj.beneficiary_type:
-                return "donor"
-        except ObjectDoesNotExist:
-            pass
-
-        return "unknown"
+        if obj.beneficiary_type:
+            return "beneficiary"
+        else:
+            return "donor"
 
     def get_causes(self, obj):
         # try:
@@ -92,10 +98,4 @@ class AccountProfileReturnSerializer(serializers.ModelSerializer):
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = "__all__"
-
-
-class PhoneNumberSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PhoneNumber
         fields = "__all__"

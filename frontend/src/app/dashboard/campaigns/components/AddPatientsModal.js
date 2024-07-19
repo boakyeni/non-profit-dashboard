@@ -174,8 +174,9 @@ const AddPatientsModal = () => {
 
 
         const filteredPhoneNumbers = phone_numbers.filter(phone =>
-            phone.name !== '' || phone.phoneNumber !== '' || phone.notes !== ''
+            phone.name !== '' || phone.number !== '' || phone.notes !== ''
         );
+        console.log(filteredPhoneNumbers)
 
         const jsonPhoneNumbers = filteredPhoneNumbers.map(phone => JSON.stringify(phone));
         if (jsonPhoneNumbers) {
