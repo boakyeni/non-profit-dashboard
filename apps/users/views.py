@@ -143,9 +143,9 @@ def signup_view(request):
             data={"name": user_data.get("institution_name")}
         )
         institution_serializer.is_valid(raise_exception=True)
-        instituation_instance = institution_serializer.save()
+        institution_instance = institution_serializer.save()
 
-        user_data["institution"] = instituation_instance.id
+        user_data["institution"] = institution_instance.id
 
     # Post to app db
     serializer = CreateUserSerializer(data=user_data)
