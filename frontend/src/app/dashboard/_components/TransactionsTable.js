@@ -78,8 +78,8 @@ const PatientTransactionsTable = ({ itemsPerPage }) => {
 
 
     useEffect(() => {
-        const filteredContacts = contacts?.filter(contact => contact.contact_type === 'patient');
-        const filteredSearchResults = searchResults?.filter(contact => contact.contact_type === 'patient');
+        const filteredContacts = contacts?.filter(contact => contact.contact_type === 'beneficiary');
+        const filteredSearchResults = searchResults?.filter(contact => contact.contact_type === 'beneficiary');
 
         const active = isEqual(filter, initialFilterState) ? filteredContacts : filteredSearchResults
         setActiveContacts(active)
@@ -156,6 +156,29 @@ const PatientTransactionsTable = ({ itemsPerPage }) => {
         broad_base_donor: "bg-yellow-500",
     };
 
+    const getContactName = (contact) => {
+        if (!contact) return ''
+        if (contact.given_name || contact.last_name) {
+            return contact.given_name + ' ' + contact.last_name
+        } else {
+            return contact.name
+        }
+    }
+
+    const getContactDisplay = (contact) => {
+        // Default to an empty string if no contact data is available
+        if (!contact) return '';
+
+        // Use email if available
+        if (contact.email) return contact.email;
+
+        // Filter for primary contact phone number
+        const primaryPhone = contact.phone_number.find(phone => phone.primary_contact === true);
+
+        // Return the primary phone number if it exists, otherwise return the first phone number or an empty string
+        return primaryPhone ? primaryPhone.number : (contact.phone_number[0]?.number || '');
+    };
+
 
 
 
@@ -201,7 +224,7 @@ const PatientTransactionsTable = ({ itemsPerPage }) => {
                 <label htmlFor="table-search" className="sr-only">Search</label>
                 <div className="relative m-3">
 
-                    <input type="text" id="table-search-users" className="rounded-2xl block py-1 ps-2 text-sm text-gray-900 border border-gray-300 w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500  " placeholder="Search for patients" onChange={handleSearchChange} />
+                    <input type="text" id="table-search-users" className="rounded-2xl block py-1 ps-2 text-sm text-gray-900 border border-gray-300 w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500  " placeholder="Search for beneficiaries" onChange={handleSearchChange} />
                 </div>
             </div>
 
@@ -217,7 +240,7 @@ const PatientTransactionsTable = ({ itemsPerPage }) => {
                                 </div>
                             </th>
                             <th scope="col" className=" py-3">
-                                Patient Name
+                                Name
                             </th>
                             <th scope="col" className="max-sm:hidden px-6 py-3">
                                 Main Cause
@@ -244,9 +267,9 @@ const PatientTransactionsTable = ({ itemsPerPage }) => {
 
                                     <div className="">
                                         <div className="text-base break-words font-semibold flex flex-col">
-                                            <span>{contact.name} </span>
+                                            <span>{getContactName(contact)} </span>
                                         </div>
-                                        <div className="font-normal text-gray-500">neil.sims@flowbite.com</div>
+                                        <div className="font-normal text-gray-500">{getContactDisplay(contact)}</div>
                                     </div>
                                 </th>
                                 <td className="max-sm:hidden px-6 py-4">
@@ -254,7 +277,7 @@ const PatientTransactionsTable = ({ itemsPerPage }) => {
                                 </td>
                                 <td className="max-sm:hidden px-6 py-4">
                                     <div className="flex items-center">
-                                        <div className={`h-2.5 w-2.5 rounded-full me-2 ${leadTypeColorMapping[contact.donor_type] || (contact?.contact_type === 'patient' ? 'bg-purple-500' : 'bg-gray-500')}`}></div> {contactTypeMapping[contact.donor_type] || (contact?.contact_type === 'patient' ? 'Patient' : 'n/a')}
+                                        <div className={`h-2.5 w-2.5 rounded-full me-2 ${leadTypeColorMapping[contact.donor_type] || (contact?.contact_type === 'beneficiary' ? 'bg-purple-500' : 'bg-gray-500')}`}></div> {contactTypeMapping[contact.donor_type] || (contact?.contact_type === 'beneficiary' ? 'Beneficiary' : 'n/a')}
                                     </div>
                                 </td>
                                 <td className="px-6 py-4">
