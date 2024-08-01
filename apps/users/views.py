@@ -194,6 +194,7 @@ def signup_view(request):
 
 
 @api_view(["POST"])
+@permission_classes([AllowAny])
 def signup_user_view(request):
     user_data = {
         "first_name": request.data.get("first_name"),
