@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .circle{
+            border-radius: 50%;
+            background-color: aqua;
+            height: 40px;
+            width: 40px
+        }
+        body{
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="circle"></div>
+    <script type="text/javascript">
+        var c = document.querySelector(".circle")
+        c.addEventListener("click", ()=>{window.resizeTo(100, 200)})
+    </script>
+</body>
+</html>
