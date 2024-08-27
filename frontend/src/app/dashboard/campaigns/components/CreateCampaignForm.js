@@ -93,10 +93,10 @@ const CreateCampaignForm = () => {
                                             <label htmlFor="select-date" className="block mb-2 text-sm font-medium text-gray-900 ">Select Start</label>
                                             <DateComponent selected={localStartDate} setDate={handleStartDateChange} />
                                         </div>
-                                        {/* <div className="max-sm:w-1/2">
+                                         <div className="max-sm:w-1/2">
                                             <label htmlFor="select-date" className="block mb-2 text-sm font-medium text-gray-900 ">Select End</label>
                                             <DateComponent selected={localEndDate} setDate={handleEndDateChange} />
-                                        </div> */}
+                                        </div> 
                                     </div>
 
 

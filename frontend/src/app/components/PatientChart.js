@@ -8,38 +8,38 @@ const AreaChartPlot = () => {
     const data = [
         {
             "year": "2016",
-            "Iphone": 4000,
-            "Samsung": 2400
+            "Patients": 4000,
+            "Donors": 2400
         },
         {
             "year": "2017",
-            "Iphone": 3000,
-            "Samsung": 1398
+            "Patients": 3000,
+            "Donors": 1398
         },
         {
             "year": "2018",
-            "Iphone": 2000,
-            "Samsung": 9800
+            "Patients": 2000,
+            "Donors": 9800
         },
         {
             "year": "2019",
-            "Iphone": 2780,
-            "Samsung": 3908
+            "Patients": 2780,
+            "Donors": 3908
         },
         {
             "year": "2020",
-            "Iphone": 1890,
-            "Samsung": 4800
+            "Patients": 1890,
+            "Donors": 4800
         },
         {
             "year": "2021",
-            "Iphone": 2390,
-            "Samsung": 3800
+            "Patients": 2390,
+            "Donors": 3800
         },
         {
             "year": "2022",
-            "Iphone": 3490,
-            "Samsung": 4300
+            "Patients": 3490,
+            "Donors": 4300
         }
     ]
     return (
@@ -70,8 +70,8 @@ const AreaChartPlot = () => {
                     <XAxis dataKey="year" dy={10} />
                     <YAxis />
                     <Tooltip />
-                    <Area type="monotone" dataKey="Iphone" stroke="#4682B4" fillOpacity={1} fill="url(#color#4682B4)" />
-                    <Area type="monotone" dataKey="Samsung" stroke="#8884d8" fillOpacity={1} fill="url(#color#8884d8)" />
+                    <Area type="monotone" dataKey="Patients" stroke="#4682B4" fillOpacity={1} fill="url(#color#4682B4)" />
+                    <Area type="monotone" dataKey="Donors" stroke="#8884d8" fillOpacity={1} fill="url(#color#8884d8)" />
                 </AreaChart>
             </ResponsiveContainer>
         </>

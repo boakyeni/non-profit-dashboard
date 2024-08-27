@@ -101,13 +101,13 @@ const LoginPage = () => {
 
                     </div>
 
-                    <div className="flex items-center justify-between mt-4">
+                    {/*<div className="flex items-center justify-between mt-4">
                         <span className="w-1/5 border-b dark:border-gray-600 md:w-1/4"></span>
 
                         <a href="/auth/register/" className="text-xs text-center text-gray-500 uppercase dark:text-gray-400 hover:underline">Don't have a Bsystems Account? Register Here</a>
 
                         <span className="w-1/5 border-b dark:border-gray-600 md:w-1/4"></span>
-                    </div>
+                    </div>*/}
                 </form>
             </div>
         </div >

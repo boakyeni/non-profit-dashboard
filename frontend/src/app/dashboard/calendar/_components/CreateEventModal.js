@@ -18,15 +18,17 @@ const CreateEventModal = () => {
     useSelector((state) => state.events);
   const { timezone } = useSelector((state) => state.profile);
   const [localTitle, setLocalTitle] = useState("");
-  const [localStartDate, setLocalStartDate] = useState(selectedEvent.start);
-  const [localEndDate, setLocalEndDate] = useState(selectedEvent.end);
+  const [localStartDate, setLocalStartDate] = useState(
+    selectedEvent?.start || ""
+  );
+  const [localEndDate, setLocalEndDate] = useState(selectedEvent?.end || "");
   const [localDescription, setLocalDescription] = useState("");
   const [localFrequency, setLocalFrequency] = useState("");
 
   useEffect(() => {
     setLocalTitle("");
-    setLocalStartDate(selectedEvent.start);
-    setLocalEndDate(selectedEvent.end);
+    setLocalStartDate(selectedEvent?.start || "");
+    setLocalEndDate(selectedEvent?.end || "");
     setLocalDescription("");
     setLocalFrequency("");
   }, [selectedEvent]);
@@ -34,17 +36,29 @@ const CreateEventModal = () => {
   const handleTitleChange = (e) => {
     setLocalTitle(e.target.value);
   };
+
   const handleStartDateChange = (date) => {
+    if (!date || !timezone) {
+      console.error("Invalid date or timezone", { date, timezone });
+      return;
+    }
     const local_time = moment(date).tz(timezone).format("YYYY-MM-DDTHH:mm:ssZ");
     setLocalStartDate(local_time);
   };
+
   const handleEndDateChange = (date) => {
+    if (!date || !timezone) {
+      console.error("Invalid date or timezone", { date, timezone });
+      return;
+    }
     const local_time = moment(date).tz(timezone).format("YYYY-MM-DDTHH:mm:ssZ");
     setLocalEndDate(local_time);
   };
+
   const handleDescriptionChange = (e) => {
     setLocalDescription(e.target.value);
   };
+
   const handleFrequencyChange = async (e) => {
     setLocalFrequency(e.target.value);
   };
@@ -84,9 +98,7 @@ const CreateEventModal = () => {
         } fixed max-sm:inset-0 z-50 items-center place-items-center justify-center p-4 h-max m-auto max-lg:w-full`}
       >
         <div className="relative w-full lg:w-[70vw] ">
-          {/* // Modal Content */}
           <div className="relative bg-white rounded-2xl shadow ">
-            {/* //Modal Header */}
             <div className="flex items-start justify-between p-4 border-b rounded-t ">
               <h3 className="text-xl font-semibold text-gray-900 ">
                 Create Event or Appointment
@@ -102,8 +114,7 @@ const CreateEventModal = () => {
                 />
               </button>
             </div>
-            {/* // Modal Body */}
-            <div className="p-6  max-h-[calc(100vh-20rem)] overflow-x-auto">
+            <div className="p-6 max-h-[calc(100vh-20rem)] overflow-x-auto">
               <div className="flex flex-col lg:flex-row space-x-6">
                 <div className="lg:w-1/2 2xl:w-3/4 space-y-6">
                   <div className="col-span-6 sm:col-span-4">
@@ -124,7 +135,6 @@ const CreateEventModal = () => {
                       onChange={handleTitleChange}
                     />
                   </div>
-
                   <div className="flex flex-row w-full space-x-3">
                     <div className="max-sm:w-1/2">
                       <label
@@ -188,7 +198,6 @@ const CreateEventModal = () => {
                       onChange={handleDescriptionChange}
                     />
                   </div>
-
                   <div className="max-w-lg">
                     <label
                       className="block text-sm font-medium text-gray-900"
@@ -211,14 +220,8 @@ const CreateEventModal = () => {
                     </div>
                   </div>
                 </div>
-                {/* <div className="lg:w-1/2 2xl:w-1/4">
-                                    <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 ">Add guests</label>
-                                    <input type="text" name="first-name" id="first-name" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="Add Email" required="" />
-
-                                </div> */}
               </div>
             </div>
-            {/* // Modal Footer */}
             <div className="flex items-center p-6 space-x-3 rtl:space-x-reverse border-t border-gray-200 rounded-b ">
               <button
                 className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center "
