@@ -84,7 +84,7 @@ const AddPatientsTable = ({ itemsPerPage }) => {
                 <label htmlFor="table-search" className="sr-only">Search</label>
                 <div className="relative m-3 w-full">
 
-                    <input type="text" id="table-search-users" className="rounded-2xl block py-1 ps-2 text-sm text-gray-900 border border-gray-300 w-60 bg-gray-50 focus:ring-blue-500 focus:border-blue-500  " placeholder="Search for patients" onChange={handleSearchChange} />
+                    <input type="text" id="table-search-users" className="rounded-2xl block py-1 ps-2 text-sm text-gray-900 border border-gray-300 w-60 bg-gray-50 focus:ring-blue-500 focus:border-blue-500  " placeholder="Search for beneficiaries" onChange={handleSearchChange} />
                 </div>
             </div>
 

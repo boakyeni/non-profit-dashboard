@@ -2,7 +2,7 @@
 
 import ProfileTabs from "./components/ProfileTabs"
 import { useDispatch, useSelector } from "react-redux"
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { momentLocalizer } from 'react-big-calendar'
 import AppointmentsWidget from "./components/AppointmentsWidget";
 import EditEventModal from "../calendar/_components/EditEventModal";
@@ -14,7 +14,8 @@ import SettingsComponent from "./components/SettingsComponent";
 
 
 const ProfilePage = () => {
-    const { selectedTab, settingsButtonPressed } = useSelector((state) => state.profile)
+    const { selectedTab, settingsButtonPressed, timezone } = useSelector((state) => state.profile)
+    moment.tz.setDefault(timezone)
     const localizer = momentLocalizer(moment)
     const dispatch = useDispatch()
 

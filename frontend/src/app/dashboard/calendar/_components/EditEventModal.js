@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { LuX } from "react-icons/lu"
 import { toggleEditEventModal, setEndDate, setStartDate, editEvent, setSelectedEvent, updateSelectedEvent, toggleEditEventModalEdit, getEvents, setEditEventModalEdit } from "../../../lib/features/events/eventSlice"
 import DateComponent from "../../_components/DateComponent"
-import moment from "moment"
+import moment from 'moment-timezone';
 
 /* View/Edit Modal */
 const EditEventModal = () => {
@@ -92,11 +92,11 @@ const EditEventModal = () => {
                                     <div className="flex flex-row w-full space-x-3">
                                         <div className="max-sm:w-1/2">
                                             <label htmlFor="select-date" className="block mb-2 text-sm font-medium text-gray-900 ">Start</label>
-                                            <DateComponent selected={localStartDate} setDate={(date) => setLocalStartDate(moment(date).format('YYYY-MM-DDTHH:mm:ss'))} read={!editEventModalEditable} />
+                                            <DateComponent selected={localStartDate} setDate={(date) => setLocalStartDate(moment(date).format('YYYY-MM-DDTHH:mm:ssZ'))} read={!editEventModalEditable} />
                                         </div>
                                         <div className="max-sm:w-1/2">
                                             <label htmlFor="select-date" className="block mb-2 text-sm font-medium text-gray-900 ">End</label>
-                                            <DateComponent selected={localEndDate} setDate={(date) => setLocalEndDate(moment(date).format('YYYY-MM-DDTHH:mm:ss'))} read={!editEventModalEditable} />
+                                            <DateComponent selected={localEndDate} setDate={(date) => setLocalEndDate(moment(date).format('YYYY-MM-DDTHH:mm:ssZ'))} read={!editEventModalEditable} />
                                         </div>
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">

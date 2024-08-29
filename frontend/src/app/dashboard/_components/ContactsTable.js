@@ -69,7 +69,10 @@ const ContactsTable = ({ itemsPerPage }) => {
 
 
     useEffect(() => {
-        const active = isEqual(filter, initialFilterState) ? contacts : searchResults
+        const filteredContacts = contacts?.filter(contact => contact.contact_type === 'donor');
+        const filteredSearchResults = searchResults?.filter(contact => contact.contact_type === 'donor');
+
+        const active = isEqual(filter, initialFilterState) ? filteredContacts : filteredSearchResults
         setActiveContacts(active)
         const endOffset = itemOffset + itemsPerPage;
         setCurrentItems(active.slice(itemOffset, endOffset));
@@ -173,7 +176,7 @@ const ContactsTable = ({ itemsPerPage }) => {
                                 <button type='button' onClick={() => handleContactChange('donor')} className="block w-full text-left px-4 py-2 hover:bg-gray-100  ">Show only Donors</button>
                             </li>
                             <li>
-                                <button type='button' onClick={() => handleContactChange('patient')} className="block w-full text-left px-4 py-2 hover:bg-gray-100  ">Show only Patients</button>
+                                <a href="/dashboard/patients/transactions" className="block w-full text-left px-4 py-2 hover:bg-gray-100  ">Go to Patients</a>
                             </li>
                             <li>
                                 <button type='button' onClick={() => handleShowAll()} className="block w-full text-left px-4 py-2 hover:bg-gray-100  ">Show All</button>
@@ -191,7 +194,7 @@ const ContactsTable = ({ itemsPerPage }) => {
                 <label htmlFor="table-search" className="sr-only">Search</label>
                 <div className="relative m-3">
 
-                    <input type="text" id="table-search-users" className="rounded-2xl block py-1 ps-2 text-sm text-gray-900 border border-gray-300 w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500  " placeholder="Search for contacts" onChange={handleSearchChange} />
+                    <input type="text" id="table-search-users" className="rounded-2xl block py-1 ps-2 text-sm text-gray-900 border border-gray-300 w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500  " placeholder="Search for donors" onChange={handleSearchChange} />
                 </div>
             </div>
 
@@ -248,9 +251,9 @@ const ContactsTable = ({ itemsPerPage }) => {
                                         <div className={`h-2.5 w-2.5 rounded-full me-2 ${leadTypeColorMapping[contact.donor_type] || (contact?.contact_type === 'patient' ? 'bg-purple-500' : 'bg-gray-500')}`}></div> {contactTypeMapping[contact.donor_type] || (contact?.contact_type === 'patient' ? 'Patient' : 'unknown')}
                                     </div>
                                 </td>
-                                <td className="px-6 py-4">
-                                    {/* // Modal Toggle */}
-                                    <a href="#" onClick={() => handleMoreInfoClick(contact)} type="button" className="font-medium text-blue-600  hover:underline">More Info</a>
+                                <td className="px-6 py-4" onClick={() => handleMoreInfoClick(contact)}>
+
+                                    <button onClick={() => handleMoreInfoClick(contact)} type="button" className="font-medium text-blue-600  hover:underline">More Info</button>
                                 </td>
                             </tr>
                         ))}

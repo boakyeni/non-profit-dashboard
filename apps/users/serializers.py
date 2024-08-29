@@ -4,11 +4,16 @@ from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.conf import settings
 from djoser.serializers import UserCreateSerializer
+from .models import Institution
 
 User = get_user_model()
 
 
 class CreateUserSerializer(UserCreateSerializer):
+    institution_admin = serializers.BooleanField(
+        default=False, required=False, allow_null=True
+    )
+
     class Meta(UserCreateSerializer.Meta):
         model = User
         fields = [
@@ -19,12 +24,16 @@ class CreateUserSerializer(UserCreateSerializer):
             "phone_number",
             "reference",
             "password",
+            "institution_admin",
+            "institution",
         ]
+        # extra_kwargs = {"password": {"write_only": True}}
 
 
 class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField(source="get_full_name")
     phone_number = PhoneNumberField()
+    institution_admin = serializers.BooleanField(required=False)
 
     class Meta:
         model = User
@@ -36,6 +45,7 @@ class UserSerializer(serializers.ModelSerializer):
             "full_name",
             "phone_number",
             "reference",
+            "institution_admin",
         ]
 
     def get_full_name(self, obj):
@@ -77,3 +87,9 @@ class TokenRefreshSerializer(serializers.Serializer):
             data["refresh"] = str(refresh)
 
         return data
+
+
+class InstitutionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Institution
+        fields = "__all__"

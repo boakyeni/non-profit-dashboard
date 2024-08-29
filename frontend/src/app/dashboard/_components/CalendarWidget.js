@@ -2,7 +2,7 @@
 import React, { Fragment, useCallback, useMemo, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Calendar, Views, DateLocalizer } from 'react-big-calendar'
-import moment from 'moment'
+import moment from 'moment-timezone';
 // Storybook cannot alias this, so you would use 'react-big-calendar/lib/addons/dragAndDrop'
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { setEvents, editEvent, setEndDate, setStartDate, toggleCreateEventModal, toggleEditEventModal, setSelectedEvent, toggleEdit, getEvents, setEndTimeRange, setStartTimeRange } from '../../lib/features/events/eventSlice';

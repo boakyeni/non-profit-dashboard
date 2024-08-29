@@ -48,8 +48,8 @@ const CustomSidebar = () => {
                     <div className="py-6 ">
                         <CustomSidebarLink title="Dashboard" icon={<FaHome className="scale-[1.5]" />} href="/dashboard" />
                         <CustomSidebarLink title="Calendar" icon={<CiCalendarDate className="scale-[1.75]" />} href="/dashboard/calendar" />
-                        <CustomSidebarLink title="Contacts" icon={<LuUsers2 className="scale-[1.75] stroke-1" />} href="/dashboard/contacts" />
-                        <CustomSidebarLink title="Patients" icon={<LuHeart className="scale-[1.5] stroke-1" />} href="/dashboard/patients/transactions" />
+                        <CustomSidebarLink title="Donors" icon={<LuUsers2 className="scale-[1.75] stroke-1" />} href="/dashboard/contacts" />
+                        <CustomSidebarLink title="Beneficiaries" icon={<LuHeart className="scale-[1.5] stroke-1" />} href="/dashboard/patients/transactions" />
                         <CustomSidebarLink title="Analytics" icon={<LuScatterChart className="scale-[1.5] stroke-1" />} href="/dashboard/analytics" />
                         <CustomSidebarLink title="Campaigns" icon={<LuHeartHandshake className="scale-[1.55] stroke-1" />} href={`/dashboard/campaigns`} />
                         <SidebarAccordian title="Tasks" subtitles={["Kanban", "Appointments"]} icons={[<LuKanbanSquareDashed className="scale-[1.5]" />, <LuTornado className="scale-[1.5]" />]} />

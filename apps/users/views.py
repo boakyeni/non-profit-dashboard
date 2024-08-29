@@ -16,12 +16,12 @@ from rest_framework.decorators import (
     authentication_classes,
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework import status, generics
+from rest_framework import status, generics, permissions
 import requests
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from .serializers import UserSerializer, CreateUserSerializer
+from .serializers import UserSerializer, CreateUserSerializer, InstitutionSerializer
 from djoser.serializers import PasswordSerializer, CurrentPasswordSerializer
 from djoser.compat import get_user_email
 from .serializers import TokenRefreshSerializer
@@ -36,7 +36,9 @@ from apps.scheduler.serializers import (
     CalendarSerializer,
     AdditionalCalendarInfoSerializer,
 )
+from django.contrib.auth.models import Permission
 from django.utils.text import slugify
+from .custom_permissions import IsAdminUser
 
 CENTRAL_AUTH_URL = settings.CENTRAL_AUTH_URL
 User = get_user_model()
@@ -71,7 +73,11 @@ def login_view(request):
     email = request.data.get("email")
     password = request.data.get("password")
 
-    user = authenticate(request, email=email, password=password)
+    user = authenticate(
+        request,
+        email=email,
+        password=password,
+    )
 
     if user and user.is_active:
         # If valid, issue JWT token
@@ -118,6 +124,7 @@ def generate_unique_slug(model_class, title):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 @transaction.atomic
+# this view will be designated for only institution admins
 def signup_view(request):
     """Register view for local authentication"""
     user_data = {
@@ -126,8 +133,20 @@ def signup_view(request):
         "email": request.data.get("email"),
         "password": request.data.get("password"),
         "phone_number": request.data.get("phone_number"),
+        "bsystems_admin": request.data.get("bsystems_admin"),
+        "institution_admin": request.data.get("institution_admin"),
+        "institution_name": request.data.get("institution_name"),
         # Add other fields as needed
     }
+
+    if user_data.get("institution_admin"):
+        institution_serializer = InstitutionSerializer(
+            data={"name": user_data.get("institution_name")}
+        )
+        institution_serializer.is_valid(raise_exception=True)
+        institution_instance = institution_serializer.save()
+
+        user_data["institution"] = institution_instance.id
 
     # Post to app db
     serializer = CreateUserSerializer(data=user_data)
@@ -172,6 +191,62 @@ def signup_view(request):
     return Response(
         {"detail": "Account creation failed"}, status=status.HTTP_400_BAD_REQUEST
     )
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def signup_user_view(request):
+    user_data = {
+        "first_name": request.data.get("first_name"),
+        "last_name": request.data.get("last_name"),
+        "email": request.data.get("email"),
+        "password": request.data.get("password"),
+        "phone_number": request.data.get("phone_number"),
+        "institution_admin": False,
+    }
+
+    serializer = CreateUserSerializer(data=user_data)
+    serializer.is_valid(raise_exception=True)
+    user = serializer.save()
+
+    create_personal_calendar(user)
+
+    if user:
+        token = RefreshToken().for_user(user)
+        drf_response = Response(
+            {
+                "access": str(token.access_token),
+            }
+        )
+        drf_response.set_cookie(
+            key=settings.SIMPLE_JWT["AUTH_COOKIE"],
+            value=str(token),
+            httponly=True,
+        )
+        return drf_response
+    return Response(
+        {"detail": "Account creation failed"}, status=status.HTTP_400_BAD_REQUEST
+    )
+
+
+def create_personal_calendar(user):
+    calendar_serializer = CalendarSerializer(
+        data={
+            "name": "Personal Calendar",
+            "slug": generate_unique_slug(Calendar, "Personal Calendar"),
+        }
+    )
+    calendar_serializer.is_valid(raise_exception=True)
+    calendar_instance = calendar_serializer.save()
+
+    info_cal_serializer = AdditionalCalendarInfoSerializer(
+        data={"calendar": calendar_instance.id, "private": True}
+    )
+    info_cal_serializer.is_valid(raise_exception=True)
+    info_cal_instance = info_cal_serializer.save()
+
+    info_cal_instance.users.add(user)
+    info_cal_instance.save()
 
 
 @api_view(["GET"])

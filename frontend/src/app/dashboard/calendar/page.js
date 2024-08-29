@@ -2,7 +2,7 @@
 
 import CalendarWidget from "../_components/CalendarWidget"
 import { useEffect, useState, useRef } from "react";
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { momentLocalizer } from 'react-big-calendar'
 import { useDispatch, useSelector } from "react-redux";
 import { getEvents, setCalendar, getCalendars, toggleCreateEventModal, toggleCreateCalendarModal, setEndDate, setStartDate, toggleCalendarAction, setCurrentCalendarId, toggleInviteModal } from "../../lib/features/events/eventSlice";
@@ -14,6 +14,8 @@ import InviteCollaboratorsModal from "./_components/InviteCollaboratorsModal";
 
 
 const CalendarPage = () => {
+    const { timezone } = useSelector((state) => state.profile)
+    moment.tz.setDefault(timezone)
 
     const localizer = momentLocalizer(moment)
 
@@ -26,7 +28,9 @@ const CalendarPage = () => {
     useEffect(() => {
         // dispatch(getEvents())
         dispatch(getCalendars())
+
         if (typeof window !== 'undefined') {
+
             const calendar_id = localStorage.getItem('current_calendar')
             dispatch(setCurrentCalendarId(calendar_id));
             // Check if `calendars` is truthy and has at least one item before proceeding
@@ -36,7 +40,7 @@ const CalendarPage = () => {
 
     useEffect(() => {
         if (calendars && calendars.length > 0) {
-            const foundCalendar = calendars.find(it => String(it.id) === String(currentCalendarId));
+            const foundCalendar = calendars.find(it => String(it.id) === String(currentCalendarId)) || calendars[0]
 
             dispatch(setCalendar(foundCalendar))
         }

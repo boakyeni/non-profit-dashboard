@@ -14,7 +14,7 @@ const ContactModal = () => {
     const [lastName, setLastName] = useState(selectedContact?.last_name || '');
     const [email, setEmail] = useState(selectedContact?.email || '');
     const [contactType, setContactType] = useState(selectedContact?.contact_type || '')
-    const [phoneNumber, setPhoneNumber] = useState(selectedContact?.phone_number || '')
+    const [phoneNumber, setPhoneNumber] = useState('')
     const [company, setCompany] = useState(selectedContact?.company || '')
     const [hospital, setHospital] = useState(selectedContact?.hospital || '')
     const [profilePhoto, setProfilePhoto] = useState(selectedContact?.profile_photo || '');
@@ -156,11 +156,11 @@ const ContactModal = () => {
                                     <input type="tel" name="phone-number" id="phone-number" value={phoneNumber} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 " placeholder="e.g. +(12)3456 789" onChange={(e) => setPhoneNumber(e.target.value)} required="" />
                                     {/* Needs better UI */}
                                     <ul className="flex flex-wrap">
-                                        {selectedContact?.phone_number.map((number) => (
+                                        {/* {selectedContact?.phone_number.map((number) => (
                                             <li key={number}>
                                                 {number}
                                             </li>
-                                        ))}
+                                        ))} */}
                                     </ul>
                                 </div>
 

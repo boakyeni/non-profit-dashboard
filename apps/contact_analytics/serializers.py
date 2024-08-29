@@ -11,6 +11,12 @@ class AccountProfileSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class PhoneNumberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PhoneNumber
+        fields = "__all__"
+
+
 class AccountProfileReturnSerializer(serializers.ModelSerializer):
     phone_number = serializers.SerializerMethodField()
     contact_type = serializers.SerializerMethodField()
@@ -26,39 +32,35 @@ class AccountProfileReturnSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def get_phone_number(self, obj):
-        return [str(phone_number.number) for phone_number in obj.phone_number.all()]
+        return [
+            PhoneNumberSerializer(instance=phone_number).data
+            for phone_number in obj.phone_number.all()
+        ]
 
     def get_contact_type(self, obj):
-        try:
-            if obj.donor_profile and not obj.is_patient:
-                return "donor"
-        except ObjectDoesNotExist:
-            pass
-        try:
-            if obj.patient_profile and obj.is_patient:
-                return "patient"
-        except ObjectDoesNotExist:
-            pass
-
-        return "unknown"
+        if obj.beneficiary_type:
+            return "beneficiary"
+        else:
+            return "donor"
 
     def get_causes(self, obj):
-        try:
-            if obj.is_patient and obj.patient_profile:
-                return [cause.title for cause in obj.patient_profile.causes.all()]
-        except ObjectDoesNotExist:
-            return []
+        # try:
+        #     if obj.beneficiary_type and obj.patient_profile:
+        #         return [cause.title for cause in obj.patient_profile.causes.all()]
+        # except ObjectDoesNotExist:
+        #     return []
+        return
 
     def get_notes(self, obj):
         try:
-            if not obj.is_patient and obj.donor_profile:
+            if not obj.beneficiary_type and obj.donor_profile:
                 return obj.donor_profile.notes
         except ObjectDoesNotExist:
             # Catching the exception if donor_profile does not exist
             pass
 
         try:
-            if obj.is_patient and obj.patient_profile:
+            if obj.beneficiary_type and obj.patient_profile:
                 return obj.patient_profile.notes
         except ObjectDoesNotExist:
             # Catching the exception if patient_profile does not exist
@@ -73,7 +75,7 @@ class AccountProfileReturnSerializer(serializers.ModelSerializer):
 
     def get_hospital(self, obj):
         # Check if the patient_profile exists before trying to access its attributes
-        if hasattr(obj, "patient_profile") and obj.is_patient:
+        if hasattr(obj, "patient_profile") and obj.beneficiary_type:
             return obj.patient_profile.hospital
         else:
             return None
@@ -83,14 +85,14 @@ class AccountProfileReturnSerializer(serializers.ModelSerializer):
             obj.donor_profile.donor_type.lead_type
             if hasattr(obj, "donor_profile")
             and obj.donor_profile.donor_type
-            and not obj.is_patient
+            and not obj.beneficiary_type
             else None
         )
 
     def get_amount_donated(self, obj):
         return (
             obj.donor_profile.amount_donated
-            if hasattr(obj, "donor_profile") and not obj.is_patient
+            if hasattr(obj, "donor_profile") and not obj.beneficiary_type
             else None
         )
 
@@ -98,10 +100,4 @@ class AccountProfileReturnSerializer(serializers.ModelSerializer):
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
-        fields = "__all__"
-
-
-class PhoneNumberSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PhoneNumber
         fields = "__all__"

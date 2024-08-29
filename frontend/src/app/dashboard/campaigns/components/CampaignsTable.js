@@ -185,8 +185,8 @@ const CampaignsTable = ({ itemsPerPage }) => {
                                     </div>
                                 </td>
                                 <td className="px-6 py-4">
-                                    {/* // Modal Toggle */}
-                                    <a href="/dashboard/campaigns/1" type="button" className="font-medium text-blue-600  hover:underline">More Info</a>
+
+                                    <a href={`/dashboard/campaigns/${campaign?.id}`} type="button" className="font-medium text-blue-600  hover:underline">More Info</a>
                                 </td>
                             </tr>))}
                     </tbody>

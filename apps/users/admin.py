@@ -6,7 +6,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
 
 from .forms import CustomUserChangeForm, CustomUserCreationForm
-from .models import User
+from .models import User, Institution
 
 
 class UserAdmin(BaseUserAdmin):
@@ -20,6 +20,7 @@ class UserAdmin(BaseUserAdmin):
         "first_name",
         "last_name",
         "is_active",
+        "institution",
     ]
     list_display_links = ["id", "email"]
     list_filter = [
@@ -47,6 +48,7 @@ class UserAdmin(BaseUserAdmin):
                     "first_name",
                     "last_name",
                     "phone_number",
+                    "timezone",
                 )
             },
         ),
@@ -59,6 +61,8 @@ class UserAdmin(BaseUserAdmin):
                     "is_superuser",
                     "groups",
                     "user_permissions",
+                    "institution",
+                    "institution_admin",
                 )
             },
         ),
@@ -85,3 +89,4 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(User, UserAdmin)
+admin.site.register(Institution)

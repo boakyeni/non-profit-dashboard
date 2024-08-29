@@ -19,18 +19,29 @@ sorl-thumbnail = "^12.10.0"
 jsonfield = "^3.1.0"
 pillow = "^10.1.0"
 premailer = "^3.10.0"
+<<<<<<< HEAD
 mysqlclient = "2.1.0"
 jsonify = "^0.5"
 django-cors-headers = "^4.3.1"
 django-countries = "^7.5.1"
 python-magic = "0.4.27"
+=======
+jsonify = "^0.5"
+django-cors-headers = "^4.3.1"
+django-countries = "^7.5.1"
+python-magic = "^0.4.27"
+>>>>>>> origin/new_features
 djoser = "^2.2.2"
 celery = "^5.3.6"
 flower = "^2.0.1"
 redis = "^5.0.3"
 django-celery-email = "^3.0.0"
 watchdog = "^4.0.0"
+<<<<<<< HEAD
 libmagic = "^1.0"
+=======
+mysqlclient = "^2.2.4"
+>>>>>>> origin/new_features
 
 
 [build-system]

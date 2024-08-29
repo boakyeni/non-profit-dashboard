@@ -92,7 +92,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.mysql",
+        "ENGINE": env("MYSQL_ENGINE"),
         "NAME": env("MYSQL_NAME"),
         "USER": env("MYSQL_USER"),
         "PASSWORD": env("MYSQL_PASSWORD"),
@@ -151,12 +151,12 @@ AUTH_USER_MODEL = "users.User"
 
 from datetime import timedelta
 
-REST_FRAMEWORK = {
-    # "DEFAULT_AUTHENTICATION_CLASSES": (
-    #     "rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication",
-    # ),
-    # "EXCEPTION_HANDLER": "utils.exceptions.custom_exception_handler",
-}
+# REST_FRAMEWORK = {
+#     # "DEFAULT_AUTHENTICATION_CLASSES": (
+#     #     "rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication",
+#     # ),
+#     "EXCEPTION_HANDLER": "utils.exception_handler.custom_exception_handler",
+# }
 
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": (
@@ -218,6 +218,6 @@ PHONENUMBER_DEFAULT_REGION = "GH"
 
 # CELERY_RESULT_BACKEND = env("CELERY_BACKEND")
 
-CELERY_TIMEZONE = "Africa/Accra"
+# CELERY_TIMEZONE = "Africa/Accra"
 
-CELERY_WORKER_MAX_TASKS_PER_CHILD = 100
+# CELERY_WORKER_MAX_TASKS_PER_CHILD = 100

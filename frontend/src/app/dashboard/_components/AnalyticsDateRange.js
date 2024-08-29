@@ -5,19 +5,19 @@ import { LuX } from "react-icons/lu"
 import DateComponent from "./DateComponent"
 import { toggleDateRangeModal, fetchDonorAnalytics, updateTimeFrame } from "../../lib/features/analytics/analyticSlice"
 import { useState } from "react"
-import moment from "moment"
+import moment from 'moment-timezone';
 
 const AnalyticsDateRangeModal = () => {
     const dispatch = useDispatch()
     const { dateRangeModalOpen } = useSelector((state) => state.analytics)
-    const [start_date, setStartDate] = useState('2024-01-12T00:00:00')
-    const [end_date, setEndDate] = useState('2024-01-12T00:00:00')
+    const [start_date, setStartDate] = useState('2024-01-12T00:00:00Z')
+    const [end_date, setEndDate] = useState('2024-01-12T00:00:00Z')
     const handleStartDateChange = (date) => {
-        const local_time = moment(date).format('YYYY-MM-DDTHH:mm:ss')
+        const local_time = moment(date).format('YYYY-MM-DDTHH:mm:ssZ')
         setStartDate(local_time)
     }
     const handleEndDateChange = (date) => {
-        const local_time = moment(date).format('YYYY-MM-DDTHH:mm:ss')
+        const local_time = moment(date).format('YYYY-MM-DDTHH:mm:ssZ')
         setEndDate(local_time)
     }
     const handleSubmit = (e) => {
