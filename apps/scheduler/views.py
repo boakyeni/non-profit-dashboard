@@ -232,7 +232,8 @@ class PersistedOccurrenceCreateView(APIView):
         cancel_data["start"] = request.data.get("cancel_start")
         cancel_data["end"] = request.data.get("cancel_end")
         """
-        All previously cancelled occurrences should have the same original start, but only one with that original    start for that event would not be cancelled, that is the one that the user just selected
+        All previously cancelled occurrences should have the same original start, but only one with that original
+        start for that event would not be cancelled, that is the one that the user just selected
         If there is no original start passed this must be the first time it is being moved or cancelled
         """
         original_start = parse_datetime(request.data.get("cancel_start"))
